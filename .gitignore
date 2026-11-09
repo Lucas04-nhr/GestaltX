@@ -22,3 +22,5 @@ findings.md
 docs/plans/
 .env
 .env.*
+# Written at build time by .github/scripts/build-ipa.sh
+GestaltX/BuildCommit.txt

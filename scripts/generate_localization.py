@@ -353,6 +353,18 @@ This feature is only official on iPad.	此功能仅在 iPad 上为官方设定�
 This flag is only enabled on Apple internal or research devices.	此标记仅在 Apple 内部设备或安全研究设备上开启。
 This model is not in the reference table. Only internal flags and consistency are checked.	此机型不在参考表中，仅检查内部标记和一致性。
 Unknown	未知
+
+Change to %@	改为 %@
+Change the region code to %@	将地区代码改为 %@
+Stage %lld Fixes	暂存 %lld 项修正
+Fixes are staged first. Review and apply them like any other change. A backup is created before writing. Possibly unofficial items are not selected by default.	修正会先暂存，像其他更改一样确认后再应用，写入前会自动备份。“可能非官方”的项目默认不勾选。
+
+Rename	重命名
+Rename Backup	重命名备份
+Backup Name	备份名称
+Save	保存
+Leave the name empty to show the backup's type instead.	名称留空时显示备份类型。
+This backup could not be found. Refresh the list and try again.	找不到这个备份，请刷新列表后重试。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

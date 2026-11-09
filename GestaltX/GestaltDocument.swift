@@ -258,6 +258,8 @@ struct BackupRecord: Identifiable, Codable, Sendable {
     let source: DocumentSource
     let deviceID: String
     let byteCount: Int
+    /// A name chosen by the user. Records saved before renaming existed have none.
+    var name: String?
     var filename: String { id.uuidString + ".plist" }
 }
 
@@ -452,6 +454,19 @@ actor GestaltFileStore {
         let data = try Data(contentsOf: backupDirectory.appendingPathComponent(record.filename))
         _ = try GestaltDocument(data: data)
         return data
+    }
+
+    /// Renames a backup. An empty name clears it. Only the metadata changes, never the backup bytes.
+    @discardableResult
+    func renameBackup(_ record: BackupRecord, to name: String) throws -> BackupRecord {
+        let metadata = backupDirectory.appendingPathComponent(record.id.uuidString + ".json")
+        guard var current = try? JSONDecoder().decode(BackupRecord.self, from: Data(contentsOf: metadata)), current.id == record.id else {
+            throw GestaltFailure("This backup could not be found. Refresh the list and try again.")
+        }
+        let trimmed = String(name.trimmingCharacters(in: .whitespacesAndNewlines).filter { !$0.isNewline }.prefix(100))
+        current.name = trimmed.isEmpty ? nil : trimmed
+        try JSONEncoder().encode(current).write(to: metadata, options: .atomic)
+        return current
     }
 
     func deleteBackup(_ record: BackupRecord) throws {

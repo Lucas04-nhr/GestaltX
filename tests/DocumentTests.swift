@@ -610,9 +610,16 @@ final class AccessTrace: @unchecked Sendable {
         do { _ = try await library.restore(importedRecord, onto: libraryLocal); throw TestFailure(message: "Restores require a fresh device read") }
         catch is GestaltFailure {}
         try expect(try Data(contentsOf: libraryDevice) == beforeLayoutRestore, "Rejected restores leave the device file untouched")
+        let renamed = try await store.renameBackup(records[0], to: "  Before region change\n ")
+        try expect(renamed.name == "Before region change", "Rename trims whitespace and newlines")
+        try expect(try await store.backups().first { $0.id == records[0].id }?.name == "Before region change", "Renamed backups keep their name after reloading")
+        try expect(try await store.backupData(records[0]) == originalData, "Renaming never changes the backup bytes")
+        try expect(try await store.renameBackup(records[0], to: "   ").name == nil, "An empty name clears the name")
+        let legacy = try JSONDecoder().decode(BackupRecord.self, from: Data(#"{"id":"\#(UUID().uuidString)","date":0,"reason":"Manual backup","source":"device","deviceID":"x","byteCount":1}"#.utf8))
+        try expect(legacy.name == nil, "Records saved before renaming existed still decode")
         try await store.deleteBackup(records[0])
         let remaining = try await store.backups()
         try expect(!remaining.contains { $0.id == records[0].id }, "Backup deletion updates library")
-        print("PASS: typed plist editing, nested roundtrip, durable backups, readback verification, stale-write rejection, owned restore, foreign-backup rejection, rollback, backup failure, local isolation, layout-checked library restores, and extension release.")
+        print("PASS: typed plist editing, nested roundtrip, durable backups, readback verification, stale-write rejection, owned restore, foreign-backup rejection, rollback, backup failure, local isolation, layout-checked library restores, backup renaming, and extension release.")
     }
 }

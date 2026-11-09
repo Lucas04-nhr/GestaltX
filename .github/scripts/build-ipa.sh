@@ -7,7 +7,10 @@
 #
 # Set SOURCE_DIR to build a checkout other than this repository (CI builds an
 # upstream tag checked out next to it). Set BUILD_DATE (YYYY-MM-DD) to write it
-# to GestaltX/BuildDate.txt, which the About page shows. In GitHub Actions,
+# to GestaltX/BuildDate.txt, which the About page shows. The short commit hash
+# of the built source is written to GestaltX/BuildCommit.txt, so the app and the
+# IPA name show the version as <marketing version>-<hash>, such as 1.0.3-abc1234.
+# CFBundleShortVersionString stays numeric, as iOS requires. In GitHub Actions,
 # `version` and `ipa` are written to GITHUB_OUTPUT.
 set -euo pipefail
 
@@ -21,6 +24,9 @@ if [[ -z "$version" || "$(wc -l <<< "$version")" -ne 1 ]]; then
   echo "Error: expected one MARKETING_VERSION, found: ${version:-none}" >&2
   exit 1
 fi
+commit="$(git -C "$root" rev-parse --short=7 HEAD)"
+printf '%s' "$commit" > GestaltX/BuildCommit.txt
+version="$version-$commit"
 echo "==> Building GestaltX $version"
 
 if [[ -n "${BUILD_DATE:-}" ]]; then

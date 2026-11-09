@@ -341,5 +341,15 @@
   "This feature is only official on iPad.": "此功能僅在 iPad 上為官方設定。",
   "This flag is only enabled on Apple internal or research devices.": "此標記僅在 Apple 內部裝置或安全研究裝置上開啟。",
   "This model is not in the reference table. Only internal flags and consistency are checked.": "此機型不在參考表中，僅檢查內部標記和一致性。",
-  "Unknown": "未知"
+  "Unknown": "未知",
+  "Change to %@": "改為 %@",
+  "Change the region code to %@": "將地區代碼改為 %@",
+  "Stage %lld Fixes": "暫存 %lld 項修正",
+  "Fixes are staged first. Review and apply them like any other change. A backup is created before writing. Possibly unofficial items are not selected by default.": "修正會先暫存，像其他更改一樣確認後再應用，寫入前會自動備份。「可能非官方」的項目預設不勾選。",
+  "Rename": "重新命名",
+  "Rename Backup": "重新命名備份",
+  "Backup Name": "備份名稱",
+  "Save": "儲存",
+  "Leave the name empty to show the backup's type instead.": "名稱留空時顯示備份類型。",
+  "This backup could not be found. Refresh the list and try again.": "找不到這個備份，請重新整理列表後再試一次。"
 }

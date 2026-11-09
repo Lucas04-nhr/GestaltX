@@ -25,6 +25,18 @@ import Foundation
         precondition(report.findings.first?.certainty == .definite, "Definite findings sort first")
         precondition(report.notChecked.contains("Boot & Shutdown Chime"), "Items without a reference are listed as not checked")
 
+        // Applying every fix makes the document official, keeping number types.
+        var fixed = spoofed
+        for finding in report.findings { finding.apply(to: &fixed) }
+        precondition(GestaltAudit.check(fixed, machine: "iPhone14,5").findings.isEmpty, "All fixes resolve their findings")
+        precondition(PlistValueKind.detect(fixed.extra["YlEtTtHlNesRBMal1CqRaA"]!) == .boolean, "Boolean flags stay Boolean")
+        precondition(PlistValueKind.detect(fixed.extra["XYlJKKkj2hztRP1NWWnhlw"]!) == .integer, "Integer flags stay integers")
+        precondition((fixed.extra["9MZ5AdH43csAUajl/dU+IQ"] as? [NSNumber]) == [1], "iPad apps return to the iPhone family")
+        precondition(fixed.extra[GestaltKeys.productType] as? String == "iPhone14,5")
+        precondition(fixed.artwork["ArtworkDeviceProductDescription"] as? String == "iPhone 13")
+        precondition(fixed.extra[GestaltKeys.regionCode] as? String == "CH", "Region code follows the sales-region suffix")
+        precondition(fixed.extra["2OOJf1VhaM7NxfRok3HbWQ"] as? Bool == false, "Unflagged keys are untouched")
+
         // Stock iPhone 15 Pro values produce no findings.
         let stock = try document([
             "YlEtTtHlNesRBMal1CqRaA": true, "A62OafQ85EJAiiqKn4agtg": true, "cT44WE1EohiwRzhsZ8xEsw": true,
@@ -46,6 +58,6 @@ import Foundation
         // iPad-only features are not judged on iPad.
         let iPad = try document(["yhHcB0iH0d1XzPO/CFd3ow": true, "qeaj75wk3HF4DwQ8qbIi7g": true])
         precondition(GestaltAudit.check(iPad, machine: "iPad14,1").findings.isEmpty, "iPad features are not reported on iPad")
-        print("PASS: unofficial-setting audit flags spoofed features, identity and region, and stays silent on stock or unknown references.")
+        print("PASS: unofficial-setting audit flags spoofed features, identity and region, and stays silent on stock or unknown references, and fixes resolve every finding.")
     }
 }

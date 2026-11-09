@@ -341,5 +341,15 @@
   "This feature is only official on iPad.": "Эта функция официальна только на iPad.",
   "This flag is only enabled on Apple internal or research devices.": "Этот флаг включён только на внутренних устройствах Apple или устройствах для исследований безопасности.",
   "This model is not in the reference table. Only internal flags and consistency are checked.": "Этой модели нет в справочной таблице. Проверяются только внутренние флаги и согласованность.",
-  "Unknown": "Неизвестно"
+  "Unknown": "Неизвестно",
+  "Change to %@": "Изменить на %@",
+  "Change the region code to %@": "Изменить код региона на %@",
+  "Stage %lld Fixes": "Подготовить исправления: %lld",
+  "Fixes are staged first. Review and apply them like any other change. A backup is created before writing. Possibly unofficial items are not selected by default.": "Исправления сначала подготавливаются. Проверьте и примените их, как любые другие изменения. Перед записью создаётся резервная копия. Элементы «Возможно, неофициально» по умолчанию не выбраны.",
+  "Rename": "Переименовать",
+  "Rename Backup": "Переименовать резервную копию",
+  "Backup Name": "Название резервной копии",
+  "Save": "Сохранить",
+  "Leave the name empty to show the backup's type instead.": "Оставьте название пустым, чтобы показывать тип резервной копии.",
+  "This backup could not be found. Refresh the list and try again.": "Эта резервная копия не найдена. Обновите список и повторите попытку."
 }

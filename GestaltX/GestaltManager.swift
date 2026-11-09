@@ -390,11 +390,22 @@ final class GestaltManager: ObservableObject {
         if let originalKey = draft.originalKey, originalKey != key { doc.set(nil, for: originalKey) }
         doc.set(value, for: key); working = doc
         // Explicit field edits take precedence: discard presets that would overwrite the key.
-        let changedKeys = Set([key, draft.originalKey].compactMap { $0 })
+        discardPresets(touching: Set([key, draft.originalKey].compactMap { $0 }))
+    }
+    private func discardPresets(touching changedKeys: Set<String>) {
         for capability in Capability.all where !changedKeys.isDisjoint(with: capability.keys) { choices[capability.id] = .keep }
         if !changedKeys.isDisjoint(with: [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo]) { regionID = "keep"; regionCodeID = "keep" }
-        if changedKeys.contains(GestaltKeys.artwork) { subtype = 0 }
+        // A staged Dynamic Island layout also sets the Dynamic Island flag.
+        if changedKeys.contains(GestaltKeys.artwork) || changedKeys.contains("YlEtTtHlNesRBMal1CqRaA") { subtype = 0 }
         if !changedKeys.isDisjoint(with: [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]) { changesName = false }
+    }
+    /// Stages audit fixes like any other edit. Nothing is written until the changes are applied.
+    func stageFixes(_ findings: [GestaltAudit.Finding]) {
+        guard !isBusy, var document = working, !findings.isEmpty else { return }
+        for finding in findings { finding.apply(to: &document) }
+        working = document
+        discardPresets(touching: Set(findings.flatMap(\.fix.keys)))
+        log("[audit] Staged fixes: " + findings.map(\.id).joined(separator: ", "))
     }
     func removeField(_ key: String) {
         working?.set(nil, for: key)
@@ -463,11 +474,20 @@ final class GestaltManager: ObservableObject {
         isBusy = true; defer { isBusy = false }
         do {
             let data = try await files.backupData(record)
-            var loaded = try await files.loadLocal(data: data, name: exportName(for: record.date))
+            var loaded = try await files.loadLocal(data: data, name: exportName(for: record.date, title: record.name))
             loaded.ownershipVerified = record.source == .device
             accept(loaded); status = "Local file opened"; needsRespring = false
             log("[open] \(record.filename) opened as a local document")
         } catch { failed(error) }
+    }
+    func renameBackup(_ record: BackupRecord, to name: String) async {
+        guard !isBusy else { return }
+        isBusy = true; defer { isBusy = false }
+        do {
+            let renamed = try await files.renameBackup(record, to: name)
+            log("[backup] \(record.filename) renamed to \(renamed.name ?? "(none)")")
+            await reloadBackups()
+        } catch { failed(error); await reloadBackups() }
     }
     func deleteBackup(_ record: BackupRecord) async {
         guard !isBusy else { return }
@@ -479,7 +499,7 @@ final class GestaltManager: ObservableObject {
         do {
             let data = try await files.backupData(record)
             let bytes = record.source == .device ? try DeviceBoundPlist.seal(data) : data
-            return try exportData(bytes, name: exportName(for: record.date))
+            return try exportData(bytes, name: exportName(for: record.date, title: record.name))
         } catch { failed(error); return nil }
     }
     /// Exports the open document as last read or saved. Staged changes are never exported.
@@ -491,11 +511,15 @@ final class GestaltManager: ObservableObject {
         }
         catch { failed(error); return nil }
     }
-    private func exportName(for date: Date) -> String {
+    private func exportName(for date: Date, title: String? = nil) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyyMMdd-HHmmss"
-        return "MobileGestalt-" + formatter.string(from: date) + ".plist"
+        let stamp = "MobileGestalt-" + formatter.string(from: date)
+        // Keep the name file-system safe; the date keeps names unique.
+        let safe = (title ?? "").map { "/\\:*?\"<>|".contains($0) || $0.isNewline ? "-" : $0 }
+        let cleaned = String(safe).trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: ".")))
+        return (cleaned.isEmpty ? stamp : String(cleaned.prefix(80)) + " " + stamp) + ".plist"
     }
     private func exportData(_ data: Data, name: String) throws -> URL {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)

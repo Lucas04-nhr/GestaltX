@@ -341,5 +341,15 @@
   "This feature is only official on iPad.": "این ویژگی فقط روی iPad رسمی است.",
   "This flag is only enabled on Apple internal or research devices.": "این پرچم فقط روی دستگاه‌های داخلی Apple یا دستگاه‌های پژوهش امنیتی فعال است.",
   "This model is not in the reference table. Only internal flags and consistency are checked.": "این مدل در جدول مرجع نیست. فقط پرچم‌های داخلی و سازگاری بررسی می‌شوند.",
-  "Unknown": "نامشخص"
+  "Unknown": "نامشخص",
+  "Change to %@": "تغییر به %@",
+  "Change the region code to %@": "تغییر کد منطقه به %@",
+  "Stage %lld Fixes": "آماده‌سازی %lld اصلاح",
+  "Fixes are staged first. Review and apply them like any other change. A backup is created before writing. Possibly unofficial items are not selected by default.": "اصلاح‌ها ابتدا آماده می‌شوند. آن‌ها را مانند هر تغییر دیگری بازبینی و اعمال کنید. پیش از نوشتن، نسخهٔ پشتیبان ساخته می‌شود. موارد «احتمالاً غیررسمی» به‌طور پیش‌فرض انتخاب نشده‌اند.",
+  "Rename": "تغییر نام",
+  "Rename Backup": "تغییر نام نسخهٔ پشتیبان",
+  "Backup Name": "نام نسخهٔ پشتیبان",
+  "Save": "ذخیره",
+  "Leave the name empty to show the backup's type instead.": "برای نمایش نوع نسخهٔ پشتیبان، نام را خالی بگذارید.",
+  "This backup could not be found. Refresh the list and try again.": "این نسخهٔ پشتیبان پیدا نشد. فهرست را تازه کنید و دوباره امتحان کنید."
 }

@@ -16,6 +16,13 @@ enum GestaltAudit {
         let current: String
         let reason: String
         let certainty: Certainty
+        /// Top-level CacheExtra values that make this item official again.
+        let fix: [String: Any]
+        let fixSummary: String
+
+        func apply(to document: inout GestaltDocument) {
+            for (key, value) in fix { document.set(value, for: key) }
+        }
     }
 
     struct Report {
@@ -81,6 +88,7 @@ enum GestaltAudit {
     ]
     private static let iPadOnly: Set<String> = ["pencil", "stageManager", "ipadApps"]
     private static let internalOnly: Set<String> = ["internal", "storage", "srd"]
+    private static let modelNameKeys = ["Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]
 
     /// The real model identifier, read from the kernel rather than the MobileGestalt cache.
     static func liveMachine() -> String {
@@ -104,8 +112,12 @@ enum GestaltAudit {
             let enabled = capability.keys.filter { isEnabled(extra[$0], capability: capability.id) }
             let current = present.isEmpty ? L("Not present") : present.map { describe(extra[$0]!) }.joined(separator: ", ")
             func flag(_ reason: String) {
+                var fix: [String: Any] = [:]
+                for key in enabled { fix[key] = officialValue(replacing: extra[key], capability: capability.id) }
+                let summary = fix.values.map(describe).sorted().first ?? ""
                 findings.append(Finding(id: capability.id, title: L(capability.title), keys: capability.keys,
-                                        current: current, reason: reason, certainty: .definite))
+                                        current: current, reason: reason, certainty: .definite,
+                                        fix: fix, fixSummary: String(format: L("Change to %@"), summary)))
             }
             if internalOnly.contains(capability.id) {
                 if !enabled.isEmpty { flag(L("This flag is only enabled on Apple internal or research devices.")) }
@@ -124,21 +136,28 @@ enum GestaltAudit {
         if !machine.isEmpty, let cached = extra[GestaltKeys.productType] as? String, cached != machine {
             findings.append(Finding(id: "productType", title: L("Product Type"), keys: [GestaltKeys.productType], current: cached,
                                     reason: String(format: L("The cached product type is %@, but this device reports %@."), cached, machine),
-                                    certainty: .definite))
+                                    certainty: .definite, fix: [GestaltKeys.productType: machine],
+                                    fixSummary: String(format: L("Change to %@"), machine)))
         }
         // Official names may carry a suffix such as "(3rd generation)".
         if let model, let name = document.artwork["ArtworkDeviceProductDescription"] as? String,
            name != model.name, !name.hasPrefix(model.name + " (") {
-            findings.append(Finding(id: "modelName", title: L("Model Name"), keys: [GestaltKeys.artwork], current: name,
+            var artwork = document.artwork
+            artwork["ArtworkDeviceProductDescription"] = model.name
+            var fix: [String: Any] = [GestaltKeys.artwork: artwork]
+            // GestaltX writes a changed name to these keys as well; fix them only if they hold the same name.
+            for key in modelNameKeys where extra[key] as? String == name { fix[key] = model.name }
+            findings.append(Finding(id: "modelName", title: L("Model Name"), keys: fix.keys.sorted(), current: name,
                                     reason: String(format: L("The model name is %@, but this device is %@."), name, model.name),
-                                    certainty: .likely))
+                                    certainty: .likely, fix: fix, fixSummary: String(format: L("Change to %@"), model.name)))
         }
         if let code = extra[GestaltKeys.regionCode] as? String {
             for key in [GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo] {
                 guard let info = extra[key] as? String, let prefix = info.split(separator: "/").first, String(prefix) != code else { continue }
                 findings.append(Finding(id: "region-" + key, title: L("Region Code"), keys: [GestaltKeys.regionCode, key], current: code + " · " + info,
                                         reason: String(format: L("The region code %@ does not match the sales-region suffix %@."), code, info),
-                                        certainty: .likely))
+                                        certainty: .likely, fix: [GestaltKeys.regionCode: String(prefix)],
+                                        fixSummary: String(format: L("Change the region code to %@"), String(prefix))))
                 break
             }
         }
@@ -152,6 +171,13 @@ enum GestaltAudit {
             return (value as? [Any])?.contains { ($0 as? NSNumber)?.intValue == 2 } ?? false
         }
         return (value as? NSNumber)?.boolValue ?? false
+    }
+
+    /// The unsupported value, keeping the stored number type.
+    private static func officialValue(replacing value: Any?, capability: String) -> Any {
+        if capability == "ipadApps" { return [NSNumber(value: 1)] }
+        if let value, PlistValueKind.detect(value) == .integer { return NSNumber(value: 0) }
+        return NSNumber(value: false)
     }
 
     private static func describe(_ value: Any) -> String {

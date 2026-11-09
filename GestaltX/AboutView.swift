@@ -54,7 +54,7 @@ struct AboutView: View {
     private var aboutFooter: some View {
         let year = Calendar.current.component(.year, from: .now)
         return VStack(spacing: 8) {
-            Text("Version: \(GestaltBrand.version) (\(GestaltBrand.build))")
+            Text("Version: \(GestaltBrand.displayVersion) (\(GestaltBrand.build))")
                 .foregroundStyle(.secondary)
                 .contentShape(Rectangle())
                 .onTapGesture {

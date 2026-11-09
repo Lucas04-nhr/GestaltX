@@ -341,5 +341,15 @@
   "This feature is only official on iPad.": "Tính năng này chỉ chính thức trên iPad.",
   "This flag is only enabled on Apple internal or research devices.": "Cờ này chỉ được bật trên thiết bị nội bộ của Apple hoặc thiết bị nghiên cứu bảo mật.",
   "This model is not in the reference table. Only internal flags and consistency are checked.": "Kiểu máy này không có trong bảng tham chiếu. Chỉ kiểm tra các cờ nội bộ và tính nhất quán.",
-  "Unknown": "Không xác định"
+  "Unknown": "Không xác định",
+  "Change to %@": "Đổi thành %@",
+  "Change the region code to %@": "Đổi mã vùng thành %@",
+  "Stage %lld Fixes": "Chuẩn bị %lld bản sửa",
+  "Fixes are staged first. Review and apply them like any other change. A backup is created before writing. Possibly unofficial items are not selected by default.": "Các bản sửa được chuẩn bị trước. Xem lại và áp dụng như mọi thay đổi khác. Một bản sao lưu được tạo trước khi ghi. Các mục có thể không chính thức không được chọn theo mặc định.",
+  "Rename": "Đổi tên",
+  "Rename Backup": "Đổi tên bản sao lưu",
+  "Backup Name": "Tên bản sao lưu",
+  "Save": "Lưu",
+  "Leave the name empty to show the backup's type instead.": "Để trống tên để hiển thị loại bản sao lưu.",
+  "This backup could not be found. Refresh the list and try again.": "Không tìm thấy bản sao lưu này. Hãy làm mới danh sách và thử lại."
 }

@@ -546,6 +546,8 @@ struct BackupsView: View {
     @EnvironmentObject private var model: GestaltManager
     @State private var restores: BackupRecord?
     @State private var deletes: BackupRecord?
+    @State private var renames: BackupRecord?
+    @State private var newName = ""
     @State private var showsImporter = false
     var body: some View {
         List {
@@ -563,7 +565,13 @@ struct BackupsView: View {
                 Section {
                     ForEach(model.backups) { record in
                         row(record)
-                            .swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletes = record }.tint(.red) }
+                            .swipeActions(allowsFullSwipe: false) {
+                                Button(L("Delete")) { deletes = record }.tint(.red)
+                                Button(L("Rename")) { beginRename(record) }.tint(.orange)
+                            }
+                            .contextMenu {
+                                Button { beginRename(record) } label: { Label(L("Rename"), systemImage: "pencil") }
+                            }
                     }
                 } footer: {
                     Text(L("Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device."))
@@ -583,10 +591,23 @@ struct BackupsView: View {
             Button(L("Cancel"), role: .cancel) { restores = nil }
             Button(L("Restore"), role: .destructive) { if let record = restores { Task { await model.restore(record) } }; restores = nil }
         } message: { Text(L("The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.")) }
+        .alert(L("Rename Backup"), isPresented: Binding(get: { renames != nil }, set: { if !$0 { renames = nil } })) {
+            TextField(L("Backup Name"), text: $newName)
+            Button(L("Cancel"), role: .cancel) { renames = nil }
+            Button(L("Save")) {
+                if let record = renames { Task { await model.renameBackup(record, to: newName) } }
+                renames = nil
+            }
+        } message: { Text(L("Leave the name empty to show the backup's type instead.")) }
         .alert(L("Delete this backup?"), isPresented: Binding(get: { deletes != nil }, set: { if !$0 { deletes = nil } })) {
             Button(L("Cancel"), role: .cancel) { deletes = nil }
             Button(L("Delete"), role: .destructive) { if let record = deletes { Task { await model.deleteBackup(record) } }; deletes = nil }
         } message: { Text(L("This removes the local backup permanently. It does not change the device file.")) }
+    }
+
+    private func beginRename(_ record: BackupRecord) {
+        newName = record.name ?? ""
+        renames = record
     }
 
     private func row(_ record: BackupRecord) -> some View {
@@ -594,8 +615,11 @@ struct BackupsView: View {
             HStack {
                 Image(systemName: record.reason == "Imported" ? "square.and.arrow.down" : record.source == .device ? "iphone" : "doc.text")
                     .foregroundStyle(Color.gestaltAccent)
-                Text(L(record.reason)).fontWeight(.medium)
+                Text(record.name ?? L(record.reason)).fontWeight(.medium).lineLimit(2)
                 Spacer()
+            }
+            if record.name != nil {
+                Text(L(record.reason)).font(.caption).foregroundStyle(.secondary)
             }
             Text(record.date, format: .dateTime.year().month().day().hour().minute().second()).font(.subheadline)
             Text(L(record.source == .device ? "Device Backup" : "Local File Backup") + " · " + ByteCountFormatter.string(fromByteCount: Int64(record.byteCount), countStyle: .file))
