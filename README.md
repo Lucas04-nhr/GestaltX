@@ -83,7 +83,7 @@ An archive is signed with the same device-only Keychain key as exported plists. 
 **Check Unofficial Settings** in Tools lists values in the open document that are not official for this device. The check itself changes nothing. The device's real model identifier comes from the system (`hw.machine`), not from the MobileGestalt cache, so it is correct even if the cached product type was changed.
 
 - **Not Official:** Apple internal and Security Research Device flags that are turned on. iPad-only features turned on on an iPhone. Features the model does not officially support, such as Dynamic Island on an iPhone 13. A cached product type that differs from the real model.
-- **Possibly Not Official:** A model name that differs from the real model, or a region code that does not match the sales-region suffix.
+- **Possibly Not Official:** A model name that differs from the real model (checked on iPhone only), or a region code that does not match the sales-region suffix.
 - **Not Checked:** Items with no reliable reference for this device. They are never reported. Models missing from the reference table are only checked for internal flags and consistency.
 
 **Stage Fixes** stages the official value for each selected item: Boolean flags are turned off with their number type kept, iPad app compatibility returns to iPhone apps only, and the product type, model name or region code is corrected. Not Official items are selected by default; Possibly Not Official items must be selected. Fixes are only staged. Review and apply them like any other change, so a backup is created and the write is read back and verified.

@@ -41,6 +41,46 @@ enum GestaltAudit {
 
     /// iPhone models and the preset features they officially support.
     /// Models missing here are treated as unknown, never as unsupported.
+    /// Every model in the reference table.
+    static let models: [String: OfficialModel] = iPhones.merging(iPads) { phone, _ in phone }
+
+    /// iPads and the preset features they officially support. No iPad has Dynamic Island,
+    /// Always-On Display, the Action Button or Camera Control. Apple Intelligence needs M1 or
+    /// later, or A17 Pro. iPad-only features (Apple Pencil, Stage Manager) are not judged on iPad.
+    static let iPads: [String: OfficialModel] = {
+        let none: Set<Feature> = []
+        let ai: Set<Feature> = [.appleIntelligence]
+        func pair(_ ids: [String], _ name: String, _ features: Set<Feature>) -> [(String, OfficialModel)] {
+            ids.map { ($0, OfficialModel(name: name, features: features)) }
+        }
+        let entries: [(String, OfficialModel)] =
+            pair(["iPad11,6", "iPad11,7"], "iPad (8th generation)", none)
+            + pair(["iPad12,1", "iPad12,2"], "iPad (9th generation)", none)
+            + pair(["iPad13,18", "iPad13,19"], "iPad (10th generation)", none)
+            + pair(["iPad15,7", "iPad15,8"], "iPad (A16)", none)
+            + pair(["iPad11,1", "iPad11,2"], "iPad mini (5th generation)", none)
+            + pair(["iPad14,1", "iPad14,2"], "iPad mini (6th generation)", none)
+            + pair(["iPad16,1", "iPad16,2"], "iPad mini (A17 Pro)", ai)
+            + pair(["iPad11,3", "iPad11,4"], "iPad Air (3rd generation)", none)
+            + pair(["iPad13,1", "iPad13,2"], "iPad Air (4th generation)", none)
+            + pair(["iPad13,16", "iPad13,17"], "iPad Air (5th generation)", ai)
+            + pair(["iPad14,8", "iPad14,9"], "iPad Air 11-inch (M2)", ai)
+            + pair(["iPad14,10", "iPad14,11"], "iPad Air 13-inch (M2)", ai)
+            + pair(["iPad15,3", "iPad15,4"], "iPad Air 11-inch (M3)", ai)
+            + pair(["iPad15,5", "iPad15,6"], "iPad Air 13-inch (M3)", ai)
+            + pair(["iPad8,1", "iPad8,2", "iPad8,3", "iPad8,4"], "iPad Pro 11-inch (1st generation)", none)
+            + pair(["iPad8,5", "iPad8,6", "iPad8,7", "iPad8,8"], "iPad Pro 12.9-inch (3rd generation)", none)
+            + pair(["iPad8,9", "iPad8,10"], "iPad Pro 11-inch (2nd generation)", none)
+            + pair(["iPad8,11", "iPad8,12"], "iPad Pro 12.9-inch (4th generation)", none)
+            + pair(["iPad13,4", "iPad13,5", "iPad13,6", "iPad13,7"], "iPad Pro 11-inch (3rd generation)", ai)
+            + pair(["iPad13,8", "iPad13,9", "iPad13,10", "iPad13,11"], "iPad Pro 12.9-inch (5th generation)", ai)
+            + pair(["iPad14,3", "iPad14,4"], "iPad Pro 11-inch (4th generation)", ai)
+            + pair(["iPad14,5", "iPad14,6"], "iPad Pro 12.9-inch (6th generation)", ai)
+            + pair(["iPad16,3", "iPad16,4"], "iPad Pro 11-inch (M4)", ai)
+            + pair(["iPad16,5", "iPad16,6"], "iPad Pro 13-inch (M4)", ai)
+        return Dictionary(uniqueKeysWithValues: entries)
+    }()
+
     static let iPhones: [String: OfficialModel] = {
         let none: Set<Feature> = []
         let island: Set<Feature> = [.dynamicIsland]
@@ -103,7 +143,7 @@ enum GestaltAudit {
     static func check(_ document: GestaltDocument, machine: String) -> Report {
         let extra = document.extra
         let isPhone = machine.hasPrefix("iPhone")
-        let model = iPhones[machine]
+        let model = models[machine]
         var findings: [Finding] = []
         var notChecked: [String] = []
 
@@ -139,8 +179,9 @@ enum GestaltAudit {
                                     certainty: .definite, fix: [GestaltKeys.productType: machine],
                                     fixSummary: String(format: L("Change to %@"), machine)))
         }
-        // Official names may carry a suffix such as "(3rd generation)".
-        if let model, let name = document.artwork["ArtworkDeviceProductDescription"] as? String,
+        // Official names may carry a suffix such as "(3rd generation)". iPad names vary too much
+        // in their official form to compare reliably, so only iPhone names are checked.
+        if isPhone, let model, let name = document.artwork["ArtworkDeviceProductDescription"] as? String,
            name != model.name, !name.hasPrefix(model.name + " (") {
             var artwork = document.artwork
             artwork["ArtworkDeviceProductDescription"] = model.name

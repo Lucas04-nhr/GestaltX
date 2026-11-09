@@ -58,6 +58,16 @@ import Foundation
         // iPad-only features are not judged on iPad.
         let iPad = try document(["yhHcB0iH0d1XzPO/CFd3ow": true, "qeaj75wk3HF4DwQ8qbIi7g": true])
         precondition(GestaltAudit.check(iPad, machine: "iPad14,1").findings.isEmpty, "iPad features are not reported on iPad")
+        // iPads are in the reference table: iPhone-only features are flagged, Apple Intelligence follows the chip.
+        let spoofedPad = try document(["YlEtTtHlNesRBMal1CqRaA": true, "A62OafQ85EJAiiqKn4agtg": true, "cT44WE1EohiwRzhsZ8xEsw": true,
+                                       GestaltKeys.artwork: ["ArtworkDeviceProductDescription": "iPad (9th generation) Wi-Fi"]])
+        let padReport = GestaltAudit.check(spoofedPad, machine: "iPad12,1")
+        precondition(padReport.model?.name == "iPad (9th generation)")
+        precondition(ids(padReport) == ["dynamicIsland", "ai", "actionButton"], "iPad findings: \(ids(padReport))")
+        let m4 = try document(["A62OafQ85EJAiiqKn4agtg": true])
+        precondition(GestaltAudit.check(m4, machine: "iPad16,3").findings.isEmpty, "M4 iPads officially support Apple Intelligence")
+        precondition(GestaltAudit.iPads.keys.allSatisfy { $0.hasPrefix("iPad") } && GestaltAudit.models.count == GestaltAudit.iPhones.count + GestaltAudit.iPads.count,
+                     "iPad and iPhone identifiers do not overlap")
         print("PASS: unofficial-setting audit flags spoofed features, identity and region, and stays silent on stock or unknown references, and fixes resolve every finding.")
     }
 }
