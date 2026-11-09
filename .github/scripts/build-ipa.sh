@@ -52,10 +52,17 @@ echo "==> Signing with entitlements"
 while IFS= read -r -d '' item; do
   codesign -f -s - "$item"
 done < <(find "$app" \( -name '*.framework' -o -name '*.dylib' \) -print0)
-codesign -f -s - --entitlements ShareExtension/GestaltXShare.entitlements "$appex"
-codesign -f -s - --entitlements GestaltX/GestaltX.entitlements "$app"
 
-for bundle in "$appex" "$app"; do
+# Older versions have no share extension
+bundles=()
+if [[ -d "$appex" ]]; then
+  codesign -f -s - --entitlements ShareExtension/GestaltXShare.entitlements "$appex"
+  bundles+=("$appex")
+fi
+codesign -f -s - --entitlements GestaltX/GestaltX.entitlements "$app"
+bundles+=("$app")
+
+for bundle in "${bundles[@]}"; do
   if ! codesign -d --entitlements - --xml "$bundle" 2>/dev/null | grep -q 'com.apple.security.application-groups'; then
     echo "Error: ${bundle#"$stage/"} has no App Group entitlement after signing" >&2
     exit 1
