@@ -1,0 +1,152 @@
+name: Build IPA
+
+# Builds the IPA of one upstream tag with its entitlements embedded, and
+# publishes it as this fork's release under the same tag. The source is
+# checked out from upstream at that tag, so the build matches the upstream
+# version exactly. A tag that already has a release here is skipped unless
+# forced. Sync Upstream (sync_upstream.yml) starts this workflow for each new
+# upstream tag when the UPSTREAM_BUILD_WORKFLOW variable is set to build.yml.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Upstream tag to build (empty for the latest upstream release)
+        type: string
+        default: ""
+      force:
+        description: Rebuild even if this tag already has a release
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-ipa-${{ inputs.tag || 'latest' }}
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPO: huamidev/GestaltX
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Check release
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          tag="${INPUT_TAG:-$(gh release view --repo "$UPSTREAM_REPO" --json tagName --jq .tagName)}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            if [ "$FORCE" != "true" ]; then
+              echo "Release $tag already exists; skipping."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout upstream tag
+        if: steps.check.outputs.skip == 'false'
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ env.UPSTREAM_REPO }}
+          ref: ${{ steps.check.outputs.tag }}
+          path: upstream
+
+      - name: Select Xcode
+        if: steps.check.outputs.skip == 'false'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build IPA
+        id: build
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SOURCE_DIR: upstream
+        run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
+
+      - name: Publish release
+        id: publish
+        if: steps.check.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.check.outputs.tag }}
+          EXISTS: ${{ steps.check.outputs.exists }}
+          IPA: ${{ steps.build.outputs.ipa }}
+        run: |
+          source_sha="$(git -C upstream rev-parse HEAD)"
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+          # Reuse upstream's notes for the tag, then say how this build differs
+          notes="$RUNNER_TEMP/notes.md"
+          gh release view "$TAG" --repo "$UPSTREAM_REPO" --json body --jq .body > "$notes" 2>/dev/null || : > "$notes"
+          if [ -s "$notes" ]; then
+            printf '\n\n' >> "$notes"
+          fi
+          printf '%s\n' "Built from ${UPSTREAM_REPO}@${TAG} (${source_sha:0:7}) by GitHub Actions. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group." >> "$notes"
+
+          if [ "$EXISTS" = "true" ]; then
+            gh release upload "$TAG" "$IPA" --clobber
+            gh release edit "$TAG" --notes-file "$notes"
+          else
+            # Sync Upstream has normally pushed the upstream tag here already, and the release uses it.
+            # For a tag that is not here yet, create it on the default branch.
+            gh release create "$TAG" "$IPA" --title "$TAG" --notes-file "$notes"
+          fi
+
+      - name: Send ServerChan push
+        # Push when a build was published or the run failed, not when it was skipped
+        if: ${{ !cancelled() && (failure() || steps.publish.outcome == 'success') }}
+        env:
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          JOB_STATUS: ${{ job.status }}
+          TAG: ${{ steps.check.outputs.tag }}
+          EXISTS: ${{ steps.check.outputs.exists }}
+          VERSION: ${{ steps.build.outputs.version }}
+          SOURCE_SHA: ${{ steps.publish.outputs.source_sha }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+        run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          tag="${TAG:-unknown tag}"
+          if [ "$JOB_STATUS" = "success" ]; then
+            export TITLE="GestaltX $VERSION built"
+            if [ "$EXISTS" = "true" ]; then
+              export SHORT="$repo: Rebuilt $tag"
+            else
+              export SHORT="$repo: Released $tag"
+            fi
+          else
+            export TITLE="GestaltX build failed"
+            if [ "$BUILD_OUTCOME" = "failure" ]; then
+              export SHORT="$repo: Could not build $tag"
+            elif [ "$PUBLISH_OUTCOME" = "failure" ]; then
+              export SHORT="$repo: Could not publish $tag"
+            else
+              export SHORT="$repo: The build workflow failed"
+            fi
+          fi
+          export DESP="- Tag: \`$tag\`
+          - Version: \`${VERSION:-unknown}\`
+          - Upstream commit: \`${SOURCE_SHA:0:7}\`
+          - Trigger: \`$GITHUB_EVENT_NAME\`
+          - Build: \`${BUILD_OUTCOME:-skipped}\`
+          - Publish: \`${PUBLISH_OUTCOME:-skipped}\`"
+          if [ "$JOB_STATUS" = "success" ]; then
+            DESP+=$'\n\n'"[View the release](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/$tag)"
+          fi
+          .github/scripts/serverchan.sh

@@ -1,0 +1,796 @@
+name: Sync Upstream
+
+on:
+  workflow_dispatch: # Allows manual triggering of the workflow
+  schedule:
+    - cron: "0 4 * * *"
+      timezone: "Europe/Copenhagen" # Follows daylight saving time
+
+env:
+  UPSTREAM_HOST: ${{ vars.UPSTREAM_HOST || 'github.com' }} # Optional: set only for upstreams outside GitHub
+  UPSTREAM_REPO: ${{ vars.UPSTREAM_REPO }} # owner/repo
+  UPSTREAM_BRANCH: ${{ vars.UPSTREAM_BRANCH }} # main or master
+  UPSTREAM_ROLLING_TAG: ${{ vars.UPSTREAM_ROLLING_TAG }} # Optional: a tag upstream keeps moving, synced as <tag>_<date> snapshots
+  UPSTREAM_SYNC_RELEASES: ${{ vars.UPSTREAM_SYNC_RELEASES }} # Optional: set to false to skip copying upstream releases, e.g. when this repo builds its own
+  UPSTREAM_BUILD_WORKFLOW: ${{ vars.UPSTREAM_BUILD_WORKFLOW }} # Optional: a workflow file started with -f tag=<tag> for each new tag
+
+jobs:
+  sync-code-and-tags:
+    name: Sync Code & Tags
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    outputs:
+      has_changes: ${{ steps.check_changes.outputs.has_changes }}
+      commit_count: ${{ steps.check_changes.outputs.commit_count }}
+      failed_step: ${{ steps.report.outputs.failed_step }}
+      new_tags: ${{ steps.report.outputs.new_tags }}
+      new_tag_names: ${{ steps.report.outputs.new_tag_names }}
+      failed_tags: ${{ steps.report.outputs.failed_tags }}
+      warnings: ${{ steps.report.outputs.warnings }}
+      new_tag_count: ${{ steps.report.outputs.new_tag_count }}
+      failed_tag_count: ${{ steps.report.outputs.failed_tag_count }}
+      warning_count: ${{ steps.report.outputs.warning_count }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Define push helper
+        run: |
+          cat > "$RUNNER_TEMP/push_with_fallback.sh" <<'EOF'
+          # GITHUB_TOKEN cannot push workflow file changes, so try the PATs first and move on when one is rejected.
+          # Resetting extraheader stops git from sending the GITHUB_TOKEN persisted by checkout instead of the URL token.
+          push_failure_reason() {
+            case "$1" in
+              *"refusing to allow"*"workflow"*) echo "missing workflow permission" ;;
+              *"stale info"*) echo "main changed during this run" ;;
+              *"Authentication failed"*|*"Invalid username or token"*|*"Bad credentials"*) echo "invalid or expired token" ;;
+              *"Permission to"*"denied"*|*"error: 403"*) echo "no write access to this repository" ;;
+              *GH006*|*GH013*|*"protected branch"*|*"rule violations"*) echo "blocked by branch protection or a ruleset" ;;
+              *"non-fast-forward"*|*"fetch first"*|*"already exists"*) echo "remote ref changed" ;;
+              *) echo "other: $(echo "$1" | grep -m1 -E '^(fatal|error):|\[(remote )?rejected\]' | cut -c1-200)" ;;
+            esac
+          }
+
+          # Each rejected token leaves a warning annotation; the final error lists every reason on the run page
+          push_with_fallback() {
+            local name token output reason summary=""
+            for name in GH_PAT GH_TOKEN GITHUB_TOKEN; do
+              token="${!name}"
+              if [ -z "$token" ]; then
+                echo "   ⏭️  $name is not configured"
+                continue
+              fi
+              echo "   Attempting to push with $name..."
+              if output=$(git -c http.https://github.com/.extraheader= push "https://x-access-token:$token@github.com/$GITHUB_REPOSITORY" "$@" 2>&1); then
+                echo "$output"
+                echo "   ✅ Pushed with $name"
+                return 0
+              fi
+              echo "$output"
+              reason=$(push_failure_reason "$output")
+              echo "$name: $reason" >> "$RUNNER_TEMP/push_warnings"
+              reason="${reason//%/%25}"
+              echo "::warning title=$name push rejected::$reason"
+              summary="$summary $name - $reason;"
+            done
+            echo "::error title=Push rejected::${*: -1} -$summary"
+            return 1
+          }
+          EOF
+
+      - name: Add upstream repository
+        run: git remote add upstream "https://$UPSTREAM_HOST/$UPSTREAM_REPO.git"
+
+      - name: Fetch upstream changes
+        id: fetch_upstream
+        run: git fetch upstream --tags --force
+
+      - name: Sync main branch
+        id: sync_branch
+        run: |
+          echo "========================================="
+          echo "🔄 Syncing main branch..."
+          echo "========================================="
+          # git merge -X theirs "upstream/$UPSTREAM_BRANCH" --no-edit
+          git rebase -X ours "upstream/$UPSTREAM_BRANCH" --autosquash --keep-empty --reapply-cherry-picks
+          echo "✅ Branch sync completed"
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet origin/main..HEAD; then
+            echo "No changes to push"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "commit_count=$(git rev-list --count "origin/main..upstream/$UPSTREAM_BRANCH")" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push main branch changes
+        id: push_main
+        if: steps.check_changes.outputs.has_changes == 'true'
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📤 Pushing main branch changes..."
+          source "$RUNNER_TEMP/push_with_fallback.sh"
+          # Pushing to a URL has no remote-tracking ref to lease on, so name the expected commit
+          push_with_fallback --force-with-lease="main:$(git rev-parse origin/main)" main
+          echo "✅ Main branch pushed"
+
+      - name: Sync tags
+        id: sync_tags
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          source "$RUNNER_TEMP/push_with_fallback.sh"
+
+          echo "========================================="
+          echo "🏷️  Syncing tags..."
+          echo "========================================="
+
+          TODAY_UTC=$(date -u +%Y%m%d)
+
+          tag_count=0
+          skipped_count=0
+          failed_tags=()
+
+          for tag in $(git tag -l); do
+            echo "Checking tag: $tag"
+
+            # Skip tags that don't exist on upstream (e.g. locally-created date-suffix tags like beta_20260613)
+            if ! git ls-remote --tags upstream "refs/tags/$tag" 2>/dev/null | grep -q "$tag"; then
+              echo "⏭️  Tag $tag not found on upstream, skipping"
+              skipped_count=$((skipped_count + 1))
+              continue
+            fi
+
+            target_tag="$tag"
+            if [ "$tag" = "$UPSTREAM_ROLLING_TAG" ]; then
+              upstream_tag_head=$(git ls-remote --tags upstream "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{print $1}' | tail -n1)
+              if [ -z "$upstream_tag_head" ]; then
+                echo "   ❌ Failed to resolve upstream head for rolling tag: $tag"
+                failed_tags+=("$tag (cannot resolve upstream head)")
+                echo "$tag (cannot resolve upstream head)" >> "$RUNNER_TEMP/failed_tags"
+                continue
+              fi
+
+              latest_origin_rolling_tag=$(git ls-remote --tags origin "refs/tags/${tag}_*" \
+                | awk '{print $2}' \
+                | sed 's#refs/tags/##' \
+                | awk -v base="$tag" 'index($0, base "_")==1 && $0 ~ /_[0-9]{8}$/ {print}' \
+                | sort -V \
+                | tail -n1)
+
+              if [ -n "$latest_origin_rolling_tag" ]; then
+                latest_origin_rolling_head=$(git ls-remote --tags origin "refs/tags/$latest_origin_rolling_tag" "refs/tags/$latest_origin_rolling_tag^{}" | awk '{print $1}' | tail -n1)
+                if [ -n "$latest_origin_rolling_head" ] && [ "$latest_origin_rolling_head" = "$upstream_tag_head" ]; then
+                  echo "⏭️  Latest origin rolling tag $latest_origin_rolling_tag has same head as upstream/$tag, skipping"
+                  skipped_count=$((skipped_count + 1))
+                  continue
+                fi
+              fi
+
+              target_tag="${tag}_${TODAY_UTC}"
+              echo "   🔁 Detected rolling tag, mapped to: $target_tag"
+            fi
+            
+            # Check if the tag points to a commit that contains workflow files
+            if git ls-tree -r --name-only $tag 2>/dev/null | grep -q "^\.github/workflows/"; then
+              echo "⚠️  Tag $tag contains workflow files"
+              
+              # Check if target tag already exists on origin
+              if git ls-remote --tags origin "refs/tags/$target_tag" 2>/dev/null | grep -q "$target_tag"; then
+                echo "   ✅ Tag already exists on origin, skipping"
+                skipped_count=$((skipped_count + 1))
+                continue
+              fi
+              
+              if [ "$target_tag" != "$tag" ]; then
+                if ! git rev-parse "$target_tag" >/dev/null 2>&1; then
+                  git tag "$target_tag" "$tag"
+                fi
+              fi
+              if push_with_fallback "$target_tag"; then
+                tag_count=$((tag_count + 1))
+                echo "$target_tag" >> "$RUNNER_TEMP/new_tags"
+              else
+                echo "$target_tag (contains workflow files)" >> "$RUNNER_TEMP/failed_tags"
+                echo "   ❌ ERROR: Tag $target_tag contains workflow files and cannot be pushed"
+                echo "   This tag requires a Personal Access Token with 'workflow' permissions."
+                echo "   Please check the GH_PAT and GH_TOKEN secrets or manually push this tag."
+                exit 1
+              fi
+            else
+              # Check if target tag already exists on origin
+              if git ls-remote --tags origin "refs/tags/$target_tag" 2>/dev/null | grep -q "$target_tag"; then
+                echo "⏭️  Tag already exists: $target_tag"
+                skipped_count=$((skipped_count + 1))
+              else
+                if [ "$target_tag" != "$tag" ]; then
+                  if ! git rev-parse "$target_tag" >/dev/null 2>&1; then
+                    git tag "$target_tag" "$tag"
+                  fi
+                fi
+                if push_with_fallback "$target_tag"; then
+                  echo "✅ Pushed tag: $target_tag"
+                  tag_count=$((tag_count + 1))
+                  echo "$target_tag" >> "$RUNNER_TEMP/new_tags"
+                else
+                  echo "❌ Failed to push tag: $target_tag"
+                  failed_tags+=("$target_tag (push failed, may need manual intervention)")
+                  echo "$target_tag (push failed)" >> "$RUNNER_TEMP/failed_tags"
+                fi
+              fi
+            fi
+          done
+
+          echo ""
+          echo "========================================="
+          echo "📊 Tag Sync Summary"
+          echo "========================================="
+          echo "✅ Tags pushed:  $tag_count"
+          echo "⏭️  Skipped:      $skipped_count"
+
+          if [ ${#failed_tags[@]} -gt 0 ]; then
+            echo "❌ Failed:        ${#failed_tags[@]}"
+            echo ""
+            echo "⚠️  Tags that failed to push:"
+            echo "========================================="
+            for failed_tag in "${failed_tags[@]}"; do
+              echo "  • $failed_tag"
+            done
+            echo ""
+            echo "💡 To manually push these tags locally, run:"
+            echo "   git push origin <tag-name>"
+            echo ""
+            echo "❌ ERROR: Tag synchronization incomplete"
+            echo "Exiting with error to prevent release sync with missing tags"
+            exit 1
+          else
+            echo "❌ Failed:        0"
+          fi
+          echo "========================================="
+
+      # Runs after a failed step too, so the push can report whatever finished before the failure
+      - name: Collect sync report
+        id: report
+        if: always()
+        env:
+          FAILED_STEP: ${{ steps.fetch_upstream.outcome == 'failure' && 'Fetch upstream changes' || steps.sync_branch.outcome == 'failure' && 'Sync main branch' || steps.push_main.outcome == 'failure' && 'Push main branch changes' || steps.sync_tags.outcome == 'failure' && 'Sync tags' || '' }}
+        run: |
+          # Keep the push short: long lists stay in the run log
+          write_section() {
+            local delimiter lines total
+            delimiter="REPORT_$(openssl rand -hex 8)"
+            lines=$(cat)
+            {
+              echo "$1<<$delimiter"
+              if [ -n "$lines" ]; then
+                echo "$lines" | head -n 20
+                total=$(echo "$lines" | wc -l)
+                if [ "$total" -gt 20 ]; then
+                  echo "- ...and $((total - 20)) more"
+                fi
+              fi
+              echo "$delimiter"
+            } >> "$GITHUB_OUTPUT"
+          }
+
+          touch "$RUNNER_TEMP/new_tags" "$RUNNER_TEMP/failed_tags" "$RUNNER_TEMP/push_warnings"
+          {
+            echo "failed_step=$FAILED_STEP"
+            # Untruncated, space-separated names for build-new-tags
+            echo "new_tag_names=$(tr '\n' ' ' < "$RUNNER_TEMP/new_tags" | sed 's/ *$//')"
+            echo "new_tag_count=$(wc -l < "$RUNNER_TEMP/new_tags")"
+            echo "failed_tag_count=$(wc -l < "$RUNNER_TEMP/failed_tags")"
+            echo "warning_count=$(sort -u "$RUNNER_TEMP/push_warnings" | wc -l)"
+          } >> "$GITHUB_OUTPUT"
+          sed 's/.*/- `&`/' "$RUNNER_TEMP/new_tags" | write_section new_tags
+          sed 's/.*/- `&`/' "$RUNNER_TEMP/failed_tags" | write_section failed_tags
+          # One rejected token repeats for every tag, so report each distinct reason once
+          sort "$RUNNER_TEMP/push_warnings" | uniq -c | awk '{ count = $1; $1 = ""; print "-" $0 " (" count "x)" }' | write_section warnings
+
+  sync-releases:
+    name: Sync Releases & Assets
+    runs-on: ubuntu-latest
+    needs: sync-code-and-tags
+    # gh can only read releases from GitHub; UPSTREAM_SYNC_RELEASES=false turns this off
+    if: vars.UPSTREAM_HOST == '' && vars.UPSTREAM_SYNC_RELEASES != 'false'
+    permissions:
+      contents: write
+    outputs:
+      new_releases: ${{ steps.report.outputs.new_releases }}
+      release_warnings: ${{ steps.report.outputs.release_warnings }}
+      new_release_count: ${{ steps.report.outputs.new_release_count }}
+      release_warning_count: ${{ steps.report.outputs.release_warning_count }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch all tags from origin and upstream
+        run: |
+          echo "🔄 Fetching tags from origin..."
+          git fetch origin --tags --force
+
+          echo "🔄 Adding upstream remote..."
+          git remote add upstream "https://$UPSTREAM_HOST/$UPSTREAM_REPO.git" || true
+
+          echo "🔄 Fetching tags from upstream..."
+          git fetch upstream --tags --force
+
+          echo "📋 Total tags available:"
+          git tag -l | wc -l
+
+          echo "📋 Recent tags:"
+          git tag -l | sort -V | tail -10
+
+      - name: Sync releases from upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "========================================="
+          echo "📦 Starting incremental release sync..."
+          echo "========================================="
+
+          # Save the repository directory
+          REPO_DIR="$PWD"
+
+          # Create temp directory for assets
+          mkdir -p /tmp/release_assets
+
+          # Counters
+          new_releases=0
+          skipped_releases=0
+          failed_releases=0
+
+          # Get upstream releases
+          echo "🔍 Fetching upstream releases..."
+          upstream_releases=$(gh release list --repo "$UPSTREAM_REPO" --limit 10000 --json tagName,name,isDraft,isPrerelease,createdAt)
+          total_upstream=$(echo "$upstream_releases" | jq '. | length')
+          echo "Found $total_upstream upstream releases"
+          echo ""
+
+          # Sort releases by creation date (oldest first) to maintain correct latest release marking
+          echo "📅 Sorting releases by creation date (oldest first)..."
+          upstream_releases=$(echo "$upstream_releases" | jq 'sort_by(.createdAt)')
+
+          # Get current repo releases
+          current_releases=$(gh release list --repo ${{ github.repository }} --limit 10000 --json tagName)
+          total_current=$(echo "$current_releases" | jq '. | length')
+          echo "Current repo has $total_current releases"
+          echo ""
+
+          # Parse and sync each release (oldest to newest)
+          # Use process substitution to preserve variable values
+          while read -r release; do
+            tag=$(echo "$release" | jq -r '.tagName')
+            source_tag="$tag"
+            target_tag="$tag"
+            title=$(echo "$release" | jq -r '.name')
+            is_draft=$(echo "$release" | jq -r '.isDraft')
+            is_prerelease=$(echo "$release" | jq -r '.isPrerelease')
+
+            if [ "$source_tag" = "$UPSTREAM_ROLLING_TAG" ]; then
+              today_utc=$(date -u +%Y%m%d)
+              target_tag="${source_tag}_${today_utc}"
+              is_prerelease="true"
+
+              upstream_rolling_head=$(git ls-remote --tags upstream "refs/tags/$source_tag" "refs/tags/$source_tag^{}" | awk '{print $1}' | tail -n1)
+              if [ -z "$upstream_rolling_head" ]; then
+                echo "⚠️  Cannot resolve upstream head for rolling tag: $source_tag, skipping"
+                failed_releases=$((failed_releases + 1))
+                echo "$source_tag: cannot resolve upstream head" >> "$RUNNER_TEMP/release_warnings"
+                continue
+              fi
+
+              latest_origin_rolling_tag=$(git ls-remote --tags origin "refs/tags/${source_tag}_*" \
+                | awk '{print $2}' \
+                | sed 's#refs/tags/##' \
+                | awk -v base="$source_tag" 'index($0, base "_")==1 && $0 ~ /_[0-9]{8}$/ {print}' \
+                | sort -V \
+                | tail -n1)
+
+              if [ -n "$latest_origin_rolling_tag" ]; then
+                latest_origin_rolling_head=$(git ls-remote --tags origin "refs/tags/$latest_origin_rolling_tag" "refs/tags/$latest_origin_rolling_tag^{}" | awk '{print $1}' | tail -n1)
+                if [ -n "$latest_origin_rolling_head" ] && [ "$latest_origin_rolling_head" = "$upstream_rolling_head" ]; then
+                  if echo "$current_releases" | jq -e ".[] | select(.tagName == \"$latest_origin_rolling_tag\")" > /dev/null 2>&1; then
+                    echo "⏭️  Latest origin rolling tag $latest_origin_rolling_tag has same head as upstream/$source_tag and release exists, skipping"
+                    skipped_releases=$((skipped_releases + 1))
+                    continue
+                  else
+                    echo "ℹ️  Latest origin rolling tag $latest_origin_rolling_tag has same head as upstream/$source_tag but no release yet, will create release"
+                  fi
+                fi
+              fi
+
+              echo "🔁 Detected rolling release tag, mapped $source_tag -> $target_tag"
+            fi
+            
+            # Check if release already exists (incremental sync - skip existing)
+            if echo "$current_releases" | jq -e ".[] | select(.tagName == \"$target_tag\")" > /dev/null 2>&1; then
+              echo "⏭️  Release $target_tag already exists, skipping (incremental sync)"
+              skipped_releases=$((skipped_releases + 1))
+              continue
+            fi
+            
+            # Check if tag exists locally (from either origin or upstream) - must be in repo directory
+            cd "$REPO_DIR"
+            if ! git rev-parse "$source_tag" >/dev/null 2>&1; then
+              echo "⚠️  Tag $source_tag does not exist locally"
+              echo "    Checking if it exists on origin..."
+              if git ls-remote --tags origin "refs/tags/$source_tag" 2>/dev/null | grep -q "$source_tag"; then
+                echo "    Tag exists on origin, fetching..."
+                git fetch origin "refs/tags/$source_tag:refs/tags/$source_tag" 2>/dev/null || true
+                if git rev-parse "$source_tag" >/dev/null 2>&1; then
+                  echo "    ✓ Tag fetched successfully"
+                else
+                  echo "    ✗ Failed to fetch tag from origin"
+                  echo "    ❌ ERROR: Tag $source_tag exists on origin but cannot be fetched locally"
+                  echo "$source_tag: tag cannot be fetched from origin" >> "$RUNNER_TEMP/release_warnings"
+                  exit 1
+                fi
+              else
+                echo "    ✗ Tag $source_tag not found on origin!"
+                echo "    ❌ ERROR: Tag sync failed for $source_tag"
+                echo "$source_tag: tag not found on origin" >> "$RUNNER_TEMP/release_warnings"
+                echo "    This tag needs to be pushed to origin first to avoid unverified commits."
+                echo "    Please check the tag sync job logs and manually push if needed."
+                exit 1
+              fi
+            fi
+
+            if [ "$target_tag" != "$source_tag" ]; then
+              if ! git rev-parse "$target_tag" >/dev/null 2>&1; then
+                source_head=$(git rev-parse "$source_tag^{}" 2>/dev/null || git rev-parse "$source_tag")
+                git tag "$target_tag" "$source_head"
+              fi
+            fi
+            
+            echo "========================================="
+            echo "📦 New release detected: $target_tag"
+            echo "========================================="
+            
+            # Get full release details including body and assets from upstream
+            echo "🔍 Fetching release details..."
+            release_details=$(gh release view "$source_tag" --repo "$UPSTREAM_REPO" --json body,assets 2>/dev/null)
+            
+            # Save body to a temporary file to handle special characters properly
+            body_file="/tmp/release_assets/body_${target_tag//\//_}.txt"
+            echo "$release_details" | jq -r '.body // ""' > "$body_file"
+            
+            assets=$(echo "$release_details" | jq -r '.assets[] | .name' 2>/dev/null || echo "")
+            asset_count=$(echo "$assets" | grep -c . || echo "0")
+            
+            # Download assets if any
+            asset_files=""
+            if [ -n "$assets" ] && [ "$asset_count" -gt 0 ]; then
+              echo "📥 Downloading $asset_count asset(s)..."
+              cd /tmp/release_assets
+              rm -rf "$target_tag" 2>/dev/null || true
+              mkdir -p "$target_tag"
+              cd "$target_tag"
+              
+              downloaded=0
+              echo "$assets" | while read -r asset_name; do
+                if [ -n "$asset_name" ]; then
+                  echo "  ⬇️  $asset_name"
+                  if gh release download "$source_tag" --repo "$UPSTREAM_REPO" --pattern "$asset_name" 2>/dev/null; then
+                    downloaded=$((downloaded + 1))
+                  else
+                    echo "     ❌ Failed to download"
+                    echo "$target_tag: failed to download asset $asset_name" >> "$RUNNER_TEMP/release_warnings"
+                  fi
+                fi
+              done
+              
+              # Collect downloaded files
+              asset_files=$(find . -type f -maxdepth 1 | sed 's|^\./||' | tr '\n' ' ')
+              
+              actual_count=$(echo "$asset_files" | wc -w | tr -d ' ')
+              echo "✓ Downloaded $actual_count asset(s)"
+            else
+              echo "ℹ️  No assets to download"
+            fi
+            
+            # Return to repository directory before creating release
+            cd "$REPO_DIR"
+            
+            # Build gh release create command
+            echo "🚀 Creating release..."
+            # An array keeps upstream-controlled text such as the title from being run as code
+            gh_cmd=(gh release create "$target_tag" --repo "$GITHUB_REPOSITORY" --title "$title" --notes-file "$body_file")
+            
+            if [ "$is_draft" = "true" ]; then
+              gh_cmd+=(--draft)
+              echo "   Type: Draft"
+            fi
+            
+            if [ "$is_prerelease" = "true" ]; then
+              gh_cmd+=(--prerelease)
+              echo "   Type: Pre-release"
+            fi
+            
+            # Add assets to the command if any were downloaded
+            if [ -n "$asset_files" ]; then
+              for file in /tmp/release_assets/"$target_tag"/*; do
+                if [ -f "$file" ]; then
+                  gh_cmd+=("$file")
+                fi
+              done
+            fi
+            
+            # Execute the command
+            if "${gh_cmd[@]}"; then
+              new_releases=$((new_releases + 1))
+              echo "$target_tag" >> "$RUNNER_TEMP/new_releases"
+              echo "✅ Successfully created release $target_tag"
+              if [ -n "$asset_files" ]; then
+                uploaded_count=$(echo $asset_files | wc -w | tr -d ' ')
+                echo "   📤 Uploaded $uploaded_count asset(s)"
+              fi
+            else
+              failed_releases=$((failed_releases + 1))
+              echo "$target_tag: failed to create release" >> "$RUNNER_TEMP/release_warnings"
+              echo "❌ Failed to create release $target_tag"
+            fi
+            
+            # Clean up downloaded assets and body file for this release
+            rm -rf "/tmp/release_assets/$target_tag" 2>/dev/null || true
+            rm -f "$body_file" 2>/dev/null || true
+            
+            echo ""
+          done < <(echo "$upstream_releases" | jq -c '.[]')
+
+          # Clean up temp directory
+          rm -rf /tmp/release_assets
+
+          echo "========================================="
+          echo "📊 Release Sync Summary"
+          echo "========================================="
+          echo "Total upstream releases: $total_upstream"
+          echo "✅ New releases synced:   $new_releases"
+          echo "⏭️  Existing (skipped):    $skipped_releases"
+          echo "❌ Failed:                $failed_releases"
+          echo "========================================="
+          echo "✨ Incremental release sync completed!"
+          echo "========================================="
+
+      - name: Collect release report
+        id: report
+        if: always()
+        run: |
+          # Keep the push short: long lists stay in the run log
+          write_section() {
+            local delimiter lines total
+            delimiter="REPORT_$(openssl rand -hex 8)"
+            lines=$(cat)
+            {
+              echo "$1<<$delimiter"
+              if [ -n "$lines" ]; then
+                echo "$lines" | head -n 20
+                total=$(echo "$lines" | wc -l)
+                if [ "$total" -gt 20 ]; then
+                  echo "- ...and $((total - 20)) more"
+                fi
+              fi
+              echo "$delimiter"
+            } >> "$GITHUB_OUTPUT"
+          }
+
+          touch "$RUNNER_TEMP/new_releases" "$RUNNER_TEMP/release_warnings"
+          {
+            echo "new_release_count=$(wc -l < "$RUNNER_TEMP/new_releases")"
+            echo "release_warning_count=$(wc -l < "$RUNNER_TEMP/release_warnings")"
+          } >> "$GITHUB_OUTPUT"
+          sed 's/.*/- `&`/' "$RUNNER_TEMP/new_releases" | write_section new_releases
+          sed 's/.*/- &/' "$RUNNER_TEMP/release_warnings" | write_section release_warnings
+
+  build-new-tags:
+    name: Start Builds
+    runs-on: ubuntu-latest
+    needs: sync-code-and-tags
+    # Also runs after a later tag failed to push, so every tag that reached origin is built
+    if: ${{ !cancelled() && vars.UPSTREAM_BUILD_WORKFLOW != '' && needs.sync-code-and-tags.outputs.new_tag_names != '' }}
+    permissions:
+      actions: write
+    outputs:
+      started_builds: ${{ steps.start.outputs.started_builds }}
+      build_warnings: ${{ steps.start.outputs.build_warnings }}
+      started_build_count: ${{ steps.start.outputs.started_build_count }}
+      build_warning_count: ${{ steps.start.outputs.build_warning_count }}
+
+    steps:
+      # Tags pushed with GITHUB_TOKEN start no workflows, so start the build workflow for each one
+      - name: Start build workflow
+        id: start
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_TAG_NAMES: ${{ needs.sync-code-and-tags.outputs.new_tag_names }}
+        run: |
+          started=()
+          failed=()
+          for tag in $NEW_TAG_NAMES; do
+            echo "🚀 Starting $UPSTREAM_BUILD_WORKFLOW for $tag"
+            if gh workflow run "$UPSTREAM_BUILD_WORKFLOW" --repo "$GITHUB_REPOSITORY" --ref main -f tag="$tag"; then
+              started+=("$tag")
+            else
+              echo "::warning title=Build not started::$UPSTREAM_BUILD_WORKFLOW could not be started for $tag"
+              failed+=("$tag")
+            fi
+          done
+
+          delimiter="REPORT_$(openssl rand -hex 8)"
+          {
+            echo "started_build_count=${#started[@]}"
+            echo "build_warning_count=${#failed[@]}"
+            echo "started_builds<<$delimiter"
+            for tag in "${started[@]}"; do echo "- \`$tag\`"; done
+            echo "$delimiter"
+            echo "build_warnings<<$delimiter"
+            for tag in "${failed[@]}"; do echo "- \`$tag\`: $UPSTREAM_BUILD_WORKFLOW could not be started"; done
+            echo "$delimiter"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ ${#failed[@]} -gt 0 ]; then
+            exit 1
+          fi
+
+  notify:
+    name: Notify sync result
+    needs: [sync-code-and-tags, sync-releases, build-new-tags]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send ServerChan push
+        env:
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
+          SYNC_RESULT: ${{ needs.sync-code-and-tags.result }}
+          RELEASE_RESULT: ${{ needs.sync-releases.result }}
+          BUILD_RESULT: ${{ needs.build-new-tags.result }}
+          STARTED_BUILDS: ${{ needs.build-new-tags.outputs.started_builds }}
+          BUILD_WARNINGS: ${{ needs.build-new-tags.outputs.build_warnings }}
+          STARTED_BUILD_COUNT: ${{ needs.build-new-tags.outputs.started_build_count }}
+          BUILD_WARNING_COUNT: ${{ needs.build-new-tags.outputs.build_warning_count }}
+          FAILED_STEP: ${{ needs.sync-code-and-tags.outputs.failed_step }}
+          COMMIT_COUNT: ${{ needs.sync-code-and-tags.outputs.commit_count }}
+          NEW_TAGS: ${{ needs.sync-code-and-tags.outputs.new_tags }}
+          FAILED_TAGS: ${{ needs.sync-code-and-tags.outputs.failed_tags }}
+          WARNINGS: ${{ needs.sync-code-and-tags.outputs.warnings }}
+          NEW_RELEASES: ${{ needs.sync-releases.outputs.new_releases }}
+          RELEASE_WARNINGS: ${{ needs.sync-releases.outputs.release_warnings }}
+          NEW_TAG_COUNT: ${{ needs.sync-code-and-tags.outputs.new_tag_count }}
+          FAILED_TAG_COUNT: ${{ needs.sync-code-and-tags.outputs.failed_tag_count }}
+          WARNING_COUNT: ${{ needs.sync-code-and-tags.outputs.warning_count }}
+          NEW_RELEASE_COUNT: ${{ needs.sync-releases.outputs.new_release_count }}
+          RELEASE_WARNING_COUNT: ${{ needs.sync-releases.outputs.release_warning_count }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SERVERCHAN_SENDKEY" ]; then
+            echo "::warning title=Sync push skipped::Set the SERVERCHAN_SENDKEY secret to enable sync pushes."
+            exit 0
+          fi
+          if [[ ! "$SERVERCHAN_SENDKEY" =~ ^sctp([0-9]+)t ]]; then
+            echo "::error title=Sync push failed::SERVERCHAN_SENDKEY is not a ServerChan3 key (sctp...)."
+            exit 1
+          fi
+          uid="${BASH_REMATCH[1]}"
+          echo "::add-mask::$uid"
+
+          # sync-releases is skipped on purpose for upstreams outside GitHub
+          # sync-releases and build-new-tags are also skipped when their variables turn them off
+          if [ "$SYNC_RESULT" != "success" ] \
+            || { [ "$RELEASE_RESULT" != "success" ] && [ "$RELEASE_RESULT" != "skipped" ]; } \
+            || { [ "$BUILD_RESULT" != "success" ] && [ "$BUILD_RESULT" != "skipped" ]; }; then
+            status="failed"
+            title="Upstream sync failed"
+          elif [ -n "$FAILED_TAGS$WARNINGS$RELEASE_WARNINGS$BUILD_WARNINGS" ]; then
+            status="warnings"
+            title="Upstream sync has warnings"
+          elif [ "${COMMIT_COUNT:-0}" != "0" ] || [ -n "$NEW_TAGS$NEW_RELEASES$STARTED_BUILDS" ]; then
+            status="completed"
+            title="Upstream sync completed"
+          else
+            status="up to date"
+            title="Upstream is up to date"
+          fi
+          repo="${GITHUB_REPOSITORY#*/}"
+          if [ "$status" = "failed" ]; then
+            if [ -n "$FAILED_STEP" ]; then
+              short="$repo: Failed at $FAILED_STEP"
+            elif [ "$SYNC_RESULT" != "success" ]; then
+              short="$repo: Code and tag sync failed"
+            elif [ "$BUILD_RESULT" = "failure" ]; then
+              short="$repo: Could not start builds"
+            else
+              short="$repo: Release sync failed"
+            fi
+            separator=" - "
+          else
+            short="$repo: "
+            separator=""
+          fi
+
+          # Problems go first, and a count joins the summary only when it fits in 64 characters
+          add_count() {
+            local item
+            if [ "${1:-0}" -gt 0 ]; then
+              item="$(($1)) $2"
+              if [ "$1" -ne 1 ]; then
+                item+="s"
+              fi
+              if [ $((${#short} + ${#separator} + ${#item})) -le 64 ]; then
+                short+="$separator$item"
+                separator=", "
+              fi
+            fi
+          }
+          add_count "$FAILED_TAG_COUNT" "failed tag"
+          add_count "$((${WARNING_COUNT:-0} + ${RELEASE_WARNING_COUNT:-0} + ${BUILD_WARNING_COUNT:-0}))" "warning"
+          add_count "$COMMIT_COUNT" "commit"
+          add_count "$NEW_TAG_COUNT" "tag"
+          add_count "$NEW_RELEASE_COUNT" "release"
+          add_count "$STARTED_BUILD_COUNT" "build"
+          if [ "$short" = "$repo: " ]; then
+            short+="No new commits, tags or releases"
+          fi
+
+          desp="- Repository: \`${GITHUB_REPOSITORY#*/}\`
+          - Code & tags: \`$SYNC_RESULT\`
+          - Releases: \`$RELEASE_RESULT\`
+          - New upstream commits: ${COMMIT_COUNT:-0}"
+          if [ -n "$UPSTREAM_BUILD_WORKFLOW" ]; then
+            desp+=$'\n'"- Builds (\`$UPSTREAM_BUILD_WORKFLOW\`): \`$BUILD_RESULT\`"
+          fi
+          if [ -n "$FAILED_STEP" ]; then
+            desp+=$'\n'"- Failed step: \`$FAILED_STEP\`"
+          fi
+
+          add_section() {
+            if [ -n "$2" ]; then
+              desp+=$'\n\n'"**$1**"$'\n\n'"$2"
+            fi
+          }
+          add_section "Failed tags" "$FAILED_TAGS"
+          add_section "Release warnings" "$RELEASE_WARNINGS"
+          add_section "Push warnings" "$WARNINGS"
+          add_section "Build warnings" "$BUILD_WARNINGS"
+          add_section "New tags" "$NEW_TAGS"
+          add_section "New releases" "$NEW_RELEASES"
+          add_section "Started builds" "$STARTED_BUILDS"
+          desp+=$'\n\n'"Check the [workflow run]($RUN_URL) for detailed logs."
+
+          response=$(curl -sS --fail-with-body --retry 3 \
+            --data-urlencode "title=$title" \
+            --data-urlencode "desp=$desp" \
+            --data-urlencode "short=$short" \
+            --data-urlencode "tags=GitHub" \
+            "https://$uid.push.ft07.com/send/$SERVERCHAN_SENDKEY.send")
+          # The response may carry a read key and the logs are public, so print only the status.
+          jq -r '"code=\(.code // "none") message=\(.message // "")"' <<< "$response"
+          jq -e '(.code // 0) == 0' <<< "$response" > /dev/null
