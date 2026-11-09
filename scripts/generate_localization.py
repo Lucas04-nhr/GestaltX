@@ -318,6 +318,22 @@ This plist uses a different system cache layout and cannot be restored.	此 plis
 Restore Imported Plist	恢复导入的 plist
 The current device file will be backed up before restoring. Restart the device afterward.	恢复前会备份当前设备文件，完成后请重启设备。
 Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.	现在可将本机 plist 分享到 GestaltX，核验后导入、增删改键值并恢复。建议先从 GestaltX 导出一份带本机校验凭证的备份。
+
+Apply or discard staged changes before exporting. Backups are in the Backups tab.	请先应用或放弃暂存的更改，再导出。备份请在“备份”页查看。
+Apply or discard your staged changes before restoring a backup.	请先应用或放弃暂存的更改，再恢复备份。
+Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.	“创建备份”会保存本机当前的 MobileGestalt 文件。导入的文件会先核验是否属于本机，再添加到这里。
+Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.	可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。核验通过的文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。
+Import from Files	从“文件”导入
+Imported	已导入
+Local file backups can be opened or exported, but not restored to this device.	本地文件备份只能打开或导出，不能恢复到本机。
+Read MobileGestalt in Tools, or open a backup as a local document.	请在“工具”中读取 MobileGestalt，或将备份作为本地文稿打开。
+Read MobileGestalt on this device before restoring a backup.	请先在本机读取 MobileGestalt，再恢复备份。
+Restore this backup to this device?	将这个备份恢复到本机？
+Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.	“恢复”会将备份写入本机。“打开”会将备份作为本地文稿载入，供查看和编辑，不会更改本机文件。
+Saved to Backups. Restore it from the Backups tab.	已保存到备份列表，可在“备份”页恢复到本机。
+The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.	会先备份本机当前文件，恢复后会读回并验证。完成后请重新启动设备。
+This plist has been verified for this device. Save it to Backups?	此 plist 已通过本机核验。要保存到备份列表吗？
+Verified import	已核验的导入
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

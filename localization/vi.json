@@ -308,5 +308,20 @@
   "This plist uses a different system cache layout and cannot be restored.": "Bố cục bộ nhớ đệm hệ thống của plist không khớp thiết bị này nên không thể khôi phục.",
   "Restore Imported Plist": "Khôi phục plist đã nhập",
   "The current device file will be backed up before restoring. Restart the device afterward.": "Tệp hiện tại trên thiết bị sẽ được sao lưu trước khi khôi phục. Sau đó hãy khởi động lại thiết bị.",
-  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "Chia sẻ plist của thiết bị này đến GestaltX để nhập sau khi xác minh, thêm, sửa, xóa khóa và giá trị hoặc khôi phục bản sao lưu. Trước tiên nên xuất bản sao từ GestaltX kèm bằng chứng gắn với thiết bị."
+  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "Chia sẻ plist của thiết bị này đến GestaltX để nhập sau khi xác minh, thêm, sửa, xóa khóa và giá trị hoặc khôi phục bản sao lưu. Trước tiên nên xuất bản sao từ GestaltX kèm bằng chứng gắn với thiết bị.",
+  "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "Hãy áp dụng hoặc bỏ các thay đổi đang chờ trước khi xuất. Các bản sao lưu nằm trong tab Bản sao lưu.",
+  "Apply or discard your staged changes before restoring a backup.": "Hãy áp dụng hoặc bỏ các thay đổi đang chờ trước khi khôi phục bản sao lưu.",
+  "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Các tệp được nhập sẽ được xác minh thuộc về thiết bị này trước khi thêm vào đây.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "Nhập plist từ Tệp trong tab Bản sao lưu, hoặc chia sẻ nó tới GestaltX. Các tệp đã xác minh được lưu vào Bản sao lưu, nơi bạn có thể khôi phục chúng về thiết bị này hoặc mở để chỉnh sửa.",
+  "Import from Files": "Nhập từ Tệp",
+  "Imported": "Đã nhập",
+  "Local file backups can be opened or exported, but not restored to this device.": "Bản sao lưu tệp cục bộ chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này.",
+  "Read MobileGestalt in Tools, or open a backup as a local document.": "Đọc MobileGestalt trong Công cụ, hoặc mở một bản sao lưu dưới dạng tài liệu cục bộ.",
+  "Read MobileGestalt on this device before restoring a backup.": "Hãy đọc MobileGestalt trên thiết bị này trước khi khôi phục bản sao lưu.",
+  "Restore this backup to this device?": "Khôi phục bản sao lưu này về thiết bị này?",
+  "Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.": "Khôi phục sẽ ghi bản sao lưu vào thiết bị này. Mở sẽ tải nó dưới dạng tài liệu cục bộ để xem và chỉnh sửa, và không bao giờ thay đổi thiết bị.",
+  "Saved to Backups. Restore it from the Backups tab.": "Đã lưu vào Bản sao lưu. Hãy khôi phục nó từ tab Bản sao lưu.",
+  "The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.": "Tệp hiện tại của thiết bị sẽ được sao lưu trước. Tệp đã khôi phục sẽ được đọc lại và xác minh. Sau đó hãy khởi động lại thiết bị.",
+  "This plist has been verified for this device. Save it to Backups?": "Plist này đã được xác minh cho thiết bị này. Lưu vào Bản sao lưu?",
+  "Verified import": "Nhập đã xác minh"
 }

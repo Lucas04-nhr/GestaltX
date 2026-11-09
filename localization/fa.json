@@ -308,5 +308,20 @@
   "This plist uses a different system cache layout and cannot be restored.": "ساختار حافظهٔ نهان سیستم این plist با دستگاه فعلی متفاوت است و قابل بازیابی نیست.",
   "Restore Imported Plist": "بازیابی plist واردشده",
   "The current device file will be backed up before restoring. Restart the device afterward.": "پیش از بازیابی، از فایل فعلی دستگاه نسخهٔ پشتیبان تهیه می‌شود. پس از پایان، دستگاه را راه‌اندازی مجدد کنید.",
-  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "plist همین دستگاه را با GestaltX به اشتراک بگذارید تا پس از تأیید، کلیدها و مقدارها را اضافه، ویرایش یا حذف کنید یا نسخهٔ پشتیبان را بازیابی کنید. بهتر است ابتدا یک نسخه با گواه مخصوص دستگاه از GestaltX صادر کنید."
+  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "plist همین دستگاه را با GestaltX به اشتراک بگذارید تا پس از تأیید، کلیدها و مقدارها را اضافه، ویرایش یا حذف کنید یا نسخهٔ پشتیبان را بازیابی کنید. بهتر است ابتدا یک نسخه با گواه مخصوص دستگاه از GestaltX صادر کنید.",
+  "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "پیش از صدور، تغییرات آماده‌شده را اعمال یا کنار بگذارید. نسخه‌های پشتیبان در زبانهٔ پشتیبان‌ها هستند.",
+  "Apply or discard your staged changes before restoring a backup.": "پیش از بازیابی نسخهٔ پشتیبان، تغییرات آماده‌شده را اعمال یا کنار بگذارید.",
+  "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. فایل‌های واردشده پیش از افزوده‌شدن به اینجا برای این دستگاه تأیید می‌شوند.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "یک plist را از Files در زبانهٔ پشتیبان‌ها وارد کنید یا آن را با GestaltX هم‌رسانی کنید. فایل‌های تأییدشده در پشتیبان‌ها ذخیره می‌شوند و می‌توانید آن‌ها را روی این دستگاه بازیابی یا برای ویرایش باز کنید.",
+  "Import from Files": "وارد کردن از Files",
+  "Imported": "واردشده",
+  "Local file backups can be opened or exported, but not restored to this device.": "پشتیبان‌های فایل محلی را می‌توان باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد.",
+  "Read MobileGestalt in Tools, or open a backup as a local document.": "MobileGestalt را در ابزارها بخوانید یا یک نسخهٔ پشتیبان را به‌عنوان سند محلی باز کنید.",
+  "Read MobileGestalt on this device before restoring a backup.": "پیش از بازیابی نسخهٔ پشتیبان، MobileGestalt را روی این دستگاه بخوانید.",
+  "Restore this backup to this device?": "این نسخهٔ پشتیبان روی این دستگاه بازیابی شود؟",
+  "Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.": "«بازیابی» نسخهٔ پشتیبان را روی این دستگاه می‌نویسد. «باز کردن» آن را به‌عنوان سند محلی برای مشاهده و ویرایش بارگذاری می‌کند و هرگز دستگاه را تغییر نمی‌دهد.",
+  "Saved to Backups. Restore it from the Backups tab.": "در پشتیبان‌ها ذخیره شد. آن را از زبانهٔ پشتیبان‌ها بازیابی کنید.",
+  "The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.": "ابتدا از فایل فعلی دستگاه پشتیبان گرفته می‌شود. فایل بازیابی‌شده دوباره خوانده و تأیید می‌شود. سپس دستگاه را دوباره راه‌اندازی کنید.",
+  "This plist has been verified for this device. Save it to Backups?": "این plist برای این دستگاه تأیید شده است. در پشتیبان‌ها ذخیره شود؟",
+  "Verified import": "ورود تأییدشده"
 }

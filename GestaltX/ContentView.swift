@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Copyright (C) 2026 huamidev
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SharedFile: Identifiable { let id = UUID(); let url: URL }
 
@@ -14,7 +15,6 @@ struct ContentView: View {
     @State private var sharesFile: SharedFile?
     @State private var showsChanges = false
     @State private var asksRespring = false
-    @State private var asksImportedRestore = false
     @State private var showsShareNotice = false
     @AppStorage("GestaltX.sharedImportNotice.v1") private var sharedImportNoticeShown = false
     @State private var selectedTab = 0
@@ -31,7 +31,7 @@ struct ContentView: View {
                 .tabItem { Label(L("Tools"), systemImage: "square.grid.2x2") }.tag(0)
             NavigationStack { FieldsView() }
                 .tabItem { Label(L("MG Control"), systemImage: "slider.horizontal.3") }.tag(1)
-            NavigationStack { BackupsView(share: { sharesFile = SharedFile(url: $0) }) }
+            NavigationStack { BackupsView(share: { sharesFile = SharedFile(url: $0) }, importFile: { importFile($0) }) }
                 .tabItem { Label(L("Backups"), systemImage: "clock.arrow.circlepath") }.tag(2)
             NavigationStack { AboutView() }
                 .tabItem { Label(L("About"), systemImage: "info.circle") }.tag(3)
@@ -66,36 +66,23 @@ struct ContentView: View {
                 isCheckingSharedImport = true
                 importOffer = nil
                 Task {
-                    await model.acceptImport(offer)
+                    if await model.acceptImport(offer) { selectedTab = 2 }
                     isCheckingSharedImport = false
                 }
             }
         } message: {
-            Text(verbatim: (importOffer?.name ?? "") + "\n\n" + L("This plist has been verified for this device. Import it?"))
-        }
-        .alert(L("Restore Imported Plist"), isPresented: $asksImportedRestore) {
-            Button(L("Cancel"), role: .cancel) {}
-            Button(L("Restore"), role: .destructive) { Task { await model.restoreImportedPlist() } }
-        } message: {
-            Text(L("The current device file will be backed up before restoring. Restart the device afterward."))
+            Text(verbatim: (importOffer?.name ?? "") + "\n\n" + L("This plist has been verified for this device. Save it to Backups?"))
         }
         .alert(L("Import Plist"), isPresented: $showsShareNotice) {
             Button(L("OK"), role: .cancel) {}
         } message: {
-            Text(L("Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof."))
+            Text(L("Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing."))
         }
         .onOpenURL { url in
             if url.scheme?.lowercased() == "gestaltx", url.host == "share" {
                 Task { await checkSharedImport() }
             } else if url.isFileURL {
-                guard !model.isBusy, model.changeCount == 0 else {
-                    model.message = L("Save or discard your current changes before opening another plist.")
-                    return
-                }
-                Task {
-                    importOffer = await model.prepareFileImport(url)
-                    if importOffer != nil { selectedTab = 0; showsImportConfirmation = true }
-                }
+                importFile(url)
             }
         }
         .onChange(of: scenePhase) { _, phase in
@@ -103,9 +90,6 @@ struct ContentView: View {
         }
         .onChange(of: model.isBusy) { _, busy in
             if !busy && pendingSharedImport { Task { await checkSharedImport() } }
-        }
-        .onChange(of: model.changeCount) { _, count in
-            if count == 0 && pendingSharedImport { Task { await checkSharedImport() } }
         }
         .onChange(of: showsChanges) { _, shown in
             if !shown && pendingSharedImport { Task { await checkSharedImport() } }
@@ -157,6 +141,15 @@ struct ContentView: View {
         await model.connect(showErrorAlert: false)
     }
 
+    /// Verifies a plist from Files or Open In and asks to save it to Backups.
+    private func importFile(_ url: URL) {
+        guard !model.isBusy, importOffer == nil, !isCheckingSharedImport else { return }
+        Task {
+            importOffer = await model.prepareFileImport(url)
+            if importOffer != nil { showsImportConfirmation = true }
+        }
+    }
+
     @discardableResult
     private func checkSharedImport() async -> Bool {
         guard acceptedWelcome else { return false }
@@ -166,18 +159,14 @@ struct ContentView: View {
                 pendingSharedImport = false
                 return false
             }
-            guard !model.isBusy, model.changeCount == 0, !showsChanges, !model.isRespringing else {
-                let firstNotice = !pendingSharedImport
+            // Imports go to the backup library, so staged edits do not need to be resolved first.
+            guard !model.isBusy, !showsChanges, !model.isRespringing else {
                 pendingSharedImport = true
-                if model.changeCount > 0 && firstNotice {
-                    model.message = L("A shared plist is waiting. Save or discard your current changes, then import it.")
-                }
                 return true
             }
             pendingSharedImport = false
             isCheckingSharedImport = true
             defer { isCheckingSharedImport = false }
-            selectedTab = 0
             sharedImportNoticeShown = true
             importOffer = await model.prepareSharedPlist(entry, from: inbox)
             if importOffer != nil { showsImportConfirmation = true }
@@ -218,11 +207,7 @@ struct ContentView: View {
                     .disabled(!model.hasDocument || model.isBusy)
                 }
             }
-            Section(L("Actions")) {
-                if model.snapshot?.source == .local && model.snapshot?.ownershipVerified == true {
-                    Button { asksImportedRestore = true } label: { Label(L("Restore Imported Plist"), systemImage: "arrow.uturn.backward") }
-                        .disabled(!model.canRestoreImportedPlist)
-                }
+            Section {
                 Button { showsChanges = true } label: {
                     HStack {
                         Label(L("Apply Changes"), systemImage: "checkmark")
@@ -232,14 +217,18 @@ struct ContentView: View {
                 }.disabled(model.changeCount == 0 || model.isBusy)
                 Button(L("Discard Changes"), role: .destructive) { model.clearStaged() }
                     .disabled(model.changeCount == 0 || model.isBusy)
-                Button { Task { await model.backup() } } label: { Label(L("Create Backup"), systemImage: "externaldrive.badge.plus") }
-                    .disabled(!model.hasDocument || model.isBusy)
                 Button {
                     if let url = model.exportDocument() { sharesFile = SharedFile(url: url) }
                 } label: { Label(L("Export Plist"), systemImage: "square.and.arrow.up") }
-                    .disabled(!model.hasDocument || model.isBusy)
+                    .disabled(!model.canExportDocument)
                 Button { asksRespring = true } label: { Label(L("Respring"), systemImage: "arrow.trianglehead.2.clockwise.rotate.90") }
                     .disabled(model.isBusy)
+            } header: {
+                Text(L("Actions"))
+            } footer: {
+                if model.hasDocument && model.changeCount > 0 {
+                    Text(L("Apply or discard staged changes before exporting. Backups are in the Backups tab."))
+                }
             }
             if model.needsRespring {
                 Section { Label(L("Some changes require a device restart."), systemImage: "info.circle").font(.footnote).foregroundStyle(.secondary) }
@@ -406,7 +395,7 @@ struct FieldsView: View {
     var body: some View {
         List {
             if !model.hasDocument {
-                ContentUnavailableView(L("No Document Open"), systemImage: "doc.text.magnifyingglass", description: Text(L("Read MobileGestalt in Tools, or share this device's plist to GestaltX.")))
+                ContentUnavailableView(L("No Document Open"), systemImage: "doc.text.magnifyingglass", description: Text(L("Read MobileGestalt in Tools, or open a backup as a local document.")))
             } else {
                 Section {
                     ForEach(keys, id: \.self) { key in
@@ -549,52 +538,78 @@ struct ChangeReviewView: View {
 
 struct BackupsView: View {
     let share: (URL) -> Void
+    let importFile: (URL) -> Void
     @EnvironmentObject private var model: GestaltManager
     @State private var restores: BackupRecord?
     @State private var deletes: BackupRecord?
+    @State private var showsImporter = false
     var body: some View {
         List {
             Section {
                 Button { Task { await model.backup() } } label: { Label(L("Create Backup"), systemImage: "plus.circle.fill") }
-                    .disabled(!model.hasDocument || model.isBusy)
+                    .disabled(!model.canCreateBackup)
+                Button { showsImporter = true } label: { Label(L("Import from Files"), systemImage: "square.and.arrow.down") }
+                    .disabled(model.isBusy)
+            } footer: {
+                Text(L("Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here."))
             }
             if model.backups.isEmpty {
                 ContentUnavailableView(L("No Backups"), systemImage: "externaldrive.badge.timemachine", description: Text(L("A backup is created before each write.")))
-            }
-            ForEach(model.backups) { record in
+            } else {
                 Section {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Image(systemName: record.source == .device ? "iphone" : "doc.text").foregroundStyle(Color.gestaltAccent)
-                            Text(L(record.reason)).fontWeight(.medium)
-                            Spacer()
-                        }
-                        Text(record.date, format: .dateTime.year().month().day().hour().minute().second()).font(.subheadline)
-                        Text(L(record.source == .device ? "Device Backup" : "Local File Backup") + " · " + ByteCountFormatter.string(fromByteCount: Int64(record.byteCount), countStyle: .file))
-                            .font(.caption).foregroundStyle(.secondary)
-                        HStack {
-                            Button(L("Open")) { Task { await model.openBackup(record) } }
-                            Spacer()
-                            Button(L("Export")) { Task { if let url = await model.exportBackup(record) { share(url) } } }
-                            Spacer()
-                            Button(L("Restore")) { restores = record }
-                                .disabled(!model.hasDocument || (model.sourceIsDevice && record.source != .device))
-                        }.font(.subheadline).buttonStyle(.borderless).padding(.top, 6)
-                    }.padding(.vertical, 6)
-                }.swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletes = record }.tint(.red) }
+                    ForEach(model.backups) { record in
+                        row(record)
+                            .swipeActions(allowsFullSwipe: false) { Button(L("Delete")) { deletes = record }.tint(.red) }
+                    }
+                } footer: {
+                    Text(L("Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device."))
+                }
             }
         }
         .navigationTitle(L("Backups")).disabled(model.isBusy)
         .task { await model.reloadBackups() }
         .refreshable { await model.reloadBackups() }
-        .alert(L("Restore this backup?"), isPresented: Binding(get: { restores != nil }, set: { if !$0 { restores = nil } })) {
+        .fileImporter(isPresented: $showsImporter, allowedContentTypes: [.propertyList, .xml]) { result in
+            switch result {
+            case .success(let url): importFile(url)
+            case .failure(let error): model.message = error.localizedDescription
+            }
+        }
+        .alert(L("Restore this backup to this device?"), isPresented: Binding(get: { restores != nil }, set: { if !$0 { restores = nil } })) {
             Button(L("Cancel"), role: .cancel) { restores = nil }
-            Button(L("Restore")) { if let record = restores { Task { await model.restore(record) } }; restores = nil }
-        } message: { Text(L("The current document is backed up first. Device restores are verified after writing.")) }
+            Button(L("Restore"), role: .destructive) { if let record = restores { Task { await model.restore(record) } }; restores = nil }
+        } message: { Text(L("The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.")) }
         .alert(L("Delete this backup?"), isPresented: Binding(get: { deletes != nil }, set: { if !$0 { deletes = nil } })) {
             Button(L("Cancel"), role: .cancel) { deletes = nil }
             Button(L("Delete"), role: .destructive) { if let record = deletes { Task { await model.deleteBackup(record) } }; deletes = nil }
         } message: { Text(L("This removes the local backup permanently. It does not change the device file.")) }
+    }
+
+    private func row(_ record: BackupRecord) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: record.reason == "Imported" ? "square.and.arrow.down" : record.source == .device ? "iphone" : "doc.text")
+                    .foregroundStyle(Color.gestaltAccent)
+                Text(L(record.reason)).fontWeight(.medium)
+                Spacer()
+            }
+            Text(record.date, format: .dateTime.year().month().day().hour().minute().second()).font(.subheadline)
+            Text(L(record.source == .device ? "Device Backup" : "Local File Backup") + " · " + ByteCountFormatter.string(fromByteCount: Int64(record.byteCount), countStyle: .file))
+                .font(.caption).foregroundStyle(.secondary)
+            if record.source != .device {
+                Text(L("Local file backups can be opened or exported, but not restored to this device."))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            HStack {
+                Button(L("Restore")) { restores = record }
+                    .disabled(!model.canRestore(record))
+                Spacer()
+                Button(L("Open")) { Task { await model.openBackup(record) } }
+                    .disabled(model.isBusy || model.changeCount > 0)
+                Spacer()
+                Button(L("Export")) { Task { if let url = await model.exportBackup(record) { share(url) } } }
+            }.font(.subheadline).buttonStyle(.borderless).padding(.top, 6)
+        }.padding(.vertical, 6)
     }
 }
 

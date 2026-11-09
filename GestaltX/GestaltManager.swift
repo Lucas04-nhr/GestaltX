@@ -329,7 +329,7 @@ final class GestaltManager: ObservableObject {
     }
 
     func prepareSharedPlist(_ entry: SharedPlistEntry, from inbox: SharedPlistInbox) async -> PlistImportOffer? {
-        guard !isBusy, changeCount == 0 else { return nil }
+        guard !isBusy else { return nil }
         isBusy = true
         defer { isBusy = false }
         do {
@@ -346,7 +346,7 @@ final class GestaltManager: ObservableObject {
     }
 
     func prepareFileImport(_ url: URL) async -> PlistImportOffer? {
-        guard !isBusy, changeCount == 0 else { return nil }
+        guard !isBusy else { return nil }
         isBusy = true
         defer { isBusy = false }
         do {
@@ -356,36 +356,22 @@ final class GestaltManager: ObservableObject {
         } catch { failed(error); return nil }
     }
 
-    func acceptImport(_ offer: PlistImportOffer) async {
-        guard !isBusy, changeCount == 0 else { return }
+    /// Saves a verified plist to the backup library. It does not open or write it.
+    @discardableResult
+    func acceptImport(_ offer: PlistImportOffer) async -> Bool {
+        guard !isBusy else { return false }
         isBusy = true
         defer { isBusy = false }
         do {
             // Use the immutable bytes that were verified for this confirmation.
             if let identity = offer.identity { try DevicePlistIdentity(plist: offer.data).requireMatch(with: identity) }
-            var loaded = try await files.loadLocal(data: offer.data, name: offer.name)
-            loaded.ownershipVerified = true
-            accept(loaded); status = "Local file opened"; needsRespring = false
+            let record = try await files.saveImport(offer.data)
             discardImport(offer)
-            log("[share] Verified device plist imported: \(offer.data.count) bytes")
-        } catch { failed(error) }
-    }
-
-    var canRestoreImportedPlist: Bool {
-        snapshot?.source == .local && snapshot?.ownershipVerified == true && changeCount == 0 && !isBusy
-    }
-    func restoreImportedPlist() async {
-        guard canRestoreImportedPlist, let imported = snapshot else { return }
-        isBusy = true; defer { isBusy = false }
-        do {
-            let live = try await files.loadDevice()
-            let restored = try await files.restoreVerifiedImport(imported, expected: live)
-            accept(restored); needsRespring = true
-            status = "Changes verified on device"
-            message = L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
-            log("[restore] Verified imported document restored")
+            log("[import] \(offer.name): \(offer.data.count) bytes saved as backup \(record.filename)")
+            message = L("Saved to Backups. Restore it from the Backups tab.")
             await reloadBackups()
-        } catch { failed(error); await reloadBackups() }
+            return true
+        } catch { failed(error); return false }
     }
 
     func discardImport(_ offer: PlistImportOffer) {
@@ -438,35 +424,49 @@ final class GestaltManager: ObservableObject {
         } catch { failed(error); await reloadBackups() }
     }
 
+    var canCreateBackup: Bool { !isBusy && deviceAccessible }
+    var canExportDocument: Bool { !isBusy && hasDocument && changeCount == 0 }
+    func canRestore(_ record: BackupRecord) -> Bool { !isBusy && changeCount == 0 && record.source == .device }
+
+    /// Backs up the live device file, whatever document is currently open.
     func backup() async {
-        guard !isBusy, let snapshot else { return }
+        guard canCreateBackup else { return }
         isBusy = true; defer { isBusy = false }
-        do { try await files.backup(snapshot); log(L("Backup saved")); message = L("Backup saved"); await reloadBackups() }
+        do { try await files.backupDevice(); log(L("Backup saved")); message = L("Backup saved"); await reloadBackups() }
         catch { failed(error) }
     }
     func reloadBackups() async {
         do { backups = try await files.backups() } catch { failed(error) }
     }
+    /// Restoring always targets this device, regardless of the open document.
     func restore(_ record: BackupRecord) async {
-        guard !isBusy, let snapshot else { return }
+        guard !isBusy else { return }
+        guard changeCount == 0 else { failed(GestaltFailure("Apply or discard your staged changes before restoring a backup.")); return }
         isBusy = true; defer { isBusy = false }
         do {
-            let data = try await files.backupData(record)
-            let restored = try GestaltDocument(data: data)
+            let live = try await files.loadDevice()
+            deviceAccessible = true
+            let restored = try GestaltDocument(data: await files.backupData(record))
             log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
-            logChanges(from: snapshot.document, to: restored, prefix: "[restore-diff] ")
-            let result = try await files.commit(restored, expected: snapshot, restoring: record)
-            accept(result); needsRespring = result.source == .device
-            message = L(result.source == .device ? "Backup restored and verified." : "Backup opened as a local document.")
+            logChanges(from: live.document, to: restored, prefix: "[restore-diff] ")
+            let result = try await files.restore(record, onto: live)
+            accept(result); needsRespring = true
+            status = "Changes verified on device"
+            message = L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
             log(message ?? ""); await reloadBackups()
         } catch { failed(error); await reloadBackups() }
     }
+    /// Opens a backup for viewing or editing. Saving it never changes the device.
     func openBackup(_ record: BackupRecord) async {
         guard !isBusy else { return }
+        guard changeCount == 0 else { failed(GestaltFailure("Save or discard your current changes before opening another plist.")); return }
         isBusy = true; defer { isBusy = false }
         do {
             let data = try await files.backupData(record)
-            accept(try await files.loadLocal(data: data, name: record.filename)); status = "Local file opened"
+            var loaded = try await files.loadLocal(data: data, name: exportName(for: record.date))
+            loaded.ownershipVerified = record.source == .device
+            accept(loaded); status = "Local file opened"; needsRespring = false
+            log("[open] \(record.filename) opened as a local document")
         } catch { failed(error) }
     }
     func deleteBackup(_ record: BackupRecord) async {
@@ -474,18 +474,28 @@ final class GestaltManager: ObservableObject {
         isBusy = true; defer { isBusy = false }
         do { try await files.deleteBackup(record); await reloadBackups() } catch { failed(error) }
     }
+    /// Device backups carry the device-bound proof so they can be imported again.
     func exportBackup(_ record: BackupRecord) async -> URL? {
-        do { return try exportData(await files.backupData(record), name: record.filename) }
-        catch { failed(error); return nil }
-    }
-    func exportDocument() -> URL? {
-        guard let doc = preview, let snapshot else { return nil }
         do {
-            let plain = try doc.encoded()
-            let bytes = snapshot.source == .device || snapshot.ownershipVerified ? try DeviceBoundPlist.seal(plain) : plain
-            return try exportData(bytes, name: "MobileGestalt-GestaltX.plist")
+            let data = try await files.backupData(record)
+            let bytes = record.source == .device ? try DeviceBoundPlist.seal(data) : data
+            return try exportData(bytes, name: exportName(for: record.date))
+        } catch { failed(error); return nil }
+    }
+    /// Exports the open document as last read or saved. Staged changes are never exported.
+    func exportDocument() -> URL? {
+        guard canExportDocument, let snapshot else { return nil }
+        do {
+            let bytes = snapshot.source == .device || snapshot.ownershipVerified ? try DeviceBoundPlist.seal(snapshot.data) : snapshot.data
+            return try exportData(bytes, name: exportName(for: .now))
         }
         catch { failed(error); return nil }
+    }
+    private func exportName(for date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        return "MobileGestalt-" + formatter.string(from: date) + ".plist"
     }
     private func exportData(_ data: Data, name: String) throws -> URL {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)

@@ -574,10 +574,45 @@ final class AccessTrace: @unchecked Sendable {
         let savedLocal = try await local.commit(document, expected: localSnapshot)
         try expect(savedLocal.source == .local && savedLocal.document.matches(document), "Local document mode")
         try expect(try Data(contentsOf: device) == originalData, "Local mode leaves device bytes untouched")
-        try expect(try await local.backups().first?.source == .local, "Local backups stay local")
+        try expect(try await local.backups().isEmpty, "Saving a local document does not add to the backup library")
+
+        // Backup library: imports are stored only, and restores target the device with a matching layout.
+        let libraryDevice = root.appendingPathComponent("library-device.plist")
+        let layoutFixture: [String: Any] = ["CacheUUID": "layout-a", "CacheVersion": "v1", "CacheData": Data([1, 2, 3, 4]),
+                                            "CacheExtra": ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-A", "value": "original"]]
+        let layoutData = try PropertyListSerialization.data(fromPropertyList: layoutFixture, format: .binary, options: 0)
+        try layoutData.write(to: libraryDevice)
+        let library = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library"),
+                                       deviceID: "library", acquire: { 1 }, release: { _ in })
+        _ = try await library.loadDevice()
+        var importedRoot = layoutFixture
+        importedRoot["CacheExtra"] = ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-A", "value": "imported"]
+        let importedData = try PropertyListSerialization.data(fromPropertyList: importedRoot, format: .binary, options: 0)
+        let importedRecord = try await library.saveImport(importedData)
+        try expect(importedRecord.source == .device && importedRecord.reason == "Imported", "Imports are saved as device backups")
+        try expect(try Data(contentsOf: libraryDevice) == layoutData, "Importing never writes the device file")
+        let liveForRestore = try await library.loadDevice()
+        let restoredImport = try await library.restore(importedRecord, onto: liveForRestore)
+        try expect(restoredImport.document.extra["value"] as? String == "imported", "An imported backup restores to the device")
+        try expect(try await library.backups().contains { $0.reason == "Before restoring" }, "Restoring backs up the current device file first")
+        var otherLayout = layoutFixture
+        otherLayout["CacheUUID"] = "layout-b"
+        let otherLayoutRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherLayout, format: .binary, options: 0))
+        let beforeLayoutRestore = try Data(contentsOf: libraryDevice)
+        do { _ = try await library.restore(otherLayoutRecord, onto: library.loadDevice()); throw TestFailure(message: "Reject a backup with another cache layout") }
+        catch is GestaltFailure {}
+        var otherDevice = layoutFixture
+        otherDevice["CacheExtra"] = ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-B", "value": "foreign"]
+        let otherDeviceRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherDevice, format: .binary, options: 0))
+        do { _ = try await library.restore(otherDeviceRecord, onto: library.loadDevice()); throw TestFailure(message: "Reject a backup with another device identity") }
+        catch is GestaltFailure {}
+        let libraryLocal = try await library.loadLocal(data: layoutData, name: "local")
+        do { _ = try await library.restore(importedRecord, onto: libraryLocal); throw TestFailure(message: "Restores require a fresh device read") }
+        catch is GestaltFailure {}
+        try expect(try Data(contentsOf: libraryDevice) == beforeLayoutRestore, "Rejected restores leave the device file untouched")
         try await store.deleteBackup(records[0])
         let remaining = try await store.backups()
         try expect(!remaining.contains { $0.id == records[0].id }, "Backup deletion updates library")
-        print("PASS: typed plist editing, nested roundtrip, durable backups, readback verification, stale-write rejection, owned restore, foreign-backup rejection, rollback, backup failure, local isolation, and extension release.")
+        print("PASS: typed plist editing, nested roundtrip, durable backups, readback verification, stale-write rejection, owned restore, foreign-backup rejection, rollback, backup failure, local isolation, layout-checked library restores, and extension release.")
     }
 }

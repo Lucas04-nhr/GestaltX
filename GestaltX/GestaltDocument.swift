@@ -436,10 +436,16 @@ actor GestaltFileStore {
         return record
     }
 
-    func backup(_ snapshot: DocumentSnapshot) throws {
-        if snapshot.source == .device {
-            _ = try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: "Manual backup") }
-        } else { try saveBackup(snapshot.data, source: .local, reason: "Manual backup") }
+    /// Backs up the live device file, independent of the document currently open.
+    func backupDevice() throws {
+        _ = try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: "Manual backup") }
+    }
+
+    /// Saves a plist whose ownership has already been verified for this device.
+    /// Imports are only ever added to the backup library; restoring is a separate step.
+    @discardableResult
+    func saveImport(_ data: Data) throws -> BackupRecord {
+        try saveBackup(data, source: .device, reason: "Imported")
     }
 
     func backupData(_ record: BackupRecord) throws -> Data {
@@ -453,19 +459,29 @@ actor GestaltFileStore {
         try FileManager.default.removeItem(at: backupDirectory.appendingPathComponent(record.filename))
     }
 
-    func restoreVerifiedImport(_ imported: DocumentSnapshot, expected: DocumentSnapshot) throws -> DocumentSnapshot {
-        guard imported.source == .local, imported.ownershipVerified, expected.source == .device else {
-            throw GestaltFailure("This plist's device proof could not be verified on this device.")
+    /// Writes an owned backup to the device. The backup must belong to this
+    /// installation, match the device identity and use the same system cache layout.
+    func restore(_ record: BackupRecord, onto live: DocumentSnapshot) throws -> DocumentSnapshot {
+        guard live.source == .device else { throw GestaltFailure("Read MobileGestalt on this device before restoring a backup.") }
+        guard record.source == .device, record.deviceID == deviceID else {
+            throw GestaltFailure("This backup does not belong to this device. Open it as a local file instead.")
         }
-        guard let uuid = imported.document.root["CacheUUID"] as? String, !uuid.isEmpty,
-              expected.document.root["CacheUUID"] as? String == uuid,
-              imported.document.root["CacheVersion"] as? String == expected.document.root["CacheVersion"] as? String,
-              let data = imported.document.root["CacheData"] as? Data,
-              let current = expected.document.root["CacheData"] as? Data, data.count == current.count else {
+        let restored = try GestaltDocument(data: backupData(record))
+        guard restored.matchesIdentity(live.document) else {
+            throw GestaltFailure("This backup does not belong to this device. Open it as a local file instead.")
+        }
+        try Self.requireSameLayout(restored, live.document)
+        return try commit(restored, expected: live, restoring: record)
+    }
+
+    static func requireSameLayout(_ restored: GestaltDocument, _ current: GestaltDocument) throws {
+        guard let uuid = restored.root["CacheUUID"] as? String, !uuid.isEmpty,
+              current.root["CacheUUID"] as? String == uuid,
+              restored.root["CacheVersion"] as? String == current.root["CacheVersion"] as? String,
+              let data = restored.root["CacheData"] as? Data,
+              let live = current.root["CacheData"] as? Data, data.count == live.count else {
             throw GestaltFailure("This plist uses a different system cache layout and cannot be restored.")
         }
-        let record = try saveBackup(imported.data, source: .device, reason: "Verified import")
-        return try commit(imported.document, expected: expected, restoring: record)
     }
 
     func commit(_ edited: GestaltDocument, expected: DocumentSnapshot, restoring record: BackupRecord? = nil,
@@ -476,7 +492,7 @@ actor GestaltFileStore {
         }
         let output = try edited.encoded()
         guard expected.source == .device else {
-            try saveBackup(expected.data, source: .local, reason: "Before editing")
+            // Local documents are in-memory copies; saving them never touches the backup library.
             var originals = expected.recordingOriginals(to: edited)
             for key in originallyAbsentKeys { originals.fields[key] = OriginalField(value: nil) }
             return DocumentSnapshot(data: output, document: edited, source: .local, name: expected.name,

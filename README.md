@@ -13,6 +13,14 @@
 
 A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://github.com/huamidev).
 
+> [!NOTE]
+> **This is an unofficial fork.** The upstream project is [huamidev/GestaltX](https://github.com/huamidev/GestaltX), and all credit for GestaltX belongs to its author. This fork follows the upstream tags and adds two changes:
+>
+> - **Reorganized backup, restore, import and export.** The Backups tab now handles all of these. See [Backups, import and export](#backups-import-and-export).
+> - **CI.** The IPA is ad-hoc signed with the entitlements of the app and its share extension, so AltStore and SideStore can register the App Group when they re-sign it.
+>
+> Report issues with these changes in this repository, and all other issues in the [upstream repository](https://github.com/huamidev/GestaltX/issues).
+
 ## Features
 
 | Category | Presets and tools |
@@ -22,9 +30,9 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 | iPad | Apple Pencil settings, Stage Manager capability, iPad app compatibility |
 | Intelligence | Independent region-code options, Apple Intelligence capability flag, and sales-region options for activation attempts on China-mainland devices |
 | Advanced | Apple internal feature flags, internal storage view, Security Research Device flag |
-| Field editor | Read, search, add, edit, and remove `CacheExtra` fields; local plist import/export; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
+| Field editor | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
-| Backups | Automatic initial backup before device editing, backup before every write, original-value records; open, export, restore, and delete |
+| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; verified import from Files or the share sheet; restore to this device, open as a local document, export, and delete |
 | Logs & respring | Actual exploit-stage logs and manual NeoSpring respring |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
@@ -41,13 +49,29 @@ Supports **iOS / iPadOS 27.x**. **iOS / iPadOS 26.x is not supported for on-devi
 
 Signing requires a certificate and provisioning profile with at least one usable App Group. Sign the app and its embedded share extension with at least one **common App Group**, and keep the extension when re-signing. Both processes detect their actual signed App Groups at runtime.
 
-## Import a plist
+## Backups, import and export
 
-In Files or another app, select a MobileGestalt plist, tap **Share**, and choose **GestaltX**. The share extension reads the supplied file and hands it to the app through the shared App Group. Return to GestaltX if it does not open automatically. The app checks a device-bound proof from a GestaltX export, or at least two unique identifiers obtained from this device, then asks you to confirm the import. Files that cannot be verified are rejected. Previously imported files are never used as the reference for device identity.
+The **Backups** tab is the single place to back up, import, restore and export. Each action does one thing:
 
-Some original plists contain no unique device identifiers. Export a copy from GestaltX on this device first: its verification key stays in the device-only Keychain and is never included in the file.
+| Action | What it does |
+| --- | --- |
+| **Create Backup** | Saves this device's current MobileGestalt file, whatever document is open. GestaltX also backs up automatically on the first read and before every write. |
+| **Import from Files** | Verifies a plist and adds it to the backups list as **Imported**. Importing never opens the file or writes it to the device, and staged edits are kept. |
+| **Restore** | Writes a backup to this device. GestaltX reads the device file again first. The backup must belong to this device and use the same system cache layout (`CacheUUID`, `CacheVersion` and `CacheData` size), so a backup made before an iOS update is refused. The current file is backed up first and the write is read back and verified. Apply or discard staged changes before restoring, and restart the device afterward. |
+| **Open** | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list. |
+| **Export** | Shares a backup as a file. Device backups are exported with a device-bound proof, so they can be imported again on this device. |
 
-Shared files are checked at launch and on return to the foreground. Pending edits are preserved until you save or discard them. Confirmed imports open as local documents. **MG Control** supports adding, editing, renaming and deleting typed keys and values. Use **Restore Imported Plist** to restore a verified file to this device; restoration requires a matching system cache layout and an additional confirmation, backs up the current file, and verifies the write. Restart the device afterward.
+**Export Plist** in Tools exports the open document as it was last read or saved, with a device-bound proof. Staged changes are never exported, so apply or discard them first.
+
+### Import verification
+
+Tap **Import from Files** in Backups, or select a MobileGestalt plist in Files or another app, tap **Share** and choose **GestaltX**. The share extension passes the file to the app through the shared App Group; return to GestaltX if it does not open automatically. Files shared this way are checked at launch and whenever GestaltX returns to the foreground.
+
+GestaltX accepts a file only if it carries a device-bound proof from a GestaltX export on this device, or at least two unique identifiers that match this device. Files that cannot be verified are rejected. Previously imported files are never used to establish this device's identity.
+
+Some original plists contain no unique device identifiers. Export a copy from GestaltX on this device first. Its verification key stays in the device-only Keychain and is never included in the file.
+
+Local file backups made by earlier versions can still be opened and exported, but they cannot be restored to the device.
 
 ## Language support
 

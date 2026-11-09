@@ -14260,6 +14260,696 @@
           }
         }
       }
+    },
+    "Apply or discard staged changes before exporting. Backups are in the Backups tab.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply or discard staged changes before exporting. Backups are in the Backups tab."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先应用或放弃暂存的更改，再导出。备份请在“备份”页查看。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش از صدور، تغییرات آماده‌شده را اعمال یا کنار بگذارید. نسخه‌های پشتیبان در زبانهٔ پشتیبان‌ها هستند."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Примените или отмените подготовленные изменения перед экспортом. Резервные копии находятся на вкладке «Резервные копии»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy áp dụng hoặc bỏ các thay đổi đang chờ trước khi xuất. Các bản sao lưu nằm trong tab Bản sao lưu."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先應用或放棄暫存的更改，再導出。備份請在「備份」頁查看。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先應用或放棄暫存的更改，再匯出。備份請在「備份」頁查看。"
+          }
+        }
+      }
+    },
+    "Apply or discard your staged changes before restoring a backup.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply or discard your staged changes before restoring a backup."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先应用或放弃暂存的更改，再恢复备份。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش از بازیابی نسخهٔ پشتیبان، تغییرات آماده‌شده را اعمال یا کنار بگذارید."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Примените или отмените подготовленные изменения перед восстановлением резервной копии."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy áp dụng hoặc bỏ các thay đổi đang chờ trước khi khôi phục bản sao lưu."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先應用或放棄暫存的更改，再恢復備份。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先應用或放棄暫存的更改，再恢復備份。"
+          }
+        }
+      }
+    },
+    "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“创建备份”会保存本机当前的 MobileGestalt 文件。导入的文件会先核验是否属于本机，再添加到这里。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. فایل‌های واردشده پیش از افزوده‌شدن به اینجا برای این دستگاه تأیید می‌شوند."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Импортированные файлы проверяются на принадлежность этому устройству перед добавлением сюда."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Các tệp được nhập sẽ được xác minh thuộc về thiết bị này trước khi thêm vào đây."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「創建備份」會保存本機目前的 MobileGestalt 文件。導入的文件會先核驗是否屬於本機，再加入這裡。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「建立備份」會儲存本機目前的 MobileGestalt 檔案。匯入的檔案會先核驗是否屬於本機，再加入這裡。"
+          }
+        }
+      }
+    },
+    "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。核验通过的文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یک plist را از Files در زبانهٔ پشتیبان‌ها وارد کنید یا آن را با GestaltX هم‌رسانی کنید. فایل‌های تأییدشده در پشتیبان‌ها ذخیره می‌شوند و می‌توانید آن‌ها را روی این دستگاه بازیابی یا برای ویرایش باز کنید."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импортируйте plist из «Файлов» на вкладке «Резервные копии» или поделитесь им с GestaltX. Проверенные файлы сохраняются в резервные копии, откуда их можно восстановить на это устройство или открыть для редактирования."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập plist từ Tệp trong tab Bản sao lưu, hoặc chia sẻ nó tới GestaltX. Các tệp đã xác minh được lưu vào Bản sao lưu, nơi bạn có thể khôi phục chúng về thiết bị này hoặc mở để chỉnh sửa."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可在「備份」頁從「檔案」導入 plist，也可以將其分享到 GestaltX。核驗通過的文件會保存到備份列表，之後可恢復到本機，或打開進行編輯。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可在「備份」頁從「檔案」匯入 plist，也可以將其分享到 GestaltX。核驗通過的檔案會儲存到備份列表，之後可恢復到本機，或開啟進行編輯。"
+          }
+        }
+      }
+    },
+    "Import from Files": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import from Files"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "从“文件”导入"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وارد کردن از Files"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импорт из «Файлов»"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập từ Tệp"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從「檔案」導入"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從「檔案」匯入"
+          }
+        }
+      }
+    },
+    "Imported": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已导入"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "واردشده"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импортировано"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã nhập"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已導入"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已匯入"
+          }
+        }
+      }
+    },
+    "Local file backups can be opened or exported, but not restored to this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local file backups can be opened or exported, but not restored to this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地文件备份只能打开或导出，不能恢复到本机。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پشتیبان‌های فایل محلی را می‌توان باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Резервные копии локальных файлов можно открыть или экспортировать, но нельзя восстановить на это устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bản sao lưu tệp cục bộ chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地文件備份只能打開或導出，不能恢復到本機。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本地檔案備份只能開啟或匯出，不能恢復到本機。"
+          }
+        }
+      }
+    },
+    "Read MobileGestalt in Tools, or open a backup as a local document.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read MobileGestalt in Tools, or open a backup as a local document."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“工具”中读取 MobileGestalt，或将备份作为本地文稿打开。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MobileGestalt را در ابزارها بخوانید یا یک نسخهٔ پشتیبان را به‌عنوان سند محلی باز کنید."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прочитайте MobileGestalt во вкладке «Инструменты» или откройте резервную копию как локальный документ."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đọc MobileGestalt trong Công cụ, hoặc mở một bản sao lưu dưới dạng tài liệu cục bộ."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請在「工具」中讀取 MobileGestalt，或將備份作為本地文稿打開。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請在「工具」中讀取 MobileGestalt，或將備份作為本地文稿開啟。"
+          }
+        }
+      }
+    },
+    "Read MobileGestalt on this device before restoring a backup.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read MobileGestalt on this device before restoring a backup."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先在本机读取 MobileGestalt，再恢复备份。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش از بازیابی نسخهٔ پشتیبان، MobileGestalt را روی این دستگاه بخوانید."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прочитайте MobileGestalt на этом устройстве перед восстановлением резервной копии."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy đọc MobileGestalt trên thiết bị này trước khi khôi phục bản sao lưu."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先在本機讀取 MobileGestalt，再恢復備份。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先在本機讀取 MobileGestalt，再恢復備份。"
+          }
+        }
+      }
+    },
+    "Restore this backup to this device?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore this backup to this device?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将这个备份恢复到本机？"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این نسخهٔ پشتیبان روی این دستگاه بازیابی شود؟"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Восстановить эту резервную копию на это устройство?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục bản sao lưu này về thiết bị này?"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將這個備份恢復到本機？"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將這個備份恢復到本機？"
+          }
+        }
+      }
+    },
+    "Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“恢复”会将备份写入本机。“打开”会将备份作为本地文稿载入，供查看和编辑，不会更改本机文件。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«بازیابی» نسخهٔ پشتیبان را روی این دستگاه می‌نویسد. «باز کردن» آن را به‌عنوان سند محلی برای مشاهده و ویرایش بارگذاری می‌کند و هرگز دستگاه را تغییر نمی‌دهد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Восстановить» записывает резервную копию на это устройство. «Открыть» загружает её как локальный документ для просмотра и редактирования и никогда не изменяет устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khôi phục sẽ ghi bản sao lưu vào thiết bị này. Mở sẽ tải nó dưới dạng tài liệu cục bộ để xem và chỉnh sửa, và không bao giờ thay đổi thiết bị."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「恢復」會將備份寫入本機。「打開」會將備份作為本地文稿載入，供查看和編輯，不會更改本機文件。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「恢復」會將備份寫入本機。「開啟」會將備份作為本地文稿載入，供查看和編輯，不會更改本機檔案。"
+          }
+        }
+      }
+    },
+    "Saved to Backups. Restore it from the Backups tab.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved to Backups. Restore it from the Backups tab."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已保存到备份列表，可在“备份”页恢复到本机。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در پشتیبان‌ها ذخیره شد. آن را از زبانهٔ پشتیبان‌ها بازیابی کنید."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранено в резервные копии. Восстановите файл на вкладке «Резервные копии»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã lưu vào Bản sao lưu. Hãy khôi phục nó từ tab Bản sao lưu."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已保存到備份列表，可在「備份」頁恢復到本機。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已儲存到備份列表，可在「備份」頁恢復到本機。"
+          }
+        }
+      }
+    },
+    "The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The current device file is backed up first. The restored file is read back and verified. Restart the device afterward."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会先备份本机当前文件，恢复后会读回并验证。完成后请重新启动设备。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابتدا از فایل فعلی دستگاه پشتیبان گرفته می‌شود. فایل بازیابی‌شده دوباره خوانده و تأیید می‌شود. سپس دستگاه را دوباره راه‌اندازی کنید."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сначала создаётся резервная копия текущего файла устройства. Восстановленный файл считывается и проверяется. После этого перезагрузите устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp hiện tại của thiết bị sẽ được sao lưu trước. Tệp đã khôi phục sẽ được đọc lại và xác minh. Sau đó hãy khởi động lại thiết bị."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "會先備份本機目前的文件，恢復後會讀回並驗證。完成後請重新啟動裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "會先備份本機目前的檔案，恢復後會讀回並驗證。完成後請重新啟動裝置。"
+          }
+        }
+      }
+    },
+    "This plist has been verified for this device. Save it to Backups?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This plist has been verified for this device. Save it to Backups?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 plist 已通过本机核验。要保存到备份列表吗？"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این plist برای این دستگاه تأیید شده است. در پشتیبان‌ها ذخیره شود؟"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этот plist проверен для этого устройства. Сохранить его в резервные копии?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plist này đã được xác minh cho thiết bị này. Lưu vào Bản sao lưu?"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 plist 已通過本機核驗。要保存到備份列表嗎？"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 plist 已通過本機核驗。要儲存到備份列表嗎？"
+          }
+        }
+      }
+    },
+    "Verified import": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verified import"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已核验的导入"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ورود تأییدشده"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Проверенный импорт"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập đã xác minh"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已核驗的導入"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已核驗的匯入"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -308,5 +308,20 @@
   "This plist uses a different system cache layout and cannot be restored.": "此 plist 的系統快取配置與本機不符，無法還原。",
   "Restore Imported Plist": "還原匯入的 plist",
   "The current device file will be backed up before restoring. Restart the device afterward.": "還原前會備份目前的裝置檔案，完成後請重新啟動裝置。",
-  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "現在可將本機 plist 分享到 GestaltX，核驗後匯入、新增、刪除或修改鍵值並還原。建議先從 GestaltX 匯出一份附有本機驗證憑證的備份。"
+  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "現在可將本機 plist 分享到 GestaltX，核驗後匯入、新增、刪除或修改鍵值並還原。建議先從 GestaltX 匯出一份附有本機驗證憑證的備份。",
+  "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "請先應用或放棄暫存的更改，再導出。備份請在「備份」頁查看。",
+  "Apply or discard your staged changes before restoring a backup.": "請先應用或放棄暫存的更改，再恢復備份。",
+  "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.": "「創建備份」會保存本機目前的 MobileGestalt 文件。導入的文件會先核驗是否屬於本機，再加入這裡。",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "可在「備份」頁從「檔案」導入 plist，也可以將其分享到 GestaltX。核驗通過的文件會保存到備份列表，之後可恢復到本機，或打開進行編輯。",
+  "Import from Files": "從「檔案」導入",
+  "Imported": "已導入",
+  "Local file backups can be opened or exported, but not restored to this device.": "本地文件備份只能打開或導出，不能恢復到本機。",
+  "Read MobileGestalt in Tools, or open a backup as a local document.": "請在「工具」中讀取 MobileGestalt，或將備份作為本地文稿打開。",
+  "Read MobileGestalt on this device before restoring a backup.": "請先在本機讀取 MobileGestalt，再恢復備份。",
+  "Restore this backup to this device?": "將這個備份恢復到本機？",
+  "Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.": "「恢復」會將備份寫入本機。「打開」會將備份作為本地文稿載入，供查看和編輯，不會更改本機文件。",
+  "Saved to Backups. Restore it from the Backups tab.": "已保存到備份列表，可在「備份」頁恢復到本機。",
+  "The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.": "會先備份本機目前的文件，恢復後會讀回並驗證。完成後請重新啟動裝置。",
+  "This plist has been verified for this device. Save it to Backups?": "此 plist 已通過本機核驗。要保存到備份列表嗎？",
+  "Verified import": "已核驗的導入"
 }

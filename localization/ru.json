@@ -308,5 +308,20 @@
   "This plist uses a different system cache layout and cannot be restored.": "Структура системного кэша plist отличается от текущей. Восстановление невозможно.",
   "Restore Imported Plist": "Восстановить импортированный plist",
   "The current device file will be backed up before restoring. Restart the device afterward.": "Перед восстановлением будет создана резервная копия текущего файла устройства. Затем перезагрузите устройство.",
-  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "Отправьте plist этого устройства в GestaltX для проверки, импорта, добавления, изменения и удаления ключей и восстановления копии. Сначала рекомендуется экспортировать копию из GestaltX с подтверждением для этого устройства."
+  "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": "Отправьте plist этого устройства в GestaltX для проверки, импорта, добавления, изменения и удаления ключей и восстановления копии. Сначала рекомендуется экспортировать копию из GestaltX с подтверждением для этого устройства.",
+  "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "Примените или отмените подготовленные изменения перед экспортом. Резервные копии находятся на вкладке «Резервные копии».",
+  "Apply or discard your staged changes before restoring a backup.": "Примените или отмените подготовленные изменения перед восстановлением резервной копии.",
+  "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Импортированные файлы проверяются на принадлежность этому устройству перед добавлением сюда.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "Импортируйте plist из «Файлов» на вкладке «Резервные копии» или поделитесь им с GestaltX. Проверенные файлы сохраняются в резервные копии, откуда их можно восстановить на это устройство или открыть для редактирования.",
+  "Import from Files": "Импорт из «Файлов»",
+  "Imported": "Импортировано",
+  "Local file backups can be opened or exported, but not restored to this device.": "Резервные копии локальных файлов можно открыть или экспортировать, но нельзя восстановить на это устройство.",
+  "Read MobileGestalt in Tools, or open a backup as a local document.": "Прочитайте MobileGestalt во вкладке «Инструменты» или откройте резервную копию как локальный документ.",
+  "Read MobileGestalt on this device before restoring a backup.": "Прочитайте MobileGestalt на этом устройстве перед восстановлением резервной копии.",
+  "Restore this backup to this device?": "Восстановить эту резервную копию на это устройство?",
+  "Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.": "«Восстановить» записывает резервную копию на это устройство. «Открыть» загружает её как локальный документ для просмотра и редактирования и никогда не изменяет устройство.",
+  "Saved to Backups. Restore it from the Backups tab.": "Сохранено в резервные копии. Восстановите файл на вкладке «Резервные копии».",
+  "The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.": "Сначала создаётся резервная копия текущего файла устройства. Восстановленный файл считывается и проверяется. После этого перезагрузите устройство.",
+  "This plist has been verified for this device. Save it to Backups?": "Этот plist проверен для этого устройства. Сохранить его в резервные копии?",
+  "Verified import": "Проверенный импорт"
 }
