@@ -362,5 +362,9 @@
   "%lld entries could not be read and were skipped.": "%lld مورد خوانده نشد و نادیده گرفته شد.",
   "The original-value record was restored.": "رکورد مقادیر اصلی بازیابی شد.",
   "The current original-value record was kept.": "رکورد فعلی مقادیر اصلی حفظ شد.",
-  "This backup archive could not be read.": "این بایگانی پشتیبان خوانده نشد."
+  "This backup archive could not be read.": "این بایگانی پشتیبان خوانده نشد.",
+  "Original author": "نویسندهٔ اصلی",
+  "Copied": "کپی شد",
+  "Copy": "کپی",
+  "Copies the version": "نسخه را کپی می‌کند"
 }

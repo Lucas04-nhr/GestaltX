@@ -362,5 +362,9 @@
   "%lld entries could not be read and were skipped.": "%lld mục không đọc được và đã bị bỏ qua.",
   "The original-value record was restored.": "Đã khôi phục bản ghi giá trị gốc.",
   "The current original-value record was kept.": "Đã giữ lại bản ghi giá trị gốc hiện tại.",
-  "This backup archive could not be read.": "Không thể đọc kho lưu trữ sao lưu này."
+  "This backup archive could not be read.": "Không thể đọc kho lưu trữ sao lưu này.",
+  "Original author": "Tác giả gốc",
+  "Copied": "Đã sao chép",
+  "Copy": "Sao chép",
+  "Copies the version": "Sao chép phiên bản"
 }

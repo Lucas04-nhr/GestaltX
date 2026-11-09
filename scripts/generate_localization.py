@@ -377,6 +377,11 @@ Added %lld backups. %lld were already in the list.	已添加 %lld 个备份，%l
 The original-value record was restored.	已恢复原值记录。
 The current original-value record was kept.	已保留当前的原值记录。
 This backup archive could not be read.	无法读取此备份归档。
+
+Original author	原作者
+Copied	已复制
+Copy	复制
+Copies the version	复制版本号
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

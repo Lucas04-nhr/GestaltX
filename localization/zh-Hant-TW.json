@@ -362,5 +362,9 @@
   "%lld entries could not be read and were skipped.": "有 %lld 個項目無法讀取，已略過。",
   "The original-value record was restored.": "已恢復原值記錄。",
   "The current original-value record was kept.": "已保留目前的原值記錄。",
-  "This backup archive could not be read.": "無法讀取此備份封存。"
+  "This backup archive could not be read.": "無法讀取此備份封存。",
+  "Original author": "原作者",
+  "Copied": "已拷貝",
+  "Copy": "拷貝",
+  "Copies the version": "拷貝版本號碼"
 }

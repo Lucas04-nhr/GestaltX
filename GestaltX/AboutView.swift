@@ -6,6 +6,8 @@ import UIKit
 struct AboutView: View {
     @EnvironmentObject private var model: GestaltManager
     @State private var unlock = AdvancedUnlockSequence()
+    @State private var copiedVersion = false
+    private var versionText: String { "\(GestaltBrand.version) (\(GestaltBrand.build))" }
     var body: some View {
         List {
             Section {
@@ -27,6 +29,17 @@ struct AboutView: View {
                 NavigationLink { CompatibilityView() } label: { Label(L("Compatibility"), systemImage: "iphone.badge.checkmark") }
             }
             Section(L("Special Thanks")) {
+                Link(destination: GestaltBrand.upstreamProject) {
+                    HStack(spacing: 12) {
+                        BrandMark(size: 24)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("GestaltX").font(.headline).foregroundStyle(.primary)
+                            Text(GestaltBrand.upstreamDeveloper + " · " + L("Original author")).font(.caption).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "arrow.up.right").font(.caption).foregroundStyle(.tertiary)
+                    }.padding(.vertical, 6)
+                }
                 Link(destination: URL(string: "https://github.com/forcequitOS/worse_query")!) {
                     HStack(spacing: 12) {
                         Image(systemName: "cpu").font(.title3).foregroundStyle(.blue)
@@ -54,24 +67,42 @@ struct AboutView: View {
     private var aboutFooter: some View {
         let year = Calendar.current.component(.year, from: .now)
         return VStack(spacing: 8) {
-            Text("Version: \(GestaltBrand.version) (\(GestaltBrand.build))")
+            Text(copiedVersion ? L("Copied") : "Version: " + versionText)
                 .foregroundStyle(.secondary)
                 .contentShape(Rectangle())
+                // Each tap copies the version; ten taps still unlock the additional options.
                 .onTapGesture {
+                    copyVersion()
                     if unlock.tap() {
                         model.unlockAdditionalOptions()
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                     }
                 }
-            Text("Developed by huamidev")
+                .contextMenu {
+                    Button { copyVersion() } label: { Label(L("Copy"), systemImage: "doc.on.doc") }
+                }
+                .accessibilityHint(L("Copies the version"))
+            Text("Developed by \(GestaltBrand.developer)")
                 .foregroundStyle(.secondary.opacity(0.7))
-            Text("© \(String(year)) huamidev. All rights reserved.")
+            Text("Based on GestaltX by \(GestaltBrand.upstreamDeveloper)")
+                .foregroundStyle(.secondary.opacity(0.7))
+            // GPL v3 requires keeping the original copyright notice.
+            Text("© \(String(year)) \(GestaltBrand.upstreamDeveloper), \(GestaltBrand.developer) · GNU GPL v3")
                 .foregroundStyle(.secondary.opacity(0.5))
         }
         .font(.caption)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 8)
+    }
+
+    private func copyVersion() {
+        UIPasteboard.general.string = versionText
+        withAnimation { copiedVersion = true }
+        Task {
+            try? await Task.sleep(for: .seconds(1.5))
+            withAnimation { copiedVersion = false }
+        }
     }
 }
 

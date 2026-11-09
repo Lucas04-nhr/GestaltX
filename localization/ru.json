@@ -362,5 +362,9 @@
   "%lld entries could not be read and were skipped.": "Не удалось прочитать записи (%lld); они пропущены.",
   "The original-value record was restored.": "Запись исходных значений восстановлена.",
   "The current original-value record was kept.": "Текущая запись исходных значений сохранена.",
-  "This backup archive could not be read.": "Не удалось прочитать этот архив резервных копий."
+  "This backup archive could not be read.": "Не удалось прочитать этот архив резервных копий.",
+  "Original author": "Автор оригинала",
+  "Copied": "Скопировано",
+  "Copy": "Скопировать",
+  "Copies the version": "Копирует версию"
 }
