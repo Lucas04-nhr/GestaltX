@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var showsImportConfirmation = false
     @State private var isCheckingSharedImport = false
     @State private var pendingSharedImport = false
+    /// A file opened from Files while GestaltX was busy (for example reading at launch).
+    @State private var pendingFileImport: URL?
     @State private var sharesFile: SharedFile?
     @State private var showsChanges = false
     @State private var asksRespring = false
@@ -89,10 +91,13 @@ struct ContentView: View {
             if phase == .active && !isPreviewSession { Task { await checkSharedImport() } }
         }
         .onChange(of: model.isBusy) { _, busy in
-            if !busy && pendingSharedImport { Task { await checkSharedImport() } }
+            if !busy { resumePendingImports() }
+        }
+        .onChange(of: showsImportConfirmation) { _, shown in
+            if !shown { resumePendingImports() }
         }
         .onChange(of: showsChanges) { _, shown in
-            if !shown && pendingSharedImport { Task { await checkSharedImport() } }
+            if !shown { resumePendingImports() }
         }
         .onChange(of: acceptedWelcome) { _, accepted in
             if accepted && !isPreviewSession { Task { await autoRead(); showShareNoticeIfNeeded() } }
@@ -137,17 +142,34 @@ struct ContentView: View {
     private func autoRead() async {
         guard !didAutoRead else { return }
         didAutoRead = true
+        defer { resumePendingImports() }
         if await checkSharedImport() || model.hasDocument { return }
+        // A plist opened from Files at launch may be verifying; read the device after it.
+        while model.isBusy { try? await Task.sleep(for: .milliseconds(100)) }
         await model.connect(showErrorAlert: false)
     }
 
     /// Verifies a plist from Files or Open In and asks to save it to Backups.
+    /// Imports never depend on staged changes. While GestaltX is busy, the file waits
+    /// instead of being refused, so opening a plist at launch works.
     private func importFile(_ url: URL) {
-        guard !model.isBusy, importOffer == nil, !isCheckingSharedImport else { return }
+        guard acceptedWelcome, !model.isBusy, importOffer == nil, !showsImportConfirmation,
+              !isCheckingSharedImport, !model.isRespringing else {
+            pendingFileImport = url
+            return
+        }
+        pendingFileImport = nil
+        isCheckingSharedImport = true
         Task {
             importOffer = await model.prepareFileImport(url)
+            isCheckingSharedImport = false
             if importOffer != nil { showsImportConfirmation = true }
         }
+    }
+
+    private func resumePendingImports() {
+        if let url = pendingFileImport { importFile(url) }
+        else if pendingSharedImport { Task { await checkSharedImport() } }
     }
 
     @discardableResult

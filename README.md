@@ -33,7 +33,7 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 | Advanced | Apple internal feature flags, internal storage view, Security Research Device flag |
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
-| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; verified import from Files or the share sheet; restore to this device, open as a local document, export, and delete |
+| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; verified import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete |
 | Logs & respring | Actual exploit-stage logs and manual NeoSpring respring |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
@@ -60,6 +60,7 @@ The **Backups** tab is the single place to back up, import, restore and export. 
 | **Import from Files** | Verifies a plist and adds it to the backups list as **Imported**. Importing never opens the file or writes it to the device, and staged edits are kept. |
 | **Restore** | Writes a backup to this device. GestaltX reads the device file again first. The backup must belong to this device and use the same system cache layout (`CacheUUID`, `CacheVersion` and `CacheData` size), so a backup made before an iOS update is refused. The current file is backed up first and the write is read back and verified. Apply or discard staged changes before restoring, and restart the device afterward. |
 | **Open** | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list. |
+| **Rename** | Swipe a backup or touch and hold it to give it a name. Only the name changes, never the backup itself. Exported files use the name. |
 | **Export** | Shares a backup as a file. Device backups are exported with a device-bound proof, so they can be imported again on this device. |
 
 **Export Plist** in Tools exports the open document as it was last read or saved, with a device-bound proof. Staged changes are never exported, so apply or discard them first.
