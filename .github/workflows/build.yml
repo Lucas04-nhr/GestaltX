@@ -1,11 +1,18 @@
 name: Build IPA
 
-# Builds the IPA of one upstream tag with its entitlements embedded, and
-# publishes it as this fork's release under the same tag. The source is
-# checked out from upstream at that tag, so the build matches the upstream
-# version exactly. A tag that already has a release here is skipped unless
-# forced. Sync Upstream (sync_upstream.yml) starts this workflow for each new
-# upstream tag when the UPSTREAM_BUILD_WORKFLOW variable is set to build.yml.
+# Builds an IPA with its entitlements embedded and publishes it as a release.
+#
+# source = upstream (default): builds one upstream tag and publishes it under
+# the same tag. The source is checked out from upstream at that tag, so the
+# build matches the upstream version exactly. A tag that already has a release
+# here is skipped unless forced. Sync Upstream (sync_upstream.yml) starts this
+# workflow for each new upstream tag when the UPSTREAM_BUILD_WORKFLOW variable
+# is set to build.yml.
+#
+# source = fork: builds this repository at the branch the workflow runs on and
+# publishes it as a pre-release tagged v<version>+<build>, such as v1.0.3+12.
+# The AltStore source reads that tag as version 1.0.3, and skips pre-releases
+# unless an app entry sets includePrereleases.
 #
 # Every build gets a new CFBundleVersion (the run number, unless one is given),
 # while the version users see stays the upstream version. AltStore and SideStore
@@ -14,12 +21,17 @@ name: Build IPA
 on:
   workflow_dispatch:
     inputs:
+      source:
+        description: What to build
+        type: choice
+        options: [upstream, fork]
+        default: upstream
       tag:
-        description: Upstream tag to build (empty for the latest upstream release)
+        description: Upstream tag to build (upstream only; empty for the latest upstream release)
         type: string
         default: ""
       force:
-        description: Rebuild even if this tag already has a release
+        description: Rebuild even if this tag already has a release (upstream only)
         type: boolean
         default: false
       build_number:
@@ -31,7 +43,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: build-ipa-${{ inputs.tag || 'latest' }}
+  group: build-ipa-${{ inputs.source == 'fork' && 'fork' || inputs.tag || 'latest' }}
   cancel-in-progress: false
 
 env:
@@ -43,9 +55,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          # Fork builds list the commits since the previous tag in their notes
+          fetch-depth: ${{ inputs.source == 'fork' && '0' || '1' }}
 
       - name: Check release
         id: check
+        if: inputs.source != 'fork'
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_TAG: ${{ inputs.tag }}
@@ -67,7 +83,7 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Checkout upstream tag
-        if: steps.check.outputs.skip == 'false'
+        if: inputs.source != 'fork' && steps.check.outputs.skip == 'false'
         uses: actions/checkout@v7
         with:
           repository: ${{ env.UPSTREAM_REPO }}
@@ -75,22 +91,50 @@ jobs:
           path: upstream
 
       - name: Select Xcode
-        if: steps.check.outputs.skip == 'false'
+        if: inputs.source == 'fork' || steps.check.outputs.skip == 'false'
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
       - name: Build IPA
         id: build
-        if: steps.check.outputs.skip == 'false'
+        if: inputs.source == 'fork' || steps.check.outputs.skip == 'false'
         env:
-          SOURCE_DIR: upstream
+          SOURCE_DIR: ${{ inputs.source == 'fork' && '.' || 'upstream' }}
           BUILD_NUMBER: ${{ inputs.build_number || github.run_number }}
         run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
 
+      - name: Publish pre-release
+        id: prerelease
+        if: inputs.source == 'fork'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IPA: ${{ steps.build.outputs.ipa }}
+          VERSION: ${{ steps.build.outputs.version }}
+          BUILD: ${{ steps.build.outputs.build }}
+        run: |
+          tag="v$VERSION+$BUILD"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "source_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+
+          notes="$RUNNER_TEMP/notes.md"
+          previous="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          {
+            if [ -n "$previous" ]; then
+              echo "Changes since ${previous}:"
+              echo
+              git log --no-merges --format='- %s (%h)' -n 50 "$previous..HEAD"
+              echo
+            fi
+            echo "Pre-release built from ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA:0:7}) by GitHub Actions as version ${VERSION}, build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group."
+          } > "$notes"
+
+          gh release create "$tag" "$IPA" --prerelease --target "$GITHUB_SHA" \
+            --title "GestaltX $VERSION ($BUILD)" --notes-file "$notes"
+
       - name: Publish release
         id: publish
-        if: steps.check.outputs.skip == 'false'
+        if: inputs.source != 'fork' && steps.check.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.check.outputs.tag }}
@@ -127,23 +171,26 @@ jobs:
 
       - name: Send ServerChan push
         # Push when a build was published or the run failed, not when it was skipped
-        if: ${{ !cancelled() && (failure() || steps.publish.outcome == 'success') }}
+        if: ${{ !cancelled() && (failure() || steps.publish.outcome == 'success' || steps.prerelease.outcome == 'success') }}
         env:
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           JOB_STATUS: ${{ job.status }}
-          TAG: ${{ steps.check.outputs.tag }}
+          SOURCE: ${{ inputs.source || 'upstream' }}
+          TAG: ${{ steps.prerelease.outputs.tag || steps.check.outputs.tag }}
           EXISTS: ${{ steps.check.outputs.exists }}
           VERSION: ${{ steps.build.outputs.version }}
           BUILD: ${{ steps.build.outputs.build }}
-          SOURCE_SHA: ${{ steps.publish.outputs.source_sha }}
+          SOURCE_SHA: ${{ steps.prerelease.outputs.source_sha || steps.publish.outputs.source_sha }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
-          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          PUBLISH_OUTCOME: ${{ inputs.source == 'fork' && steps.prerelease.outcome || steps.publish.outcome }}
         run: |
           repo="${GITHUB_REPOSITORY#*/}"
           tag="${TAG:-unknown tag}"
           if [ "$JOB_STATUS" = "success" ]; then
             export TITLE="GestaltX $VERSION ($BUILD) built"
-            if [ "$EXISTS" = "true" ]; then
+            if [ "$SOURCE" = "fork" ]; then
+              export SHORT="$repo: Pre-released $tag"
+            elif [ "$EXISTS" = "true" ]; then
               export SHORT="$repo: Rebuilt $tag"
             else
               export SHORT="$repo: Released $tag"
@@ -160,11 +207,11 @@ jobs:
           fi
           export DESP="- Tag: \`$tag\`
           - Version: \`${VERSION:-unknown} (${BUILD:-unknown})\`
-          - Upstream commit: \`${SOURCE_SHA:0:7}\`
+          - Source: \`$SOURCE\` @ \`${SOURCE_SHA:0:7}\`
           - Trigger: \`$GITHUB_EVENT_NAME\`
           - Build: \`${BUILD_OUTCOME:-skipped}\`
           - Publish: \`${PUBLISH_OUTCOME:-skipped}\`"
           if [ "$JOB_STATUS" = "success" ]; then
-            DESP+=$'\n\n'"[View the release](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/$tag)"
+            DESP+=$'\n\n'"[View the release](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${tag//+/%2B})"
           fi
           .github/scripts/serverchan.sh
