@@ -325,6 +325,7 @@
   "This plist has been verified for this device. Save it to Backups?": "此 plist 已通過本機核驗。要儲存到備份列表嗎？",
   "Verified import": "已核驗的匯入",
   "%@ does not officially support this feature.": "%@ 官方不支援此功能。",
+  "Apple Intelligence is not officially available on mainland China models.": "中國大陸機型官方不提供 Apple 智慧。",
   "Check Unofficial Settings": "檢查非官方設定",
   "Current Value": "目前值",
   "Model Identifier": "機型識別碼",

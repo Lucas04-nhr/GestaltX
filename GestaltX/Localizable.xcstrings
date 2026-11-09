@@ -14997,6 +14997,52 @@
         }
       }
     },
+    "Apple Intelligence is not officially available on mainland China models.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence is not officially available on mainland China models."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中国大陆机型官方不提供 Apple 智能。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence به‌طور رسمی روی مدل‌های سرزمین اصلی چین در دسترس نیست."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence официально недоступна на моделях для материкового Китая."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence không được cung cấp chính thức trên các mẫu dành cho Trung Quốc đại lục."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中國內地機型官方不提供 Apple 智能。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中國大陸機型官方不提供 Apple 智慧。"
+          }
+        }
+      }
+    },
     "Check Unofficial Settings": {
       "localizations": {
         "en": {

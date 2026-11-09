@@ -336,6 +336,7 @@ This plist has been verified for this device. Save it to Backups?	此 plist 已�
 Verified import	已核验的导入
 
 %@ does not officially support this feature.	%@ 官方不支持此功能。
+Apple Intelligence is not officially available on mainland China models.	中国大陆机型官方不提供 Apple 智能。
 Check Unofficial Settings	检查非官方设定
 Current Value	当前值
 Model Identifier	机型标识符

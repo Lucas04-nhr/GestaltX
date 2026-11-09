@@ -9,6 +9,9 @@ struct PlistImportOffer: Identifiable {
     let data: Data
     let name: String
     let identity: DevicePlistIdentity?
+    /// True when the plist matches this device's identifiers (or an earlier GestaltX proof from this installation).
+    /// Unverified plists are saved as local file backups, which can be opened or exported but never restored.
+    var ownershipVerified = false
     let sharedSource: (SharedPlistInbox, SharedPlistEntry)?
     /// Set when the file is a GestaltX backup archive rather than a MobileGestalt plist.
     var archive: ArchiveOffer? = nil
@@ -77,6 +80,7 @@ final class GestaltManager: ObservableObject {
             guard let text = notification.userInfo?["message"] as? String else { return }
             DispatchQueue.main.async { [weak self] in self?.log("[worse_query] " + text) }
         }
+        if DeviceBoundPlist.removeSynchronizedKeys() { log("[keychain] Removed a GestaltX key stored in iCloud Keychain") }
     }
 
     deinit { if let exploitLogObserver { NotificationCenter.default.removeObserver(exploitLogObserver) } }
@@ -318,14 +322,29 @@ final class GestaltManager: ObservableObject {
 
     #endif
 
-    private func verifyImport(_ bytes: Data) async throws -> (Data, DevicePlistIdentity?) {
-        if let payload = try DeviceBoundPlist.verifiedPayload(bytes) { return (payload, nil) }
+    /// Unwraps a file exported by an earlier version, then checks whether it belongs to this device.
+    /// Only a plist with another device's identifiers is refused; one that cannot be verified is offered as a local file backup.
+    private func prepareImport(_ bytes: Data, name: String, sharedSource: (SharedPlistInbox, SharedPlistEntry)?) async throws -> PlistImportOffer {
+        let (payload, proven) = try DeviceBoundPlist.unwrapLegacy(bytes)
+        if proven { return PlistImportOffer(data: payload, name: name, identity: nil, ownershipVerified: true, sharedSource: sharedSource) }
+        do {
+            let identity = try await ownerIdentity(of: payload)
+            return PlistImportOffer(data: payload, name: name, identity: identity, ownershipVerified: true, sharedSource: sharedSource)
+        } catch let error as SharedPlistError where error.key == DevicePlistIdentity.mismatch.key {
+            throw error
+        } catch {
+            log("[import] Ownership not verified: \(error.localizedDescription)")
+            return PlistImportOffer(data: payload, name: name, identity: nil, sharedSource: sharedSource)
+        }
+    }
+
+    private func ownerIdentity(of bytes: Data) async throws -> DevicePlistIdentity {
         let incoming = try DevicePlistIdentity(plist: bytes)
         guard incoming.values.count >= 2 else { throw DevicePlistIdentity.incomplete }
         let empty = try DevicePlistIdentity(properties: [:])
         var trusted = (try? DevicePlistIdentity(properties: GXCopyCurrentDeviceIdentity())) ?? empty
         if trusted.values.count >= 2 {
-            do { try incoming.requireMatch(with: trusted); return (bytes, trusted) }
+            do { try incoming.requireMatch(with: trusted); return trusted }
             catch let error as SharedPlistError where error.key == DevicePlistIdentity.mismatch.key { throw error }
             catch { /* The cache may provide an additional identifier. */ }
         }
@@ -336,7 +355,7 @@ final class GestaltManager: ObservableObject {
             trusted = try trusted.mergingTrusted(DevicePlistIdentity(properties: live.document.extra))
         } catch { throw DevicePlistIdentity.unavailable }
         try incoming.requireMatch(with: trusted)
-        return (bytes, trusted)
+        return trusted
     }
 
     func prepareSharedPlist(_ entry: SharedPlistEntry, from inbox: SharedPlistInbox) async -> PlistImportOffer? {
@@ -344,13 +363,11 @@ final class GestaltManager: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
-            let bytes = try inbox.read(entry)
-            let (payload, identity) = try await verifyImport(bytes)
-            log("[share] Device ownership verified; waiting for import confirmation")
-            return PlistImportOffer(data: payload, name: entry.name, identity: identity, sharedSource: (inbox, entry))
+            let offer = try await prepareImport(inbox.read(entry), name: entry.name, sharedSource: (inbox, entry))
+            log("[share] verified=\(offer.ownershipVerified); waiting for import confirmation")
+            return offer
         } catch {
-            // A lack of device access may be temporary; keep that entry for retry.
-            if (error as? SharedPlistError)?.key != DevicePlistIdentity.unavailable.key { inbox.reject(entry) }
+            inbox.reject(entry)
             failed(error)
             return nil
         }
@@ -366,8 +383,7 @@ final class GestaltManager: ObservableObject {
                 return await prepareArchive(payload: payload, tag: tag, name: url.lastPathComponent)
             }
             try SharedPlistInbox.validate(bytes)
-            let (payload, identity) = try await verifyImport(bytes)
-            return PlistImportOffer(data: payload, name: url.lastPathComponent, identity: identity, sharedSource: nil)
+            return try await prepareImport(bytes, name: url.lastPathComponent, sharedSource: nil)
         } catch { failed(error); return nil }
     }
 
@@ -435,10 +451,11 @@ final class GestaltManager: ObservableObject {
             if let archive = offer.archive { try await importArchive(archive); return true }
             // Use the immutable bytes that were verified for this confirmation.
             if let identity = offer.identity { try DevicePlistIdentity(plist: offer.data).requireMatch(with: identity) }
-            let record = try await files.saveImport(offer.data)
+            let record = try await files.saveImport(offer.data, owned: offer.ownershipVerified)
             discardImport(offer)
-            log("[import] \(offer.name): \(offer.data.count) bytes saved as backup \(record.filename)")
-            message = L("Saved to Backups. Restore it from the Backups tab.")
+            log("[import] \(offer.name): \(offer.data.count) bytes saved as \(record.source.rawValue) backup \(record.filename)")
+            message = L(offer.ownershipVerified ? "Saved to Backups. Restore it from the Backups tab."
+                                                : "Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device.")
             await reloadBackups()
             return true
         } catch { failed(error); return false }
@@ -564,20 +581,17 @@ final class GestaltManager: ObservableObject {
         isBusy = true; defer { isBusy = false }
         do { try await files.deleteBackup(record); await reloadBackups() } catch { failed(error) }
     }
-    /// Device backups carry the device-bound proof so they can be imported again.
+    /// Exports the backup's plain plist, exactly as saved.
     func exportBackup(_ record: BackupRecord) async -> URL? {
         do {
-            let data = try await files.backupData(record)
-            let bytes = record.source == .device ? try DeviceBoundPlist.seal(data) : data
-            return try exportData(bytes, name: exportName(for: record.date, title: record.name))
+            return try exportData(await files.backupData(record), name: exportName(for: record.date, title: record.name))
         } catch { failed(error); return nil }
     }
     /// Exports the open document as last read or saved. Staged changes are never exported.
     func exportDocument() -> URL? {
         guard canExportDocument, let snapshot else { return nil }
         do {
-            let bytes = snapshot.source == .device || snapshot.ownershipVerified ? try DeviceBoundPlist.seal(snapshot.data) : snapshot.data
-            return try exportData(bytes, name: exportName(for: .now))
+            return try exportData(snapshot.data, name: exportName(for: .now))
         }
         catch { failed(error); return nil }
     }

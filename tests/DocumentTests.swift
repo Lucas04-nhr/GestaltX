@@ -588,8 +588,14 @@ final class AccessTrace: @unchecked Sendable {
         var importedRoot = layoutFixture
         importedRoot["CacheExtra"] = ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-A", "value": "imported"]
         let importedData = try PropertyListSerialization.data(fromPropertyList: importedRoot, format: .binary, options: 0)
-        let importedRecord = try await library.saveImport(importedData)
-        try expect(importedRecord.source == .device && importedRecord.reason == "Imported", "Imports are saved as device backups")
+        let importedRecord = try await library.saveImport(importedData, owned: true)
+        try expect(importedRecord.source == .device && importedRecord.reason == "Imported", "Verified imports are saved as device backups")
+        let unverifiedRecord = try await library.saveImport(importedData, owned: false)
+        try expect(unverifiedRecord.source == .local && unverifiedRecord.reason == "Imported", "Unverified imports are saved as local file backups")
+        try expect(try await library.backupData(unverifiedRecord) == importedData, "Imports keep the plain plist bytes")
+        do { _ = try await library.restore(unverifiedRecord, onto: library.loadDevice()); throw TestFailure(message: "Unverified imports cannot be restored") }
+        catch is GestaltFailure {}
+        try await library.deleteBackup(unverifiedRecord)
         try expect(try Data(contentsOf: libraryDevice) == layoutData, "Importing never writes the device file")
         let liveForRestore = try await library.loadDevice()
         let restoredImport = try await library.restore(importedRecord, onto: liveForRestore)
@@ -597,13 +603,13 @@ final class AccessTrace: @unchecked Sendable {
         try expect(try await library.backups().contains { $0.reason == "Before restoring" }, "Restoring backs up the current device file first")
         var otherLayout = layoutFixture
         otherLayout["CacheUUID"] = "layout-b"
-        let otherLayoutRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherLayout, format: .binary, options: 0))
+        let otherLayoutRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherLayout, format: .binary, options: 0), owned: true)
         let beforeLayoutRestore = try Data(contentsOf: libraryDevice)
         do { _ = try await library.restore(otherLayoutRecord, onto: library.loadDevice()); throw TestFailure(message: "Reject a backup with another cache layout") }
         catch is GestaltFailure {}
         var otherDevice = layoutFixture
         otherDevice["CacheExtra"] = ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-B", "value": "foreign"]
-        let otherDeviceRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherDevice, format: .binary, options: 0))
+        let otherDeviceRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherDevice, format: .binary, options: 0), owned: true)
         do { _ = try await library.restore(otherDeviceRecord, onto: library.loadDevice()); throw TestFailure(message: "Reject a backup with another device identity") }
         catch is GestaltFailure {}
         let libraryLocal = try await library.loadLocal(data: layoutData, name: "local")

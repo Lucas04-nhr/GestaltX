@@ -325,6 +325,7 @@
   "This plist has been verified for this device. Save it to Backups?": "Этот plist проверен для этого устройства. Сохранить его в резервные копии?",
   "Verified import": "Проверенный импорт",
   "%@ does not officially support this feature.": "%@ официально не поддерживает эту функцию.",
+  "Apple Intelligence is not officially available on mainland China models.": "Apple Intelligence официально недоступна на моделях для материкового Китая.",
   "Check Unofficial Settings": "Проверить неофициальные настройки",
   "Current Value": "Текущее значение",
   "Model Identifier": "Идентификатор модели",

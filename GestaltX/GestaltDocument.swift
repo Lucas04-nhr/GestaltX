@@ -476,11 +476,11 @@ actor GestaltFileStore {
         _ = try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: "Manual backup") }
     }
 
-    /// Saves a plist whose ownership has already been verified for this device.
-    /// Imports are only ever added to the backup library; restoring is a separate step.
+    /// Saves an imported plist. Only one whose ownership was verified for this device becomes a device backup;
+    /// any other is a local file backup. Imports are only ever added to the backup library; restoring is a separate step.
     @discardableResult
-    func saveImport(_ data: Data) throws -> BackupRecord {
-        try saveBackup(data, source: .device, reason: "Imported")
+    func saveImport(_ data: Data, owned: Bool) throws -> BackupRecord {
+        try saveBackup(data, source: owned ? .device : .local, reason: "Imported")
     }
 
     func backupData(_ record: BackupRecord) throws -> Data {

@@ -42,7 +42,7 @@ import Foundation
             "YlEtTtHlNesRBMal1CqRaA": true, "A62OafQ85EJAiiqKn4agtg": true, "cT44WE1EohiwRzhsZ8xEsw": true,
             "9MZ5AdH43csAUajl/dU+IQ": [1], GestaltKeys.productType: "iPhone16,1",
             GestaltKeys.artwork: ["ArtworkDeviceProductDescription": "iPhone 15 Pro"],
-            GestaltKeys.regionCode: "CH", GestaltKeys.regionInfo: "CH/A",
+            GestaltKeys.regionCode: "LL", GestaltKeys.regionInfo: "LL/A", "37NVydb//GP/GrhuTN+exg": true,
         ])
         precondition(GestaltAudit.check(stock, machine: "iPhone16,1").findings.isEmpty, "Stock values are not reported")
 
@@ -68,6 +68,27 @@ import Foundation
         precondition(GestaltAudit.check(m4, machine: "iPad16,3").findings.isEmpty, "M4 iPads officially support Apple Intelligence")
         precondition(GestaltAudit.iPads.keys.allSatisfy { $0.hasPrefix("iPad") } && GestaltAudit.models.count == GestaltAudit.iPhones.count + GestaltAudit.iPads.count,
                      "iPad and iPhone identifiers do not overlap")
+        // Charge limit: official on iPhone 15 and later, and on iPads released in 2024 or later.
+        let charge = try document(["37NVydb//GP/GrhuTN+exg": true])
+        precondition(ids(GestaltAudit.check(charge, machine: "iPad13,16")) == ["chargeLimit"], "Air (5th generation) has no charge limit")
+        precondition(ids(GestaltAudit.check(charge, machine: "iPhone14,5")) == ["chargeLimit"], "iPhone 13 has no charge limit")
+        precondition(GestaltAudit.check(charge, machine: "iPhone15,4").findings.isEmpty, "iPhone 15 has a charge limit")
+        for machine in ["iPad15,7", "iPad16,1", "iPad14,8", "iPad15,5", "iPad16,3"] {
+            precondition(GestaltAudit.check(charge, machine: machine).findings.isEmpty, "\(machine) has a charge limit")
+        }
+
+        // Mainland China models do not offer Apple Intelligence, even on supported chips.
+        let chinaAI = try document(["A62OafQ85EJAiiqKn4agtg": true, GestaltKeys.regionCode: "CH", GestaltKeys.regionInfo: "CH/A"])
+        let chinaReport = GestaltAudit.check(chinaAI, machine: "iPad13,16")
+        precondition(ids(chinaReport) == ["ai"] && chinaReport.findings[0].certainty == .likely, "China AI: \(ids(chinaReport))")
+        var chinaFixed = chinaAI
+        chinaReport.findings[0].apply(to: &chinaFixed)
+        precondition(GestaltAudit.check(chinaFixed, machine: "iPad13,16").findings.isEmpty, "The China AI fix resolves its finding")
+        // A spoofed region code does not hide the sales region.
+        let spoofedCode = try document(["A62OafQ85EJAiiqKn4agtg": true, GestaltKeys.regionCode: "LL", GestaltKeys.regionInfo: "CH/A"])
+        precondition(ids(GestaltAudit.check(spoofedCode, machine: "iPad13,16")) == ["ai", "region-" + GestaltKeys.regionInfo])
+        let usAI = try document(["A62OafQ85EJAiiqKn4agtg": true, GestaltKeys.regionCode: "LL", GestaltKeys.regionInfo: "LL/A"])
+        precondition(GestaltAudit.check(usAI, machine: "iPad13,16").findings.isEmpty, "AI outside China is official")
         print("PASS: unofficial-setting audit flags spoofed features, identity and region, and stays silent on stock or unknown references, and fixes resolve every finding.")
     }
 }
