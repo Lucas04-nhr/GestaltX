@@ -206,6 +206,10 @@ struct ContentView: View {
                     }
                     .disabled(!model.hasDocument || model.isBusy)
                 }
+                NavigationLink { GestaltAuditView() } label: {
+                    Label(L("Check Unofficial Settings"), systemImage: "checkmark.shield")
+                }
+                .disabled(!model.hasDocument || model.isBusy)
             }
             Section {
                 Button { showsChanges = true } label: {

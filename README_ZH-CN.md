@@ -14,9 +14,10 @@
 适用于 iPhone 和 iPad 的 MobileGestalt 编辑工具，由 [huamidev](https://github.com/huamidev) 开发。
 
 > [!NOTE]
-> **本仓库为非官方分支。** 上游项目为 [huamidev/GestaltX](https://github.com/huamidev/GestaltX)，GestaltX 的一切功劳归原作者所有。本分支跟随上游 tag，并加入以下两项改动：
+> **本仓库为非官方分支。** 上游项目为 [huamidev/GestaltX](https://github.com/huamidev/GestaltX)，GestaltX 的一切功劳归原作者所有。本分支跟随上游 tag，并加入以下改动：
 >
 > - **重新整理了备份、恢复、导入与导出。** 这些操作现在统一在“备份”页完成，详见[备份、导入与导出](#备份导入与导出)。
+> - **检查非官方设定。** 在“工具”页以只读方式列出不属于本机官方设定的值，详见[检查非官方设定](#检查非官方设定)。
 > - **CI。** 使用 App 及其 Share Extension 的 entitlements 对 IPA 进行 ad-hoc 签名，以便 AltStore 和 SideStore 在重签时能够注册 App Group。
 >
 > 与上述改动相关的问题请在本仓库反馈，其他问题请反馈至[上游仓库](https://github.com/huamidev/GestaltX/issues)。
@@ -72,6 +73,16 @@
 部分原始 plist 不含唯一设备标识，请先在本机通过 GestaltX 导出一份副本。校验密钥只保存在本机钥匙串，不随文件导出。
 
 旧版本生成的本地文件备份仍可打开和导出，但不能恢复到本机。
+
+## 检查非官方设定
+
+“工具”页的“**检查非官方设定**”会列出当前文稿中不属于本机官方设定的值。它是只读检查，不会做任何修改。本机的真实机型标识符由系统（`hw.machine`）直接提供，不来自 MobileGestalt 缓存，所以即使缓存中的产品类型被改过，也能得到正确结果。
+
+- **非官方**：已开启的 Apple 内部标记和安全研究设备标记；在 iPhone 上开启的 iPad 专属功能；机型官方不支持的功能，例如 iPhone 13 上的灵动岛；缓存中与真实机型不一致的产品类型。
+- **可能非官方**：与真实机型不一致的机型名称，以及与销售地区后缀不一致的地区代码。
+- **未检查**：在本机上没有可靠参考依据的项目，这些项目不会被报告。参考表中没有的机型只检查内部标记和一致性。
+
+此检查无法判断出厂时的地区代码和销售地区，因为它们保存在 MobileGestalt 之外；也无法判断 GestaltX 预设未涵盖的键。
 
 ## 语言支持
 

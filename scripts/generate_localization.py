@@ -334,6 +334,25 @@ Saved to Backups. Restore it from the Backups tab.	已保存到备份列表，�
 The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.	会先备份本机当前文件，恢复后会读回并验证。完成后请重新启动设备。
 This plist has been verified for this device. Save it to Backups?	此 plist 已通过本机核验。要保存到备份列表吗？
 Verified import	已核验的导入
+
+%@ does not officially support this feature.	%@ 官方不支持此功能。
+Check Unofficial Settings	检查非官方设定
+Current Value	当前值
+Model Identifier	机型标识符
+No unofficial settings were found in the checked items.	在已检查的项目中未发现非官方设定。
+Not Checked	未检查
+Not Official	非官方
+Possibly Not Official	可能非官方
+Product Type	产品类型
+Read-only. The open document is compared with this device's actual model, which comes from the system rather than the MobileGestalt cache.	只读检查。会将当前文稿与本机的真实机型比对，机型由系统直接提供，而非来自 MobileGestalt 缓存。
+The cached product type is %@, but this device reports %@.	缓存中的产品类型为 %1$@，但本机实际为 %2$@。
+The model name is %@, but this device is %@.	机型名称为 %1$@，但本机实际为 %2$@。
+The region code %@ does not match the sales-region suffix %@.	地区代码 %1$@ 与销售地区后缀 %2$@ 不一致。
+These items have no reliable reference for this device, so they are never reported.	这些项目在本机上没有可靠的参考依据，因此不会被报告。
+This feature is only official on iPad.	此功能仅在 iPad 上为官方设定。
+This flag is only enabled on Apple internal or research devices.	此标记仅在 Apple 内部设备或安全研究设备上开启。
+This model is not in the reference table. Only internal flags and consistency are checked.	此机型不在参考表中，仅检查内部标记和一致性。
+Unknown	未知
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():
