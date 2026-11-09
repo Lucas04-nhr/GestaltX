@@ -637,7 +637,7 @@ jobs:
           failed=()
           for tag in $NEW_TAG_NAMES; do
             echo "🚀 Starting $UPSTREAM_BUILD_WORKFLOW for $tag"
-            if gh workflow run "$UPSTREAM_BUILD_WORKFLOW" --repo "$GITHUB_REPOSITORY" --ref main -f tag="$tag"; then
+            if gh workflow run "$UPSTREAM_BUILD_WORKFLOW" --repo "$GITHUB_REPOSITORY" --ref main -f source=upstream -f tag="$tag"; then
               started+=("$tag")
             else
               echo "::warning title=Build not started::$UPSTREAM_BUILD_WORKFLOW could not be started for $tag"

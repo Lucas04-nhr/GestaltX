@@ -2,19 +2,24 @@ name: Build IPA
 
 # Builds an IPA with its entitlements embedded and publishes it as a release.
 #
-# source = upstream (default): builds one upstream tag and publishes it under
-# the same tag. The source is checked out from upstream at that tag, so the
-# build matches the upstream version exactly. A tag that already has a release
-# here is skipped unless forced. Sync Upstream (sync_upstream.yml) starts this
-# workflow for each new upstream tag when the UPSTREAM_BUILD_WORKFLOW variable
-# is set to build.yml.
+# This repository (the default):
+# - Pushing a tag that starts with v, such as v1.1.0, builds that tag and
+#   publishes it as a release under the same tag.
+# - Pushing a tag that starts with sha-, such as sha-557369f, builds that tag and
+#   publishes it as a beta pre-release.
+# - Running the workflow by hand builds the branch it runs on and publishes it
+#   as a beta pre-release tagged with its commit, such as sha-557369f.
+# Rebuilding a tag replaces that release's IPA. The IPA name,
+# GestaltX_<version>+<build>.ipa, carries the version and build number; the
+# AltStore source skips pre-releases unless an app entry sets includePrereleases.
 #
-# source = fork: builds this repository at the branch the workflow runs on and
-# publishes it as a beta pre-release tagged with its commit, such as
-# sha-557369f. Rebuilding the same commit replaces that pre-release's IPA. The
-# IPA name, GestaltX_<version>+<build>.ipa, carries the version and build
-# number; the AltStore source skips pre-releases unless an app entry sets
-# includePrereleases.
+# source = upstream (by hand only): builds one upstream tag and publishes it
+# under the same tag. The source is checked out from upstream at that tag, so
+# the build matches the upstream version exactly. A tag that already has a
+# release here is skipped unless forced. Sync Upstream (sync_upstream.yml)
+# starts this for each new upstream tag when the UPSTREAM_BUILD_WORKFLOW
+# variable is set to build.yml. Upstream tags contain no workflow files, so
+# pushing them here starts no tag build.
 #
 # Every build gets a new CFBundleVersion: the project's CURRENT_PROJECT_VERSION
 # plus the run number (e.g. 11100017 + 7), unless one is given. The version
@@ -22,13 +27,15 @@ name: Build IPA
 # offer an update when the build number changes, including when a tag is rebuilt.
 
 on:
+  push:
+    tags: ["v*", "sha-*"]
   workflow_dispatch:
     inputs:
       source:
-        description: What to build
+        description: What to build (this repository publishes a beta pre-release of the selected branch)
         type: choice
-        options: [upstream, fork]
-        default: upstream
+        options: [fork, upstream]
+        default: fork
       tag:
         description: Upstream tag to build (upstream only; empty for the latest upstream release)
         type: string
@@ -46,11 +53,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: build-ipa-${{ inputs.source == 'fork' && 'fork' || inputs.tag || 'latest' }}
+  group: build-ipa-${{ github.ref_type == 'tag' && github.ref_name || inputs.source == 'upstream' && (inputs.tag || 'latest') || 'fork' }}
   cancel-in-progress: false
 
 env:
   UPSTREAM_REPO: huamidev/GestaltX
+  # Everything except a hand-started upstream build builds this repository
+  FORK: ${{ github.event_name == 'push' || inputs.source != 'upstream' }}
 
 jobs:
   build:
@@ -60,11 +69,11 @@ jobs:
         uses: actions/checkout@v7
         with:
           # Fork builds list the commits since the previous tag in their notes
-          fetch-depth: ${{ inputs.source == 'fork' && '0' || '1' }}
+          fetch-depth: ${{ (github.event_name == 'push' || inputs.source != 'upstream') && '0' || '1' }}
 
       - name: Check release
         id: check
-        if: inputs.source != 'fork'
+        if: env.FORK != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_TAG: ${{ inputs.tag }}
@@ -86,7 +95,7 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
       - name: Checkout upstream tag
-        if: inputs.source != 'fork' && steps.check.outputs.skip == 'false'
+        if: env.FORK != 'true' && steps.check.outputs.skip == 'false'
         uses: actions/checkout@v7
         with:
           repository: ${{ env.UPSTREAM_REPO }}
@@ -94,35 +103,46 @@ jobs:
           path: upstream
 
       - name: Select Xcode
-        if: inputs.source == 'fork' || steps.check.outputs.skip == 'false'
+        if: env.FORK == 'true' || steps.check.outputs.skip == 'false'
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
       - name: Build IPA
         id: build
-        if: inputs.source == 'fork' || steps.check.outputs.skip == 'false'
+        if: env.FORK == 'true' || steps.check.outputs.skip == 'false'
         env:
-          SOURCE_DIR: ${{ inputs.source == 'fork' && '.' || 'upstream' }}
+          SOURCE_DIR: ${{ env.FORK == 'true' && '.' || 'upstream' }}
           BUILD_NUMBER: ${{ inputs.build_number }}
           BUILD_INCREMENT: ${{ github.run_number }}
         run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
 
-      - name: Publish pre-release
+      - name: Publish fork build
         id: prerelease
-        if: inputs.source == 'fork'
+        if: env.FORK == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           IPA: ${{ steps.build.outputs.ipa }}
           VERSION: ${{ steps.build.outputs.version }}
           BUILD: ${{ steps.build.outputs.build }}
         run: |
-          tag="sha-${GITHUB_SHA:0:7}"
+          # A pushed v tag is a release; a pushed sha- tag or a run by hand is a beta pre-release
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then tag="$GITHUB_REF_NAME"; else tag="sha-${GITHUB_SHA:0:7}"; fi
+          case "$tag" in
+            v*) kind=release; title="$tag"; previous_match='v*'; prerelease=false
+                if [ "$tag" != "v$VERSION" ]; then
+                  echo "::warning title=Version mismatch::Tag $tag does not match the marketing version $VERSION"
+                fi ;;
+            *) kind=prerelease; title="v$VERSION beta ($BUILD)"; previous_match='*'; prerelease=true ;;
+          esac
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "kind=$kind" >> "$GITHUB_OUTPUT"
           echo "source_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
 
           notes="$RUNNER_TEMP/notes.md"
-          previous="$(git describe --tags --abbrev=0 --exclude "$tag" 2>/dev/null || true)"
+          # Releases list the changes since the previous release; betas since the previous tag of any kind
+          previous="$(git describe --tags --abbrev=0 --match "$previous_match" --exclude "$tag" 2>/dev/null || true)"
+          label="Beta"; [ "$kind" = "release" ] && label="Release"
           {
             if [ -n "$previous" ]; then
               echo "Changes since ${previous}:"
@@ -130,26 +150,27 @@ jobs:
               git log --no-merges --format='- %s (%h)' -n 50 "$previous..HEAD"
               echo
             fi
-            echo "Beta built from ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA:0:7}) by GitHub Actions as version ${VERSION}, build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group."
+            echo "${label} built from ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA:0:7}) by GitHub Actions as version ${VERSION}, build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group."
           } > "$notes"
 
-          title="v$VERSION beta ($BUILD)"
           if gh release view "$tag" > /dev/null 2>&1; then
-            # Rebuilding the same commit: replace the IPA, whose name carries the build number
+            # Rebuilding the same tag: replace the IPA, whose name carries the build number
             gh release view "$tag" --json assets --jq '.assets[].name' \
               | { grep -E '^GestaltX_.*\.ipa$' || true; } \
               | while IFS= read -r old; do
                   if [ "$old" != "$(basename "$IPA")" ]; then gh release delete-asset "$tag" "$old" --yes; fi
                 done
             gh release upload "$tag" "$IPA" --clobber
-            gh release edit "$tag" --title "$title" --notes-file "$notes" --prerelease
+            gh release edit "$tag" --title "$title" --notes-file "$notes" --prerelease="$prerelease"
+          elif [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            gh release create "$tag" "$IPA" --verify-tag --prerelease="$prerelease" --title "$title" --notes-file "$notes"
           else
             gh release create "$tag" "$IPA" --prerelease --target "$GITHUB_SHA" --title "$title" --notes-file "$notes"
           fi
 
       - name: Publish release
         id: publish
-        if: inputs.source != 'fork' && steps.check.outputs.skip == 'false'
+        if: env.FORK != 'true' && steps.check.outputs.skip == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.check.outputs.tag }}
@@ -190,20 +211,23 @@ jobs:
         env:
           SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           JOB_STATUS: ${{ job.status }}
-          SOURCE: ${{ inputs.source || 'upstream' }}
+          SOURCE: ${{ env.FORK == 'true' && 'fork' || 'upstream' }}
+          KIND: ${{ steps.prerelease.outputs.kind }}
           TAG: ${{ steps.prerelease.outputs.tag || steps.check.outputs.tag }}
           EXISTS: ${{ steps.check.outputs.exists }}
           VERSION: ${{ steps.build.outputs.version }}
           BUILD: ${{ steps.build.outputs.build }}
           SOURCE_SHA: ${{ steps.prerelease.outputs.source_sha || steps.publish.outputs.source_sha }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
-          PUBLISH_OUTCOME: ${{ inputs.source == 'fork' && steps.prerelease.outcome || steps.publish.outcome }}
+          PUBLISH_OUTCOME: ${{ env.FORK == 'true' && steps.prerelease.outcome || steps.publish.outcome }}
         run: |
           repo="${GITHUB_REPOSITORY#*/}"
           tag="${TAG:-unknown tag}"
           if [ "$JOB_STATUS" = "success" ]; then
             export TITLE="GestaltX $VERSION ($BUILD) built"
-            if [ "$SOURCE" = "fork" ]; then
+            if [ "$KIND" = "release" ]; then
+              export SHORT="$repo: Released $tag"
+            elif [ "$SOURCE" = "fork" ]; then
               export SHORT="$repo: Pre-released $tag"
             elif [ "$EXISTS" = "true" ]; then
               export SHORT="$repo: Rebuilt $tag"
