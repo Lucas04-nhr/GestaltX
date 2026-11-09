@@ -196,7 +196,6 @@ struct DocumentSnapshot: @unchecked Sendable {
     let name: String
     var originals: [String: OriginalField] = [:]
     var cachedOptionsOriginal: CachedOptionsOriginal?
-    var ownershipVerified = false
 
     func originalCachedOptionFlags() throws -> CachedOptionFlags {
         if let cachedOptionsOriginal { return try cachedOptionsOriginal.flags(in: document) }
@@ -267,8 +266,6 @@ struct BackupRecord: Identifiable, Codable, Sendable {
 struct BackupArchiveImport: @unchecked Sendable {
     var added = 0
     var alreadyPresent = 0
-    /// Device backups whose ownership could not be verified; they were added as local file backups.
-    var unverified = 0
     var invalid = 0
     var originalsRestored = false
     var originalsKept = false
@@ -279,20 +276,22 @@ enum BackupArchive {
     static let rootKey = "GestaltXBackupArchive"
     static let maximumByteCount = 256 * 1024 * 1024
 
-    /// Wraps an archive payload with its device-bound tag.
-    static func file(payload: Data, tag: Data) throws -> Data {
-        try PropertyListSerialization.data(fromPropertyList: [rootKey: ["version": 1, "payload": payload, "tag": tag]],
+    /// Wraps an archive payload. Archives are not signed; the empty tag keeps the file readable by earlier versions,
+    /// which treat it as an archive from another installation.
+    static func file(payload: Data) throws -> Data {
+        try PropertyListSerialization.data(fromPropertyList: [rootKey: ["version": 1, "payload": payload, "tag": Data()]],
                                            format: .binary, options: 0)
     }
-    /// Returns the payload and tag when `data` is a GestaltX backup archive, or nil for any other plist.
-    static func contents(of data: Data) throws -> (payload: Data, tag: Data)? {
+    /// Returns the payload when `data` is a GestaltX backup archive, or nil for any other plist.
+    /// The tag written by earlier versions is ignored.
+    static func payload(of data: Data) throws -> Data? {
         guard let root = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
               let archive = root[rootKey] else { return nil }
         guard let archive = archive as? [String: Any], archive["version"] as? Int == 1,
-              let payload = archive["payload"] as? Data, let tag = archive["tag"] as? Data else {
+              let payload = archive["payload"] as? Data else {
             throw GestaltFailure("This backup archive could not be read.")
         }
-        return (payload, tag)
+        return payload
     }
 }
 
@@ -476,11 +475,12 @@ actor GestaltFileStore {
         _ = try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: "Manual backup") }
     }
 
-    /// Saves an imported plist. Only one whose ownership was verified for this device becomes a device backup;
-    /// any other is a local file backup. Imports are only ever added to the backup library; restoring is a separate step.
+    /// Saves an imported plist as a device backup. Its source is not verified; the user confirms it.
+    /// Imports are only ever added to the backup library; restoring is a separate step, which still checks
+    /// the device identifiers and system cache layout.
     @discardableResult
-    func saveImport(_ data: Data, owned: Bool) throws -> BackupRecord {
-        try saveBackup(data, source: owned ? .device : .local, reason: "Imported")
+    func saveImport(_ data: Data) throws -> BackupRecord {
+        try saveBackup(data, source: .device, reason: "Imported")
     }
 
     func backupData(_ record: BackupRecord) throws -> Data {
@@ -514,11 +514,9 @@ actor GestaltFileStore {
         return try PropertyListSerialization.data(fromPropertyList: payload, format: .binary, options: 0)
     }
 
-    /// Adds an archive's backups to the library without replacing anything already there.
-    /// Device backups and the original-value record are rebound to this installation only when the
-    /// archive is `trusted` (its device-bound tag verified) or `owns` confirms their device identifiers.
-    /// Unverified device backups are kept as local file backups, which can never be restored to the device.
-    func importArchive(_ payload: Data, trusted: Bool, owns: @Sendable ([String: Any]) -> Bool) throws -> BackupArchiveImport {
+    /// Adds an archive's backups to the library without replacing anything already there, rebound to this
+    /// installation with their source and name. The archive's source is not verified; the user confirms it.
+    func importArchive(_ payload: Data) throws -> BackupArchiveImport {
         guard let archive = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) as? [String: Any],
               archive["version"] as? Int == 1, let entries = archive["backups"] as? [[String: Any]] else {
             throw GestaltFailure("This backup archive could not be read.")
@@ -529,11 +527,9 @@ actor GestaltFileStore {
         for entry in entries {
             guard let json = entry["record"] as? Data, let data = entry["data"] as? Data,
                   let record = try? JSONDecoder().decode(BackupRecord.self, from: json),
-                  let document = try? GestaltDocument(data: data) else { result.invalid += 1; continue }
+                  (try? GestaltDocument(data: data)) != nil else { result.invalid += 1; continue }
             if existing.contains(record.id) { result.alreadyPresent += 1; continue }
-            var source = record.source
-            if source == .device && !trusted && !owns(document.extra) { source = .local; result.unverified += 1 }
-            var copy = BackupRecord(id: record.id, date: record.date, reason: record.reason, source: source,
+            var copy = BackupRecord(id: record.id, date: record.date, reason: record.reason, source: record.source,
                                     deviceID: deviceID, byteCount: data.count)
             copy.name = record.name
             let url = backupDirectory.appendingPathComponent(copy.filename)
@@ -548,14 +544,16 @@ actor GestaltFileStore {
                 result.originalsKept = true
             } else if var plist = try? PropertyListSerialization.propertyList(from: journal, options: [], format: nil) as? [String: Any],
                       plist["version"] as? Int == 1, let identity = plist["identity"] as? [String: String],
-                      trusted || owns(identity) {
+                      // Reading the device refuses a record for other identifiers, so only restore one that fits.
+                      let live = try? withAccess({ try GestaltDocument(data: Data(contentsOf: deviceURL)) }),
+                      identity.allSatisfy({ live.extra[$0.key] as? String == $0.value }) {
                 plist["deviceID"] = deviceID
                 let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0)
                 try data.write(to: originalsURL, options: .atomic)
                 result.originalsRestored = true
             }
         }
-        eventSink("Archive: \(result.added) added, \(result.alreadyPresent) already present, \(result.unverified) unverified")
+        eventSink("Archive: \(result.added) added, \(result.alreadyPresent) already present")
         return result
     }
 
@@ -601,7 +599,7 @@ actor GestaltFileStore {
             var originals = expected.recordingOriginals(to: edited)
             for key in originallyAbsentKeys { originals.fields[key] = OriginalField(value: nil) }
             return DocumentSnapshot(data: output, document: edited, source: .local, name: expected.name,
-                                    originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions, ownershipVerified: expected.ownershipVerified)
+                                    originals: originals.fields, cachedOptionsOriginal: originals.cachedOptions)
         }
         if let record {
             guard record.source == .device, record.deviceID == deviceID, edited.matchesIdentity(expected.document) else {

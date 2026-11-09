@@ -588,28 +588,21 @@ final class AccessTrace: @unchecked Sendable {
         var importedRoot = layoutFixture
         importedRoot["CacheExtra"] = ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-A", "value": "imported"]
         let importedData = try PropertyListSerialization.data(fromPropertyList: importedRoot, format: .binary, options: 0)
-        let importedRecord = try await library.saveImport(importedData, owned: true)
-        try expect(importedRecord.source == .device && importedRecord.reason == "Imported", "Verified imports are saved as device backups")
-        let unverifiedRecord = try await library.saveImport(importedData, owned: false)
-        try expect(unverifiedRecord.source == .local && unverifiedRecord.reason == "Imported", "Unverified imports are saved as local file backups")
-        try expect(try await library.backupData(unverifiedRecord) == importedData, "Imports keep the plain plist bytes")
-        do { _ = try await library.restore(unverifiedRecord, onto: library.loadDevice()); throw TestFailure(message: "Unverified imports cannot be restored") }
-        catch is GestaltFailure {}
-        try await library.deleteBackup(unverifiedRecord)
-        try expect(try Data(contentsOf: libraryDevice) == layoutData, "Importing never writes the device file")
+        let importedRecord = try await library.saveImport(importedData)
+        try expect(importedRecord.source == .device && importedRecord.reason == "Imported", "Imports are saved as device backups")
         let liveForRestore = try await library.loadDevice()
         let restoredImport = try await library.restore(importedRecord, onto: liveForRestore)
         try expect(restoredImport.document.extra["value"] as? String == "imported", "An imported backup restores to the device")
         try expect(try await library.backups().contains { $0.reason == "Before restoring" }, "Restoring backs up the current device file first")
         var otherLayout = layoutFixture
         otherLayout["CacheUUID"] = "layout-b"
-        let otherLayoutRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherLayout, format: .binary, options: 0), owned: true)
+        let otherLayoutRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherLayout, format: .binary, options: 0))
         let beforeLayoutRestore = try Data(contentsOf: libraryDevice)
         do { _ = try await library.restore(otherLayoutRecord, onto: library.loadDevice()); throw TestFailure(message: "Reject a backup with another cache layout") }
         catch is GestaltFailure {}
         var otherDevice = layoutFixture
         otherDevice["CacheExtra"] = ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-B", "value": "foreign"]
-        let otherDeviceRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherDevice, format: .binary, options: 0), owned: true)
+        let otherDeviceRecord = try await library.saveImport(PropertyListSerialization.data(fromPropertyList: otherDevice, format: .binary, options: 0))
         do { _ = try await library.restore(otherDeviceRecord, onto: library.loadDevice()); throw TestFailure(message: "Reject a backup with another device identity") }
         catch is GestaltFailure {}
         let libraryLocal = try await library.loadLocal(data: layoutData, name: "local")
@@ -625,11 +618,11 @@ final class AccessTrace: @unchecked Sendable {
         let payload = try await library.archivePayload(settings: ["GestaltX.acceptedWelcome.v1": true])
         let reinstalled = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library-reinstalled"),
                                            deviceID: "reinstalled", acquire: { 1 }, release: { _ in })
-        let trustedImport = try await reinstalled.importArchive(payload, trusted: true, owns: { _ in false })
+        let archiveImport = try await reinstalled.importArchive(payload)
         let reinstalledRecords = try await reinstalled.backups()
-        try expect(trustedImport.added == libraryRecords.count && reinstalledRecords.count == libraryRecords.count, "A trusted archive restores every backup")
-        try expect(trustedImport.originalsRestored, "A trusted archive restores the original-value record")
-        try expect(trustedImport.settings["GestaltX.acceptedWelcome.v1"] as? Bool == true, "Archived settings are returned")
+        try expect(archiveImport.added == libraryRecords.count && reinstalledRecords.count == libraryRecords.count, "An archive restores every backup")
+        try expect(archiveImport.originalsRestored, "An archive restores the original-value record that fits this device")
+        try expect(archiveImport.settings["GestaltX.acceptedWelcome.v1"] as? Bool == true, "Archived settings are returned")
         for record in reinstalledRecords {
             let source = libraryRecords.first { $0.id == record.id }!
             try expect(record.deviceID == "reinstalled" && record.source == source.source && record.name == source.name,
@@ -640,27 +633,24 @@ final class AccessTrace: @unchecked Sendable {
         let reinstalledImport = reinstalledRecords.first { $0.id == importedRecord.id }!
         let restoredAfterReinstall = try await reinstalled.restore(reinstalledImport, onto: reinstalledLive)
         try expect(restoredAfterReinstall.document.extra["value"] as? String == "imported", "Archived device backups can be restored after reinstalling")
-        let repeated = try await reinstalled.importArchive(payload, trusted: true, owns: { _ in false })
+        let repeated = try await reinstalled.importArchive(payload)
         try expect(repeated.added == 0 && repeated.alreadyPresent == libraryRecords.count && repeated.originalsKept,
                    "Importing an archive again keeps existing backups and the current original-value record")
-        let checked = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library-checked"),
-                                       deviceID: "checked", acquire: { 1 }, release: { _ in })
-        let checkedImport = try await checked.importArchive(payload, trusted: false, owns: { $0["re6Zb+zwFKJNlkQTUeT+/w"] as? String == "UDID-A" })
-        let foreignCopy = try await checked.backups().first { $0.id == otherDeviceRecord.id }!
-        try expect(checkedImport.unverified == 1 && foreignCopy.source == .local, "Untrusted archives demote device backups that do not match this device")
-        try expect(try await checked.backups().filter { $0.source == .device }.count == libraryRecords.filter { $0.source == .device }.count - 1,
-                   "Untrusted archives keep matching device backups restorable")
-        try expect(checkedImport.originalsRestored, "A matching original-value record is restored from an untrusted archive")
-        let blind = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library-blind"),
-                                     deviceID: "blind", acquire: { 1 }, release: { _ in })
-        let blindImport = try await blind.importArchive(payload, trusted: false, owns: { _ in false })
-        try expect(try await blind.backups().allSatisfy { $0.source == .local } && !blindImport.originalsRestored,
-                   "Without a verified identity nothing becomes restorable")
-        do { _ = try await blind.importArchive(Data("not an archive".utf8), trusted: true, owns: { _ in true }); throw TestFailure(message: "Reject a malformed archive") }
+        let foreignArchive = try await library.archivePayload(settings: [:])
+        try PropertyListSerialization.data(fromPropertyList: ["CacheExtra": ["re6Zb+zwFKJNlkQTUeT+/w": "UDID-Z"], "CacheUUID": "x"],
+                                           format: .binary, options: 0).write(to: root.appendingPathComponent("foreign-device.plist"))
+        let otherPhone = GestaltFileStore(deviceURL: root.appendingPathComponent("foreign-device.plist"), backupDirectory: root.appendingPathComponent("library-other"),
+                                          deviceID: "other", acquire: { 1 }, release: { _ in })
+        let otherImport = try await otherPhone.importArchive(foreignArchive)
+        try expect(!otherImport.originalsRestored, "An original-value record for other identifiers is not restored, so reading the device keeps working")
+        do { _ = try await otherPhone.importArchive(Data("not an archive".utf8)); throw TestFailure(message: "Reject a malformed archive") }
         catch is GestaltFailure {}
-        let archiveFile = try BackupArchive.file(payload: payload, tag: Data(repeating: 1, count: 32))
-        try expect(try BackupArchive.contents(of: archiveFile)?.payload == payload, "Archive files round-trip their payload")
-        try expect(try BackupArchive.contents(of: layoutData) == nil, "A MobileGestalt plist is not mistaken for an archive")
+        let archiveFile = try BackupArchive.file(payload: payload)
+        try expect(try BackupArchive.payload(of: archiveFile) == payload, "Archive files round-trip their payload")
+        let signedByEarlierVersion = try PropertyListSerialization.data(fromPropertyList: [BackupArchive.rootKey: ["version": 1, "payload": payload, "tag": Data(repeating: 1, count: 32)]],
+                                                                       format: .binary, options: 0)
+        try expect(try BackupArchive.payload(of: signedByEarlierVersion) == payload, "Archives signed by earlier versions are still read")
+        try expect(try BackupArchive.payload(of: layoutData) == nil, "A MobileGestalt plist is not mistaken for an archive")
         let renamed = try await store.renameBackup(records[0], to: "  Before region change\n ")
         try expect(renamed.name == "Before region change", "Rename trims whitespace and newlines")
         try expect(try await store.backups().first { $0.id == records[0].id }?.name == "Before region change", "Renamed backups keep their name after reloading")

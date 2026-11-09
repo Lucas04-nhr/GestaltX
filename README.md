@@ -33,7 +33,7 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 | Advanced | Apple internal feature flags, internal storage view, Security Research Device flag |
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
-| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; verified import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file |
+| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file |
 | Logs & respring | Actual exploit-stage logs and manual NeoSpring respring |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
@@ -57,7 +57,7 @@ The **Backups** tab is the single place to back up, import, restore and export. 
 | Action | What it does |
 | --- | --- |
 | **Create Backup** | Saves this device's current MobileGestalt file, whatever document is open. GestaltX also backs up automatically on the first read and before every write. |
-| **Import from Files** | Checks a plist and adds it to the backups list as **Imported**: as a device backup if it belongs to this device, otherwise as a local file backup. Importing never opens the file or writes it to the device, and staged edits are kept. |
+| **Import from Files** | Adds a plist to the backups list as **Imported**, after you confirm it. Importing never opens the file or writes it to the device, and staged edits are kept. |
 | **Restore** | Writes a backup to this device. GestaltX reads the device file again first. The backup must belong to this device and use the same system cache layout (`CacheUUID`, `CacheVersion` and `CacheData` size), so a backup made before an iOS update is refused. The current file is backed up first and the write is read back and verified. Apply or discard staged changes before restoring, and restart the device afterward. |
 | **Open** | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list. |
 | **Rename** | Swipe a backup or touch and hold it to give it a name. Only the name changes, never the backup itself. Exported files use the name. |
@@ -66,19 +66,19 @@ The **Backups** tab is the single place to back up, import, restore and export. 
 
 **Export Plist** in Tools exports the open document as a plain plist, as it was last read or saved. Staged changes are never exported, so apply or discard them first.
 
-### Import verification
+### Importing
 
 Tap **Import from Files** in Backups, or select a MobileGestalt plist in Files or another app, tap **Share** and choose **GestaltX**. The share extension passes the file to the app through the shared App Group; return to GestaltX if it does not open automatically. Files shared this way are checked at launch and whenever GestaltX returns to the foreground.
 
-GestaltX exports and imports plain MobileGestalt plists. Nothing is encrypted or signed, so files work in other apps and never depend on a key that could be lost.
+GestaltX exports and imports plain MobileGestalt plists. Nothing is encrypted, signed or verified, so files work in other apps and never depend on a key that could be lost.
 
-An imported plist becomes a device backup, which can be restored, only if at least two of its unique identifiers match this device. A plist with another device's identifiers is rejected. A plist that cannot be verified, for example because it has no unique identifiers, is added as a local file backup, which can be opened and exported but not restored. Previously imported files are never used to establish this device's identity.
+GestaltX does not check where an imported file came from. **Make sure you know its source, and do not restore files from unknown sources.** Restoring still refuses a backup whose device identifiers differ from this device's or whose system cache layout is different.
 
-Plists exported by earlier versions carry a device-bound proof. They are still accepted: GestaltX imports the plain plist inside, and a proof made by this installation counts as verified. GestaltX also deletes any copy of its key found in iCloud Keychain.
+Plists exported by earlier versions carry a device-bound proof. They are still accepted: GestaltX imports the plain plist inside. The key that earlier versions kept in the Keychain, including any copy in iCloud Keychain, is deleted.
 
 Local file backups made by earlier versions can still be opened and exported, but they cannot be restored to the device.
 
-An archive is signed with a key kept only in this device's Keychain. If GestaltX can verify that signature, every backup is restored as it was. If it cannot, for example after re-signing with another Apple ID, each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups, which can be opened and exported but not restored to the device. The original-value record is restored only if no record exists yet and it belongs to this device.
+An archive is not signed. Every backup is added with its name and type, and earlier archives are read the same way. The original-value record is restored only if no record exists yet and its device identifiers match this device.
 
 ## Check unofficial settings
 

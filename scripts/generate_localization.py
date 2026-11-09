@@ -306,22 +306,16 @@ A shared plist is waiting. Save or discard your current changes, then import it.
 Save or discard your current changes before opening another plist.	请先保存或放弃当前更改，再打开另一个 plist。
 Import	导入
 Open GestaltX to confirm importing the plist.	请打开 GestaltX 确认导入 plist。
-This device's identity could not be verified. Read MobileGestalt on this device and try sharing again.	无法核验本机身份，请先读取本机 MobileGestalt 后重新分享。
-This plist belongs to another device and cannot be imported.	此 plist 的设备标识与本机不符，无法导入。
-This plist does not contain enough device identifiers to verify ownership.	此 plist 缺少足够的设备标识，无法确认属于本机。
 Additional Options	附加选项
 MG Control	MG 控制
 Read MobileGestalt in Tools, or share this device's plist to GestaltX.	在工具中读取 MobileGestalt，或将本机 plist 分享到 GestaltX。
-This plist has been verified for this device. Import it?	已核验此 plist 属于本机，是否导入？
-This plist's device proof could not be verified on this device.	无法在本机验证此 plist 的设备凭证。
 This plist uses a different system cache layout and cannot be restored.	此 plist 的系统缓存布局与本机不符，无法恢复。
 Restore Imported Plist	恢复导入的 plist
 The current device file will be backed up before restoring. Restart the device afterward.	恢复前会备份当前设备文件，完成后请重启设备。
-Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.	现在可将本机 plist 分享到 GestaltX，核验后导入、增删改键值并恢复。建议先从 GestaltX 导出一份带本机校验凭证的备份。
 
 Apply or discard staged changes before exporting. Backups are in the Backups tab.	请先应用或放弃暂存的更改，再导出。备份请在“备份”页查看。
 Apply or discard your staged changes before restoring a backup.	请先应用或放弃暂存的更改，再恢复备份。
-Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups.	“创建备份”会保存本机当前的 MobileGestalt 文件。导入的 plist 若核验属于本机即可恢复，否则会作为本地文件备份加入。
+Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.	“创建备份”会保存本机当前的 MobileGestalt 文件。只恢复你确认来源的导入文件。
 Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.	可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。核验通过的文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。
 Import from Files	从“文件”导入
 Imported	已导入
@@ -332,10 +326,8 @@ Restore this backup to this device?	将这个备份恢复到本机？
 Restore writes a backup to this device. Open loads it as a local document for viewing and editing, and never changes the device.	“恢复”会将备份写入本机。“打开”会将备份作为本地文稿载入，供查看和编辑，不会更改本机文件。
 Saved to Backups. Restore it from the Backups tab.	已保存到备份列表，可在“备份”页恢复到本机。
 The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.	会先备份本机当前文件，恢复后会读回并验证。完成后请重新启动设备。
-This plist has been verified for this device. Save it to Backups?	此 plist 已通过本机核验。要保存到备份列表吗？
-This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device.	无法核验此 plist 属于本机。要作为本地文件备份保存到备份列表吗？它只能打开或导出，不能恢复到本机。
-Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device.	已作为本地文件备份保存到备份列表。它只能打开或导出，不能恢复到本机。
-Verified import	已核验的导入
+Save this plist to Backups?	要将此 plist 保存到备份列表吗？
+Make sure you know where this file came from. Do not restore files from unknown sources.	请务必确认此文件的来源，不要恢复来源不明的文件。
 
 %@ does not officially support this feature.	%@ 官方不支持此功能。
 Apple Intelligence is not officially available on mainland China models.	中国大陆机型官方不提供 Apple 智能。
@@ -371,11 +363,9 @@ This backup could not be found. Refresh the list and try again.	找不到这个�
 
 Import Backup Archive	导入备份归档
 This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.	此归档包含 %lld 个备份及 GestaltX 设置。要添加到备份列表吗？现有备份会保留。
-It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.	此文件不是由当前安装导出的，因此每个本机备份都会与本机的设备标识比对。无法核验的备份会作为本地文件备份加入。
 Export All Backups	导出全部备份
 Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.	“导出全部备份”会把所有备份、原值记录和 GestaltX 设置保存为一个文件。重新安装后从“文件”导入即可恢复。
 Added %lld backups. %lld were already in the list.	已添加 %lld 个备份，%lld 个已在列表中。
-%lld device backups could not be verified for this device and were added as local file backups.	有 %lld 个本机备份无法核验属于本机，已作为本地文件备份加入。
 %lld entries could not be read and were skipped.	有 %lld 个条目无法读取，已跳过。
 The original-value record was restored.	已恢复原值记录。
 The current original-value record was kept.	已保留当前的原值记录。

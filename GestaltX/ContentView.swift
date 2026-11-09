@@ -150,19 +150,13 @@ struct ContentView: View {
     }
 
     private var importMessage: String {
-        guard let archive = importOffer?.archive else {
-            return L(importOffer?.ownershipVerified == true
-                     ? "This plist has been verified for this device. Save it to Backups?"
-                     : "This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device.")
-        }
-        var text = String(format: L("This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept."), Int64(archive.backupCount))
-        if !archive.trusted {
-            text += "\n\n" + L("It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.")
-        }
-        return text
+        let warning = L("Make sure you know where this file came from. Do not restore files from unknown sources.")
+        guard let archive = importOffer?.archive else { return L("Save this plist to Backups?") + "\n\n" + warning }
+        return String(format: L("This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept."),
+                      Int64(archive.backupCount)) + "\n\n" + warning
     }
 
-    /// Verifies a plist from Files or Open In and asks to save it to Backups.
+    /// Reads a plist from Files or Open In and asks to save it to Backups.
     /// Imports never depend on staged changes. While GestaltX is busy, the file waits
     /// instead of being refused, so opening a plist at launch works.
     private func importFile(_ url: URL) {
@@ -596,7 +590,7 @@ struct BackupsView: View {
                 }
                 .disabled(model.isBusy || model.backups.isEmpty)
             } footer: {
-                Text(L("Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups."))
+                Text(L("Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know."))
                 + Text(verbatim: " ")
                 + Text(L("Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back."))
             }

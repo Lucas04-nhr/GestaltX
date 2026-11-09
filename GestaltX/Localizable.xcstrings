@@ -13709,144 +13709,6 @@
         }
       }
     },
-    "This device's identity could not be verified. Read MobileGestalt on this device and try sharing again.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This device's identity could not be verified. Read MobileGestalt on this device and try sharing again."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无法核验本机身份，请先读取本机 MobileGestalt 后重新分享。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "هویت این دستگاه تأیید نشد. ابتدا MobileGestalt را روی همین دستگاه بخوانید و دوباره فایل را به اشتراک بگذارید."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Не удалось проверить идентификаторы устройства. Считайте MobileGestalt на этом устройстве и отправьте файл повторно."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không thể xác minh danh tính thiết bị này. Đọc MobileGestalt trên thiết bị này rồi chia sẻ lại."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法核驗本機身份，請先讀取本機 MobileGestalt 後重新分享。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法核驗本機身分，請先讀取本機 MobileGestalt 後重新分享。"
-          }
-        }
-      }
-    },
-    "This plist belongs to another device and cannot be imported.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This plist belongs to another device and cannot be imported."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此 plist 的设备标识与本机不符，无法导入。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "شناسه‌های این plist با دستگاه فعلی مطابقت ندارند و فایل قابل وارد کردن نیست."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Идентификаторы в plist не совпадают с этим устройством. Импорт невозможен."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mã định danh trong plist không khớp thiết bị này nên không thể nhập."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此 plist 的裝置識別資料與本機不符，無法匯入。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此 plist 的裝置識別資訊與本機不符，無法匯入。"
-          }
-        }
-      }
-    },
-    "This plist does not contain enough device identifiers to verify ownership.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This plist does not contain enough device identifiers to verify ownership."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此 plist 缺少足够的设备标识，无法确认属于本机。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "این plist شناسه‌های کافی برای تأیید تعلق به دستگاه فعلی ندارد."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "В plist недостаточно идентификаторов для проверки принадлежности устройству."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plist không có đủ mã định danh để xác minh thuộc thiết bị này."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此 plist 缺少足夠的裝置識別資料，無法確認屬於本機。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此 plist 缺少足夠的裝置識別資訊，無法確認屬於本機。"
-          }
-        }
-      }
-    },
     "Additional Options": {
       "localizations": {
         "en": {
@@ -13981,98 +13843,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "在工具中讀取 MobileGestalt，或將本機 plist 分享至 GestaltX。"
-          }
-        }
-      }
-    },
-    "This plist has been verified for this device. Import it?": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This plist has been verified for this device. Import it?"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已核验此 plist 属于本机，是否导入？"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "این plist برای همین دستگاه تأیید شده است. فایل وارد شود؟"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Этот plist проверен для данного устройства. Импортировать?"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plist đã được xác minh cho thiết bị này. Nhập tệp?"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已核驗此 plist 屬於本機，是否匯入？"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已核驗此 plist 屬於本機，是否匯入？"
-          }
-        }
-      }
-    },
-    "This plist's device proof could not be verified on this device.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This plist's device proof could not be verified on this device."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无法在本机验证此 plist 的设备凭证。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "گواه دستگاه این plist در دستگاه فعلی قابل تأیید نیست."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Не удалось проверить подтверждение принадлежности plist этому устройству."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Không thể xác minh bằng chứng thiết bị của plist này trên thiết bị hiện tại."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法在本機驗證此 plist 的裝置憑證。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無法在本機驗證此 plist 的裝置憑證。"
           }
         }
       }
@@ -14215,52 +13985,6 @@
         }
       }
     },
-    "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "现在可将本机 plist 分享到 GestaltX，核验后导入、增删改键值并恢复。建议先从 GestaltX 导出一份带本机校验凭证的备份。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "plist همین دستگاه را با GestaltX به اشتراک بگذارید تا پس از تأیید، کلیدها و مقدارها را اضافه، ویرایش یا حذف کنید یا نسخهٔ پشتیبان را بازیابی کنید. بهتر است ابتدا یک نسخه با گواه مخصوص دستگاه از GestaltX صادر کنید."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Отправьте plist этого устройства в GestaltX для проверки, импорта, добавления, изменения и удаления ключей и восстановления копии. Сначала рекомендуется экспортировать копию из GestaltX с подтверждением для этого устройства."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Chia sẻ plist của thiết bị này đến GestaltX để nhập sau khi xác minh, thêm, sửa, xóa khóa và giá trị hoặc khôi phục bản sao lưu. Trước tiên nên xuất bản sao từ GestaltX kèm bằng chứng gắn với thiết bị."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在可將本機 plist 分享到 GestaltX，核驗後匯入、新增、刪除或修改鍵值並還原。建議先從 GestaltX 匯出一份附有本機驗證憑證的備份。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在可將本機 plist 分享至 GestaltX，核驗後匯入、新增、刪除或修改鍵值並回復。建議先從 GestaltX 匯出一份附有本機驗證憑證的備份。"
-          }
-        }
-      }
-    },
     "Apply or discard staged changes before exporting. Backups are in the Backups tab.": {
       "localizations": {
         "en": {
@@ -14353,48 +14077,48 @@
         }
       }
     },
-    "Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups.": {
+    "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups."
+            "value": "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "“创建备份”会保存本机当前的 MobileGestalt 文件。导入的 plist 若核验属于本机即可恢复，否则会作为本地文件备份加入。"
+            "value": "“创建备份”会保存本机当前的 MobileGestalt 文件。只恢复你确认来源的导入文件。"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. plistهای واردشده‌ای که متعلق به این دستگاه باشند قابل بازیابی‌اند؛ بقیه به‌صورت پشتیبان فایل محلی افزوده می‌شوند."
+            "value": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. فقط فایل‌های واردشده‌ای را بازیابی کنید که منبعشان را می‌شناسید."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Импортированные plist, принадлежащие этому устройству, можно восстановить; остальные добавляются как резервные копии локальных файлов."
+            "value": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Восстанавливайте только импортированные файлы, источник которых вам известен."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Plist được nhập nếu thuộc về thiết bị này thì có thể khôi phục; các tệp khác được thêm làm bản sao lưu tệp cục bộ."
+            "value": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Chỉ khôi phục các tệp được nhập mà bạn biết rõ nguồn gốc."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "「創建備份」會保存本機目前的 MobileGestalt 文件。導入的 plist 若核驗屬於本機即可恢復，否則會作為本地文件備份加入。"
+            "value": "「創建備份」會保存本機目前的 MobileGestalt 文件。只恢復你確認來源的導入文件。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "「建立備份」會儲存本機目前的 MobileGestalt 檔案。匯入的 plist 若核驗屬於本機即可恢復，否則會作為本地檔案備份加入。"
+            "value": "「建立備份」會儲存本機目前的 MobileGestalt 檔案。只恢復你確認來源的匯入檔案。"
           }
         }
       }
@@ -14859,186 +14583,94 @@
         }
       }
     },
-    "This plist has been verified for this device. Save it to Backups?": {
+    "Save this plist to Backups?": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This plist has been verified for this device. Save it to Backups?"
+            "value": "Save this plist to Backups?"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "此 plist 已通过本机核验。要保存到备份列表吗？"
+            "value": "要将此 plist 保存到备份列表吗？"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "این plist برای این دستگاه تأیید شده است. در پشتیبان‌ها ذخیره شود؟"
+            "value": "این plist در پشتیبان‌ها ذخیره شود؟"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Этот plist проверен для этого устройства. Сохранить его в резервные копии?"
+            "value": "Сохранить этот plist в резервные копии?"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Plist này đã được xác minh cho thiết bị này. Lưu vào Bản sao lưu?"
+            "value": "Lưu plist này vào Bản sao lưu?"
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "此 plist 已通過本機核驗。要保存到備份列表嗎？"
+            "value": "要將此 plist 保存到備份列表嗎？"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "此 plist 已通過本機核驗。要儲存到備份列表嗎？"
+            "value": "要將此 plist 儲存到備份列表嗎？"
           }
         }
       }
     },
-    "This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device.": {
+    "Make sure you know where this file came from. Do not restore files from unknown sources.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device."
+            "value": "Make sure you know where this file came from. Do not restore files from unknown sources."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "无法核验此 plist 属于本机。要作为本地文件备份保存到备份列表吗？它只能打开或导出，不能恢复到本机。"
+            "value": "请务必确认此文件的来源，不要恢复来源不明的文件。"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "تأیید نشد که این plist متعلق به این دستگاه است. به‌صورت پشتیبان فایل محلی در پشتیبان‌ها ذخیره شود؟ می‌توان آن را باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد."
+            "value": "مطمئن شوید که می‌دانید این فایل از کجا آمده است. فایل‌هایی با منبع نامشخص را بازیابی نکنید."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось подтвердить, что этот plist принадлежит этому устройству. Сохранить его как резервную копию локального файла? Её можно открыть или экспортировать, но нельзя восстановить на это устройство."
+            "value": "Убедитесь, что знаете, откуда этот файл. Не восстанавливайте файлы из неизвестных источников."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Không thể xác minh plist này thuộc về thiết bị này. Lưu vào Bản sao lưu dưới dạng bản sao lưu tệp cục bộ? Bản sao lưu này chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này."
+            "value": "Hãy chắc chắn bạn biết tệp này đến từ đâu. Không khôi phục các tệp không rõ nguồn gốc."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "無法核驗此 plist 屬於本機。要作為本地文件備份保存到備份列表嗎？它只能打開或導出，不能恢復到本機。"
+            "value": "請務必確認此文件的來源，不要恢復來源不明的文件。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "無法核驗此 plist 屬於本機。要作為本地檔案備份儲存到備份列表嗎？它只能開啟或匯出，不能恢復到本機。"
-          }
-        }
-      }
-    },
-    "Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已作为本地文件备份保存到备份列表。它只能打开或导出，不能恢复到本机。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "به‌صورت پشتیبان فایل محلی در پشتیبان‌ها ذخیره شد. می‌توان آن را باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Сохранено как резервная копия локального файла. Её можно открыть или экспортировать, но нельзя восстановить на это устройство."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Đã lưu vào Bản sao lưu dưới dạng bản sao lưu tệp cục bộ. Bản sao lưu này chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已作為本地文件備份保存到備份列表。它只能打開或導出，不能恢復到本機。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已作為本地檔案備份儲存到備份列表。它只能開啟或匯出，不能恢復到本機。"
-          }
-        }
-      }
-    },
-    "Verified import": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verified import"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已核验的导入"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ورود تأییدشده"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Проверенный импорт"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nhập đã xác minh"
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已核驗的導入"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "已核驗的匯入"
+            "value": "請務必確認此檔案的來源，不要恢復來源不明的檔案。"
           }
         }
       }
@@ -16469,52 +16101,6 @@
         }
       }
     },
-    "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此文件不是由当前安装导出的，因此每个本机备份都会与本机的设备标识比对。无法核验的备份会作为本地文件备份加入。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "این فایل توسط نصب فعلی صادر نشده است، بنابراین هر پشتیبان دستگاه با شناسه‌های این دستگاه مقایسه می‌شود. پشتیبان‌هایی که تأیید نشوند به‌عنوان پشتیبان فایل محلی افزوده می‌شوند."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Файл экспортирован не этой установкой, поэтому каждая резервная копия устройства сверяется с идентификаторами этого устройства. Непроверенные копии добавляются как резервные копии локальных файлов."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tệp này không được xuất từ bản cài đặt hiện tại, nên mỗi bản sao lưu thiết bị sẽ được đối chiếu với mã định danh của thiết bị này. Các bản sao lưu không xác minh được sẽ được thêm dưới dạng bản sao lưu tệp cục bộ."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此文件不是由目前的安裝導出的，因此每個本機備份都會與本機的裝置識別碼比對。無法核驗的備份會作為本地文件備份加入。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此檔案不是由目前的安裝匯出的，因此每個本機備份都會與本機的裝置識別碼比對。無法核驗的備份會作為本地檔案備份加入。"
-          }
-        }
-      }
-    },
     "Export All Backups": {
       "localizations": {
         "en": {
@@ -16649,52 +16235,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "已加入 %lld 個備份，%lld 個已在列表中。"
-          }
-        }
-      }
-    },
-    "%lld device backups could not be verified for this device and were added as local file backups.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld device backups could not be verified for this device and were added as local file backups."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "有 %lld 个本机备份无法核验属于本机，已作为本地文件备份加入。"
-          }
-        },
-        "fa": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تعلق %lld پشتیبان دستگاه به این دستگاه تأیید نشد و به‌عنوان پشتیبان فایل محلی افزوده شدند."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Не удалось подтвердить принадлежность этому устройству для резервных копий устройства (%lld); они добавлены как резервные копии локальных файлов."
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld bản sao lưu thiết bị không xác minh được thuộc về thiết bị này và đã được thêm dưới dạng bản sao lưu tệp cục bộ."
-          }
-        },
-        "zh-Hant-HK": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "有 %lld 個本機備份無法核驗屬於本機，已作為本地文件備份加入。"
-          }
-        },
-        "zh-Hant-TW": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "有 %lld 個本機備份無法核驗屬於本機，已作為本地檔案備份加入。"
           }
         }
       }

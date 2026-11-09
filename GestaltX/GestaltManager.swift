@@ -8,10 +8,6 @@ struct PlistImportOffer: Identifiable {
     let id = UUID()
     let data: Data
     let name: String
-    let identity: DevicePlistIdentity?
-    /// True when the plist matches this device's identifiers (or an earlier GestaltX proof from this installation).
-    /// Unverified plists are saved as local file backups, which can be opened or exported but never restored.
-    var ownershipVerified = false
     let sharedSource: (SharedPlistInbox, SharedPlistEntry)?
     /// Set when the file is a GestaltX backup archive rather than a MobileGestalt plist.
     var archive: ArchiveOffer? = nil
@@ -19,11 +15,7 @@ struct PlistImportOffer: Identifiable {
 
 struct ArchiveOffer {
     let payload: Data
-    /// The archive's device-bound tag verified, so it was exported by this installation's key.
-    let trusted: Bool
     let backupCount: Int
-    /// This device's identifiers, used to check each backup when the archive is not trusted.
-    let identity: DevicePlistIdentity?
 }
 
 @MainActor
@@ -80,7 +72,7 @@ final class GestaltManager: ObservableObject {
             guard let text = notification.userInfo?["message"] as? String else { return }
             DispatchQueue.main.async { [weak self] in self?.log("[worse_query] " + text) }
         }
-        if DeviceBoundPlist.removeSynchronizedKeys() { log("[keychain] Removed a GestaltX key stored in iCloud Keychain") }
+        if LegacyDeviceProof.removeKeys() { log("[keychain] Removed the device-proof key used by earlier versions") }
     }
 
     deinit { if let exploitLogObserver { NotificationCenter.default.removeObserver(exploitLogObserver) } }
@@ -322,40 +314,9 @@ final class GestaltManager: ObservableObject {
 
     #endif
 
-    /// Unwraps a file exported by an earlier version, then checks whether it belongs to this device.
-    /// Only a plist with another device's identifiers is refused; one that cannot be verified is offered as a local file backup.
-    private func prepareImport(_ bytes: Data, name: String, sharedSource: (SharedPlistInbox, SharedPlistEntry)?) async throws -> PlistImportOffer {
-        let (payload, proven) = try DeviceBoundPlist.unwrapLegacy(bytes)
-        if proven { return PlistImportOffer(data: payload, name: name, identity: nil, ownershipVerified: true, sharedSource: sharedSource) }
-        do {
-            let identity = try await ownerIdentity(of: payload)
-            return PlistImportOffer(data: payload, name: name, identity: identity, ownershipVerified: true, sharedSource: sharedSource)
-        } catch let error as SharedPlistError where error.key == DevicePlistIdentity.mismatch.key {
-            throw error
-        } catch {
-            log("[import] Ownership not verified: \(error.localizedDescription)")
-            return PlistImportOffer(data: payload, name: name, identity: nil, sharedSource: sharedSource)
-        }
-    }
-
-    private func ownerIdentity(of bytes: Data) async throws -> DevicePlistIdentity {
-        let incoming = try DevicePlistIdentity(plist: bytes)
-        guard incoming.values.count >= 2 else { throw DevicePlistIdentity.incomplete }
-        let empty = try DevicePlistIdentity(properties: [:])
-        var trusted = (try? DevicePlistIdentity(properties: GXCopyCurrentDeviceIdentity())) ?? empty
-        if trusted.values.count >= 2 {
-            do { try incoming.requireMatch(with: trusted); return trusted }
-            catch let error as SharedPlistError where error.key == DevicePlistIdentity.mismatch.key { throw error }
-            catch { /* The cache may provide an additional identifier. */ }
-        }
-        // Only a fresh read from the actual device path is a trusted fallback.
-        // Previously imported documents and user-provided backups are never used.
-        do {
-            let live = try await files.loadDevice()
-            trusted = try trusted.mergingTrusted(DevicePlistIdentity(properties: live.document.extra))
-        } catch { throw DevicePlistIdentity.unavailable }
-        try incoming.requireMatch(with: trusted)
-        return trusted
+    /// Imports are not verified. The confirmation asks the user to make sure of the file's source.
+    private func prepareImport(_ bytes: Data, name: String, sharedSource: (SharedPlistInbox, SharedPlistEntry)?) throws -> PlistImportOffer {
+        PlistImportOffer(data: try LegacyDeviceProof.plainPlist(bytes), name: name, sharedSource: sharedSource)
     }
 
     func prepareSharedPlist(_ entry: SharedPlistEntry, from inbox: SharedPlistInbox) async -> PlistImportOffer? {
@@ -363,8 +324,8 @@ final class GestaltManager: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
-            let offer = try await prepareImport(inbox.read(entry), name: entry.name, sharedSource: (inbox, entry))
-            log("[share] verified=\(offer.ownershipVerified); waiting for import confirmation")
+            let offer = try prepareImport(inbox.read(entry), name: entry.name, sharedSource: (inbox, entry))
+            log("[share] \(entry.name): waiting for import confirmation")
             return offer
         } catch {
             inbox.reject(entry)
@@ -379,36 +340,22 @@ final class GestaltManager: ObservableObject {
         defer { isBusy = false }
         do {
             let bytes = try SharedPlistInbox.readFile(at: url, limit: BackupArchive.maximumByteCount)
-            if let (payload, tag) = try BackupArchive.contents(of: bytes) {
-                return await prepareArchive(payload: payload, tag: tag, name: url.lastPathComponent)
+            if let payload = try BackupArchive.payload(of: bytes) {
+                let root = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) as? [String: Any]
+                let count = (root?["backups"] as? [Any])?.count ?? 0
+                log("[archive] \(url.lastPathComponent): \(count) backups")
+                return PlistImportOffer(data: Data(), name: url.lastPathComponent, sharedSource: nil,
+                                        archive: ArchiveOffer(payload: payload, backupCount: count))
             }
             try SharedPlistInbox.validate(bytes)
-            return try await prepareImport(bytes, name: url.lastPathComponent, sharedSource: nil)
+            return try prepareImport(bytes, name: url.lastPathComponent, sharedSource: nil)
         } catch { failed(error); return nil }
-    }
-
-    private func prepareArchive(payload: Data, tag: Data, name: String) async -> PlistImportOffer {
-        let trusted = DeviceBoundPlist.isAuthenticArchive(payload, tag: tag)
-        let root = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) as? [String: Any]
-        let count = (root?["backups"] as? [Any])?.count ?? 0
-        var identity: DevicePlistIdentity?
-        if !trusted {
-            // After reinstalling or re-signing with another team, the archive key is gone.
-            // Check each backup against identifiers from the system and a fresh device read.
-            var current = (try? DevicePlistIdentity(properties: GXCopyCurrentDeviceIdentity())) ?? (try? DevicePlistIdentity(properties: [:]))
-            if let live = try? await files.loadDevice(), let base = current,
-               let merged = try? base.mergingTrusted(DevicePlistIdentity(properties: live.document.extra)) { current = merged }
-            if let current, current.values.count >= 2 { identity = current }
-        }
-        log("[archive] \(name): \(count) backups, trusted=\(trusted), identity=\(identity != nil)")
-        return PlistImportOffer(data: Data(), name: name, identity: nil, sharedSource: nil,
-                                archive: ArchiveOffer(payload: payload, trusted: trusted, backupCount: count, identity: identity))
     }
 
     /// Settings saved in a backup archive. The installation ID is not restored; imported backups are rebound instead.
     static let archivedSettingKeys = ["GestaltX.acceptedWelcome.v1", "GestaltX.sharedImportNotice.v1"]
 
-    /// Exports every backup, the original-value record and the app settings as one authenticated file.
+    /// Exports every backup, the original-value record and the app settings as one file.
     func exportAllBackups() async -> URL? {
         guard !isBusy else { return nil }
         isBusy = true; defer { isBusy = false }
@@ -416,23 +363,16 @@ final class GestaltManager: ObservableObject {
             var settings: [String: Any] = [:]
             for key in Self.archivedSettingKeys { if let value = UserDefaults.standard.object(forKey: key) { settings[key] = value } }
             let payload = try await files.archivePayload(settings: settings)
-            let file = try BackupArchive.file(payload: payload, tag: DeviceBoundPlist.authenticateArchive(payload))
+            let file = try BackupArchive.file(payload: payload)
             log("[archive] Exported \(backups.count) backups, \(file.count) bytes")
             return try exportData(file, name: "GestaltX-Backups-" + timestamp(.now) + ".plist")
         } catch { failed(error); return nil }
     }
 
     private func importArchive(_ archive: ArchiveOffer) async throws {
-        let identity = archive.identity
-        let result = try await files.importArchive(archive.payload, trusted: archive.trusted) { properties in
-            guard let identity, let incoming = try? DevicePlistIdentity(properties: properties) else { return false }
-            return (try? incoming.requireMatch(with: identity)) != nil
-        }
+        let result = try await files.importArchive(archive.payload)
         for key in Self.archivedSettingKeys { if let value = result.settings[key] as? Bool { UserDefaults.standard.set(value, forKey: key) } }
         var lines = [String(format: L("Added %lld backups. %lld were already in the list."), Int64(result.added), Int64(result.alreadyPresent))]
-        if result.unverified > 0 {
-            lines.append(String(format: L("%lld device backups could not be verified for this device and were added as local file backups."), Int64(result.unverified)))
-        }
         if result.invalid > 0 { lines.append(String(format: L("%lld entries could not be read and were skipped."), Int64(result.invalid))) }
         if result.originalsRestored { lines.append(L("The original-value record was restored.")) }
         if result.originalsKept { lines.append(L("The current original-value record was kept.")) }
@@ -441,7 +381,7 @@ final class GestaltManager: ObservableObject {
         await reloadBackups()
     }
 
-    /// Saves a verified plist to the backup library. It does not open or write it.
+    /// Saves an imported plist to the backup library. It does not open or write it.
     @discardableResult
     func acceptImport(_ offer: PlistImportOffer) async -> Bool {
         guard !isBusy else { return false }
@@ -449,13 +389,10 @@ final class GestaltManager: ObservableObject {
         defer { isBusy = false }
         do {
             if let archive = offer.archive { try await importArchive(archive); return true }
-            // Use the immutable bytes that were verified for this confirmation.
-            if let identity = offer.identity { try DevicePlistIdentity(plist: offer.data).requireMatch(with: identity) }
-            let record = try await files.saveImport(offer.data, owned: offer.ownershipVerified)
+            let record = try await files.saveImport(offer.data)
             discardImport(offer)
-            log("[import] \(offer.name): \(offer.data.count) bytes saved as \(record.source.rawValue) backup \(record.filename)")
-            message = L(offer.ownershipVerified ? "Saved to Backups. Restore it from the Backups tab."
-                                                : "Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device.")
+            log("[import] \(offer.name): \(offer.data.count) bytes saved as backup \(record.filename)")
+            message = L("Saved to Backups. Restore it from the Backups tab.")
             await reloadBackups()
             return true
         } catch { failed(error); return false }
@@ -561,8 +498,7 @@ final class GestaltManager: ObservableObject {
         isBusy = true; defer { isBusy = false }
         do {
             let data = try await files.backupData(record)
-            var loaded = try await files.loadLocal(data: data, name: exportName(for: record.date, title: record.name))
-            loaded.ownershipVerified = record.source == .device
+            let loaded = try await files.loadLocal(data: data, name: exportName(for: record.date, title: record.name))
             accept(loaded); status = "Local file opened"; needsRespring = false
             log("[open] \(record.filename) opened as a local document")
         } catch { failed(error) }
