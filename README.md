@@ -57,26 +57,28 @@ The **Backups** tab is the single place to back up, import, restore and export. 
 | Action | What it does |
 | --- | --- |
 | **Create Backup** | Saves this device's current MobileGestalt file, whatever document is open. GestaltX also backs up automatically on the first read and before every write. |
-| **Import from Files** | Verifies a plist and adds it to the backups list as **Imported**. Importing never opens the file or writes it to the device, and staged edits are kept. |
+| **Import from Files** | Checks a plist and adds it to the backups list as **Imported**: as a device backup if it belongs to this device, otherwise as a local file backup. Importing never opens the file or writes it to the device, and staged edits are kept. |
 | **Restore** | Writes a backup to this device. GestaltX reads the device file again first. The backup must belong to this device and use the same system cache layout (`CacheUUID`, `CacheVersion` and `CacheData` size), so a backup made before an iOS update is refused. The current file is backed up first and the write is read back and verified. Apply or discard staged changes before restoring, and restart the device afterward. |
 | **Open** | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list. |
 | **Rename** | Swipe a backup or touch and hold it to give it a name. Only the name changes, never the backup itself. Exported files use the name. |
-| **Export** | Shares a backup as a file. Device backups are exported with a device-bound proof, so they can be imported again on this device. |
+| **Export** | Shares a backup as its plain plist, exactly as saved. It can be imported again here or opened in other apps. |
 | **Export All Backups** | Saves every backup (with its name), the original-value record and GestaltX settings in one file. To keep your backups when you delete GestaltX, export them first, then after reinstalling import the file with **Import from Files** or open it in GestaltX from Files. Existing backups are kept. The share sheet does not accept this file. |
 
-**Export Plist** in Tools exports the open document as it was last read or saved, with a device-bound proof. Staged changes are never exported, so apply or discard them first.
+**Export Plist** in Tools exports the open document as a plain plist, as it was last read or saved. Staged changes are never exported, so apply or discard them first.
 
 ### Import verification
 
 Tap **Import from Files** in Backups, or select a MobileGestalt plist in Files or another app, tap **Share** and choose **GestaltX**. The share extension passes the file to the app through the shared App Group; return to GestaltX if it does not open automatically. Files shared this way are checked at launch and whenever GestaltX returns to the foreground.
 
-GestaltX accepts a file only if it carries a device-bound proof from a GestaltX export on this device, or at least two unique identifiers that match this device. Files that cannot be verified are rejected. Previously imported files are never used to establish this device's identity.
+GestaltX exports and imports plain MobileGestalt plists. Nothing is encrypted or signed, so files work in other apps and never depend on a key that could be lost.
 
-Some original plists contain no unique device identifiers. Export a copy from GestaltX on this device first. Its verification key stays in the device-only Keychain and is never included in the file.
+An imported plist becomes a device backup, which can be restored, only if at least two of its unique identifiers match this device. A plist with another device's identifiers is rejected. A plist that cannot be verified, for example because it has no unique identifiers, is added as a local file backup, which can be opened and exported but not restored. Previously imported files are never used to establish this device's identity.
+
+Plists exported by earlier versions carry a device-bound proof. They are still accepted: GestaltX imports the plain plist inside, and a proof made by this installation counts as verified. GestaltX also deletes any copy of its key found in iCloud Keychain.
 
 Local file backups made by earlier versions can still be opened and exported, but they cannot be restored to the device.
 
-An archive is signed with the same device-only Keychain key as exported plists. If GestaltX can verify that signature, every backup is restored as it was. If it cannot, for example after re-signing with another Apple ID, each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups, which can be opened and exported but not restored to the device. The original-value record is restored only if no record exists yet and it belongs to this device.
+An archive is signed with a key kept only in this device's Keychain. If GestaltX can verify that signature, every backup is restored as it was. If it cannot, for example after re-signing with another Apple ID, each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups, which can be opened and exported but not restored to the device. The original-value record is restored only if no record exists yet and it belongs to this device.
 
 ## Check unofficial settings
 

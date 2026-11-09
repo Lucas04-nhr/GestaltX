@@ -321,7 +321,7 @@ Share this device's plist to GestaltX to edit its keys and values or restore a v
 
 Apply or discard staged changes before exporting. Backups are in the Backups tab.	请先应用或放弃暂存的更改，再导出。备份请在“备份”页查看。
 Apply or discard your staged changes before restoring a backup.	请先应用或放弃暂存的更改，再恢复备份。
-Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.	“创建备份”会保存本机当前的 MobileGestalt 文件。导入的文件会先核验是否属于本机，再添加到这里。
+Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups.	“创建备份”会保存本机当前的 MobileGestalt 文件。导入的 plist 若核验属于本机即可恢复，否则会作为本地文件备份加入。
 Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.	可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。核验通过的文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。
 Import from Files	从“文件”导入
 Imported	已导入
@@ -333,6 +333,8 @@ Restore writes a backup to this device. Open loads it as a local document for vi
 Saved to Backups. Restore it from the Backups tab.	已保存到备份列表，可在“备份”页恢复到本机。
 The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.	会先备份本机当前文件，恢复后会读回并验证。完成后请重新启动设备。
 This plist has been verified for this device. Save it to Backups?	此 plist 已通过本机核验。要保存到备份列表吗？
+This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device.	无法核验此 plist 属于本机。要作为本地文件备份保存到备份列表吗？它只能打开或导出，不能恢复到本机。
+Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device.	已作为本地文件备份保存到备份列表。它只能打开或导出，不能恢复到本机。
 Verified import	已核验的导入
 
 %@ does not officially support this feature.	%@ 官方不支持此功能。

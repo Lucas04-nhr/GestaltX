@@ -14353,48 +14353,48 @@
         }
       }
     },
-    "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here.": {
+    "Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here."
+            "value": "Create Backup saves this device's current MobileGestalt file. Imported plists that match this device can be restored; others are added as local file backups."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "“创建备份”会保存本机当前的 MobileGestalt 文件。导入的文件会先核验是否属于本机，再添加到这里。"
+            "value": "“创建备份”会保存本机当前的 MobileGestalt 文件。导入的 plist 若核验属于本机即可恢复，否则会作为本地文件备份加入。"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. فایل‌های واردشده پیش از افزوده‌شدن به اینجا برای این دستگاه تأیید می‌شوند."
+            "value": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. plistهای واردشده‌ای که متعلق به این دستگاه باشند قابل بازیابی‌اند؛ بقیه به‌صورت پشتیبان فایل محلی افزوده می‌شوند."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Импортированные файлы проверяются на принадлежность этому устройству перед добавлением сюда."
+            "value": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Импортированные plist, принадлежащие этому устройству, можно восстановить; остальные добавляются как резервные копии локальных файлов."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Các tệp được nhập sẽ được xác minh thuộc về thiết bị này trước khi thêm vào đây."
+            "value": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Plist được nhập nếu thuộc về thiết bị này thì có thể khôi phục; các tệp khác được thêm làm bản sao lưu tệp cục bộ."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "「創建備份」會保存本機目前的 MobileGestalt 文件。導入的文件會先核驗是否屬於本機，再加入這裡。"
+            "value": "「創建備份」會保存本機目前的 MobileGestalt 文件。導入的 plist 若核驗屬於本機即可恢復，否則會作為本地文件備份加入。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "「建立備份」會儲存本機目前的 MobileGestalt 檔案。匯入的檔案會先核驗是否屬於本機，再加入這裡。"
+            "value": "「建立備份」會儲存本機目前的 MobileGestalt 檔案。匯入的 plist 若核驗屬於本機即可恢復，否則會作為本地檔案備份加入。"
           }
         }
       }
@@ -14901,6 +14901,98 @@
           "stringUnit": {
             "state": "translated",
             "value": "此 plist 已通過本機核驗。要儲存到備份列表嗎？"
+          }
+        }
+      }
+    },
+    "This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This plist could not be verified for this device. Save it to Backups as a local file backup? It can be opened or exported, but not restored to this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法核验此 plist 属于本机。要作为本地文件备份保存到备份列表吗？它只能打开或导出，不能恢复到本机。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تأیید نشد که این plist متعلق به این دستگاه است. به‌صورت پشتیبان فایل محلی در پشتیبان‌ها ذخیره شود؟ می‌توان آن را باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось подтвердить, что этот plist принадлежит этому устройству. Сохранить его как резервную копию локального файла? Её можно открыть или экспортировать, но нельзя восстановить на это устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xác minh plist này thuộc về thiết bị này. Lưu vào Bản sao lưu dưới dạng bản sao lưu tệp cục bộ? Bản sao lưu này chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法核驗此 plist 屬於本機。要作為本地文件備份保存到備份列表嗎？它只能打開或導出，不能恢復到本機。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法核驗此 plist 屬於本機。要作為本地檔案備份儲存到備份列表嗎？它只能開啟或匯出，不能恢復到本機。"
+          }
+        }
+      }
+    },
+    "Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved to Backups as a local file backup. It can be opened or exported, but not restored to this device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已作为本地文件备份保存到备份列表。它只能打开或导出，不能恢复到本机。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "به‌صورت پشتیبان فایل محلی در پشتیبان‌ها ذخیره شد. می‌توان آن را باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сохранено как резервная копия локального файла. Её можно открыть или экспортировать, но нельзя восстановить на это устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã lưu vào Bản sao lưu dưới dạng bản sao lưu tệp cục bộ. Bản sao lưu này chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已作為本地文件備份保存到備份列表。它只能打開或導出，不能恢復到本機。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已作為本地檔案備份儲存到備份列表。它只能開啟或匯出，不能恢復到本機。"
           }
         }
       }
