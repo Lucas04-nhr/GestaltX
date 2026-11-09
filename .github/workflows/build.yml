@@ -133,7 +133,7 @@ jobs:
             echo "Beta built from ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA:0:7}) by GitHub Actions as version ${VERSION}, build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group."
           } > "$notes"
 
-          title="GestaltX $VERSION beta ($BUILD)"
+          title="v$VERSION beta ($BUILD)"
           if gh release view "$tag" > /dev/null 2>&1; then
             # Rebuilding the same commit: replace the IPA, whose name carries the build number
             gh release view "$tag" --json assets --jq '.assets[].name' \
