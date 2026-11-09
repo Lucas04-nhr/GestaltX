@@ -351,5 +351,16 @@
   "Backup Name": "Название резервной копии",
   "Save": "Сохранить",
   "Leave the name empty to show the backup's type instead.": "Оставьте название пустым, чтобы показывать тип резервной копии.",
-  "This backup could not be found. Refresh the list and try again.": "Эта резервная копия не найдена. Обновите список и повторите попытку."
+  "This backup could not be found. Refresh the list and try again.": "Эта резервная копия не найдена. Обновите список и повторите попытку.",
+  "Import Backup Archive": "Импорт архива резервных копий",
+  "This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.": "Этот архив содержит резервные копии (%lld) и настройки GestaltX. Добавить их в резервные копии? Существующие копии сохранятся.",
+  "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.": "Файл экспортирован не этой установкой, поэтому каждая резервная копия устройства сверяется с идентификаторами этого устройства. Непроверенные копии добавляются как резервные копии локальных файлов.",
+  "Export All Backups": "Экспортировать все резервные копии",
+  "Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.": "«Экспортировать все резервные копии» сохраняет все копии, запись исходных значений и настройки GestaltX в один файл. После переустановки импортируйте его из «Файлов», чтобы вернуть их.",
+  "Added %lld backups. %lld were already in the list.": "Добавлено резервных копий: %lld. Уже были в списке: %lld.",
+  "%lld device backups could not be verified for this device and were added as local file backups.": "Не удалось подтвердить принадлежность этому устройству для резервных копий устройства (%lld); они добавлены как резервные копии локальных файлов.",
+  "%lld entries could not be read and were skipped.": "Не удалось прочитать записи (%lld); они пропущены.",
+  "The original-value record was restored.": "Запись исходных значений восстановлена.",
+  "The current original-value record was kept.": "Текущая запись исходных значений сохранена.",
+  "This backup archive could not be read.": "Не удалось прочитать этот архив резервных копий."
 }

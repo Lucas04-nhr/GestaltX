@@ -7,11 +7,17 @@
 #
 # Set SOURCE_DIR to build a checkout other than this repository (CI builds an
 # upstream tag checked out next to it). Set BUILD_DATE (YYYY-MM-DD) to write it
-# to GestaltX/BuildDate.txt, which the About page shows. The short commit hash
-# of the built source is written to GestaltX/BuildCommit.txt, so the app and the
-# IPA name show the version as <marketing version>-<hash>, such as 1.0.3-abc1234.
-# CFBundleShortVersionString stays numeric, as iOS requires. In GitHub Actions,
-# `version` and `ipa` are written to GITHUB_OUTPUT.
+# to GestaltX/BuildDate.txt, which the About page shows.
+#
+# Set BUILD_NUMBER (a positive integer) to use it as CFBundleVersion for the app
+# and its share extension. The version users see stays the marketing version
+# (e.g. 1.0.3), and the About page shows it as "1.0.3 (4)". AltStore and
+# SideStore offer an update when the build number changes, so CI increments it
+# for every build. The IPA is then named GestaltX_<version>+<build>.ipa, which
+# the AltStore source reads as buildVersion. Without BUILD_NUMBER the project's
+# own CURRENT_PROJECT_VERSION is kept and the IPA is named GestaltX_<version>.ipa.
+#
+# In GitHub Actions, `version`, `build` and `ipa` are written to GITHUB_OUTPUT.
 set -euo pipefail
 
 root="$(cd "${SOURCE_DIR:-$(dirname "${BASH_SOURCE[0]}")/../..}" && pwd)"
@@ -24,10 +30,19 @@ if [[ -z "$version" || "$(wc -l <<< "$version")" -ne 1 ]]; then
   echo "Error: expected one MARKETING_VERSION, found: ${version:-none}" >&2
   exit 1
 fi
-commit="$(git -C "$root" rev-parse --short=7 HEAD)"
-printf '%s' "$commit" > GestaltX/BuildCommit.txt
-version="$version-$commit"
-echo "==> Building GestaltX $version"
+build_settings=()
+if [[ -n "${BUILD_NUMBER:-}" ]]; then
+  if [[ ! "$BUILD_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]]; then
+    echo "Error: BUILD_NUMBER must be a positive integer, got: $BUILD_NUMBER" >&2
+    exit 1
+  fi
+  build="$BUILD_NUMBER"
+  # A command-line setting applies to every target, so the extension matches the app
+  build_settings+=("CURRENT_PROJECT_VERSION=$build")
+else
+  build="$(sed -n 's/^[[:space:]]*CURRENT_PROJECT_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u | head -1)"
+fi
+echo "==> Building GestaltX $version ($build)"
 
 if [[ -n "${BUILD_DATE:-}" ]]; then
   printf '%s' "$BUILD_DATE" > GestaltX/BuildDate.txt
@@ -43,6 +58,7 @@ xcodebuild -quiet \
   CODE_SIGNING_ALLOWED=NO \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGN_IDENTITY="" \
+  ${build_settings[@]+"${build_settings[@]}"} \
   build
 
 stage="$(mktemp -d)"
@@ -75,7 +91,11 @@ for bundle in "${bundles[@]}"; do
   fi
 done
 
-ipa="$out/GestaltX_$version.ipa"
+if [[ -n "${BUILD_NUMBER:-}" ]]; then
+  ipa="$out/GestaltX_$version+$build.ipa"
+else
+  ipa="$out/GestaltX_$version.ipa"
+fi
 rm -f "$ipa"
 (cd "$stage" && zip -qry "$ipa" Payload)
 echo "==> Wrote $ipa"
@@ -83,6 +103,7 @@ echo "==> Wrote $ipa"
 if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
     echo "version=$version"
+    echo "build=$build"
     echo "ipa=$ipa"
   } >> "$GITHUB_OUTPUT"
 fi

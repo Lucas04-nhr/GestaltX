@@ -351,5 +351,16 @@
   "Backup Name": "نام نسخهٔ پشتیبان",
   "Save": "ذخیره",
   "Leave the name empty to show the backup's type instead.": "برای نمایش نوع نسخهٔ پشتیبان، نام را خالی بگذارید.",
-  "This backup could not be found. Refresh the list and try again.": "این نسخهٔ پشتیبان پیدا نشد. فهرست را تازه کنید و دوباره امتحان کنید."
+  "This backup could not be found. Refresh the list and try again.": "این نسخهٔ پشتیبان پیدا نشد. فهرست را تازه کنید و دوباره امتحان کنید.",
+  "Import Backup Archive": "وارد کردن بایگانی پشتیبان",
+  "This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.": "این بایگانی شامل %lld نسخهٔ پشتیبان و تنظیمات GestaltX است. به پشتیبان‌ها افزوده شوند؟ پشتیبان‌های موجود حفظ می‌شوند.",
+  "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.": "این فایل توسط نصب فعلی صادر نشده است، بنابراین هر پشتیبان دستگاه با شناسه‌های این دستگاه مقایسه می‌شود. پشتیبان‌هایی که تأیید نشوند به‌عنوان پشتیبان فایل محلی افزوده می‌شوند.",
+  "Export All Backups": "صدور همهٔ پشتیبان‌ها",
+  "Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.": "«صدور همهٔ پشتیبان‌ها» همهٔ پشتیبان‌ها، رکورد مقادیر اصلی و تنظیمات GestaltX را در یک فایل ذخیره می‌کند. پس از نصب دوباره، آن را از Files وارد کنید تا بازگردانده شوند.",
+  "Added %lld backups. %lld were already in the list.": "%lld نسخهٔ پشتیبان افزوده شد. %lld مورد از قبل در فهرست بود.",
+  "%lld device backups could not be verified for this device and were added as local file backups.": "تعلق %lld پشتیبان دستگاه به این دستگاه تأیید نشد و به‌عنوان پشتیبان فایل محلی افزوده شدند.",
+  "%lld entries could not be read and were skipped.": "%lld مورد خوانده نشد و نادیده گرفته شد.",
+  "The original-value record was restored.": "رکورد مقادیر اصلی بازیابی شد.",
+  "The current original-value record was kept.": "رکورد فعلی مقادیر اصلی حفظ شد.",
+  "This backup archive could not be read.": "این بایگانی پشتیبان خوانده نشد."
 }

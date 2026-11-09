@@ -351,5 +351,16 @@
   "Backup Name": "Tên bản sao lưu",
   "Save": "Lưu",
   "Leave the name empty to show the backup's type instead.": "Để trống tên để hiển thị loại bản sao lưu.",
-  "This backup could not be found. Refresh the list and try again.": "Không tìm thấy bản sao lưu này. Hãy làm mới danh sách và thử lại."
+  "This backup could not be found. Refresh the list and try again.": "Không tìm thấy bản sao lưu này. Hãy làm mới danh sách và thử lại.",
+  "Import Backup Archive": "Nhập kho lưu trữ sao lưu",
+  "This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.": "Kho lưu trữ này chứa %lld bản sao lưu và thiết lập GestaltX. Thêm chúng vào Bản sao lưu? Các bản sao lưu hiện có được giữ nguyên.",
+  "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.": "Tệp này không được xuất từ bản cài đặt hiện tại, nên mỗi bản sao lưu thiết bị sẽ được đối chiếu với mã định danh của thiết bị này. Các bản sao lưu không xác minh được sẽ được thêm dưới dạng bản sao lưu tệp cục bộ.",
+  "Export All Backups": "Xuất tất cả bản sao lưu",
+  "Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.": "Xuất tất cả bản sao lưu sẽ lưu mọi bản sao lưu, bản ghi giá trị gốc và thiết lập GestaltX vào một tệp. Sau khi cài đặt lại, hãy nhập tệp đó từ Tệp để khôi phục.",
+  "Added %lld backups. %lld were already in the list.": "Đã thêm %lld bản sao lưu. %lld bản đã có trong danh sách.",
+  "%lld device backups could not be verified for this device and were added as local file backups.": "%lld bản sao lưu thiết bị không xác minh được thuộc về thiết bị này và đã được thêm dưới dạng bản sao lưu tệp cục bộ.",
+  "%lld entries could not be read and were skipped.": "%lld mục không đọc được và đã bị bỏ qua.",
+  "The original-value record was restored.": "Đã khôi phục bản ghi giá trị gốc.",
+  "The current original-value record was kept.": "Đã giữ lại bản ghi giá trị gốc hiện tại.",
+  "This backup archive could not be read.": "Không thể đọc kho lưu trữ sao lưu này."
 }

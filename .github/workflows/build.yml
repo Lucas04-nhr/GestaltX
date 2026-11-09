@@ -6,6 +6,10 @@ name: Build IPA
 # version exactly. A tag that already has a release here is skipped unless
 # forced. Sync Upstream (sync_upstream.yml) starts this workflow for each new
 # upstream tag when the UPSTREAM_BUILD_WORKFLOW variable is set to build.yml.
+#
+# Every build gets a new CFBundleVersion (the run number, unless one is given),
+# while the version users see stays the upstream version. AltStore and SideStore
+# offer an update when the build number changes, including when a tag is rebuilt.
 
 on:
   workflow_dispatch:
@@ -18,6 +22,10 @@ on:
         description: Rebuild even if this tag already has a release
         type: boolean
         default: false
+      build_number:
+        description: CFBundleVersion to use (empty for this run's number). Must be higher than the last build.
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -77,6 +85,7 @@ jobs:
         if: steps.check.outputs.skip == 'false'
         env:
           SOURCE_DIR: upstream
+          BUILD_NUMBER: ${{ inputs.build_number || github.run_number }}
         run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
 
       - name: Publish release
@@ -87,6 +96,7 @@ jobs:
           TAG: ${{ steps.check.outputs.tag }}
           EXISTS: ${{ steps.check.outputs.exists }}
           IPA: ${{ steps.build.outputs.ipa }}
+          BUILD: ${{ steps.build.outputs.build }}
         run: |
           source_sha="$(git -C upstream rev-parse HEAD)"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
@@ -97,9 +107,16 @@ jobs:
           if [ -s "$notes" ]; then
             printf '\n\n' >> "$notes"
           fi
-          printf '%s\n' "Built from ${UPSTREAM_REPO}@${TAG} (${source_sha:0:7}) by GitHub Actions. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group." >> "$notes"
+          printf '%s\n' "Built from ${UPSTREAM_REPO}@${TAG} (${source_sha:0:7}) by GitHub Actions as build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group." >> "$notes"
 
           if [ "$EXISTS" = "true" ]; then
+            # The build number is in the file name, so remove the previous IPA instead of
+            # leaving two of them; the AltStore source uses the first matching asset.
+            gh release view "$TAG" --json assets --jq '.assets[].name' \
+              | { grep -E '^GestaltX_.*\.ipa$' || true; } \
+              | while IFS= read -r old; do
+                  if [ "$old" != "$(basename "$IPA")" ]; then gh release delete-asset "$TAG" "$old" --yes; fi
+                done
             gh release upload "$TAG" "$IPA" --clobber
             gh release edit "$TAG" --notes-file "$notes"
           else
@@ -117,6 +134,7 @@ jobs:
           TAG: ${{ steps.check.outputs.tag }}
           EXISTS: ${{ steps.check.outputs.exists }}
           VERSION: ${{ steps.build.outputs.version }}
+          BUILD: ${{ steps.build.outputs.build }}
           SOURCE_SHA: ${{ steps.publish.outputs.source_sha }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
@@ -124,7 +142,7 @@ jobs:
           repo="${GITHUB_REPOSITORY#*/}"
           tag="${TAG:-unknown tag}"
           if [ "$JOB_STATUS" = "success" ]; then
-            export TITLE="GestaltX $VERSION built"
+            export TITLE="GestaltX $VERSION ($BUILD) built"
             if [ "$EXISTS" = "true" ]; then
               export SHORT="$repo: Rebuilt $tag"
             else
@@ -141,7 +159,7 @@ jobs:
             fi
           fi
           export DESP="- Tag: \`$tag\`
-          - Version: \`${VERSION:-unknown}\`
+          - Version: \`${VERSION:-unknown} (${BUILD:-unknown})\`
           - Upstream commit: \`${SOURCE_SHA:0:7}\`
           - Trigger: \`$GITHUB_EVENT_NAME\`
           - Build: \`${BUILD_OUTCOME:-skipped}\`

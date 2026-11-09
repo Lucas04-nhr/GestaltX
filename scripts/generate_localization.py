@@ -365,6 +365,18 @@ Backup Name	备份名称
 Save	保存
 Leave the name empty to show the backup's type instead.	名称留空时显示备份类型。
 This backup could not be found. Refresh the list and try again.	找不到这个备份，请刷新列表后重试。
+
+Import Backup Archive	导入备份归档
+This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.	此归档包含 %lld 个备份及 GestaltX 设置。要添加到备份列表吗？现有备份会保留。
+It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.	此文件不是由当前安装导出的，因此每个本机备份都会与本机的设备标识比对。无法核验的备份会作为本地文件备份加入。
+Export All Backups	导出全部备份
+Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.	“导出全部备份”会把所有备份、原值记录和 GestaltX 设置保存为一个文件。重新安装后从“文件”导入即可恢复。
+Added %lld backups. %lld were already in the list.	已添加 %lld 个备份，%lld 个已在列表中。
+%lld device backups could not be verified for this device and were added as local file backups.	有 %lld 个本机备份无法核验属于本机，已作为本地文件备份加入。
+%lld entries could not be read and were skipped.	有 %lld 个条目无法读取，已跳过。
+The original-value record was restored.	已恢复原值记录。
+The current original-value record was kept.	已保留当前的原值记录。
+This backup archive could not be read.	无法读取此备份归档。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

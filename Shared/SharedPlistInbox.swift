@@ -47,6 +47,14 @@ struct SharedPlistInbox: Sendable {
         return data
     }
 
+    /// Reads any file within its security scope, up to `limit` bytes, without validating its contents.
+    static func readFile(at url: URL, limit: Int) throws -> Data {
+        guard url.isFileURL else { throw invalidQueue }
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        return try readLimited(url, limit: limit)
+    }
+
     private static func readLimited(_ url: URL, limit: Int) throws -> Data {
         let handle = try FileHandle(forReadingFrom: url)
         defer { try? handle.close() }

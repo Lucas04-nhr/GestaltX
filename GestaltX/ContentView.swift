@@ -58,7 +58,7 @@ struct ContentView: View {
             Button(L("Cancel"), role: .cancel) {}
             Button(L("Respring")) { model.isRespringing = true }
         } message: { Text(L("This will attempt to restart SpringBoard using NeoSpring.")) }
-        .alert(L("Import Plist"), isPresented: $showsImportConfirmation) {
+        .alert(L(importOffer?.archive == nil ? "Import Plist" : "Import Backup Archive"), isPresented: $showsImportConfirmation) {
             Button(L("Cancel"), role: .cancel) {
                 if let offer = importOffer { model.discardImport(offer) }
                 importOffer = nil
@@ -73,7 +73,7 @@ struct ContentView: View {
                 }
             }
         } message: {
-            Text(verbatim: (importOffer?.name ?? "") + "\n\n" + L("This plist has been verified for this device. Save it to Backups?"))
+            Text(verbatim: (importOffer?.name ?? "") + "\n\n" + importMessage)
         }
         .alert(L("Import Plist"), isPresented: $showsShareNotice) {
             Button(L("OK"), role: .cancel) {}
@@ -147,6 +147,15 @@ struct ContentView: View {
         // A plist opened from Files at launch may be verifying; read the device after it.
         while model.isBusy { try? await Task.sleep(for: .milliseconds(100)) }
         await model.connect(showErrorAlert: false)
+    }
+
+    private var importMessage: String {
+        guard let archive = importOffer?.archive else { return L("This plist has been verified for this device. Save it to Backups?") }
+        var text = String(format: L("This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept."), Int64(archive.backupCount))
+        if !archive.trusted {
+            text += "\n\n" + L("It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.")
+        }
+        return text
     }
 
     /// Verifies a plist from Files or Open In and asks to save it to Backups.
@@ -578,8 +587,14 @@ struct BackupsView: View {
                     .disabled(!model.canCreateBackup)
                 Button { showsImporter = true } label: { Label(L("Import from Files"), systemImage: "square.and.arrow.down") }
                     .disabled(model.isBusy)
+                Button { Task { if let url = await model.exportAllBackups() { share(url) } } } label: {
+                    Label(L("Export All Backups"), systemImage: "archivebox")
+                }
+                .disabled(model.isBusy || model.backups.isEmpty)
             } footer: {
                 Text(L("Create Backup saves this device's current MobileGestalt file. Imported files are verified for this device before they are added here."))
+                + Text(verbatim: " ")
+                + Text(L("Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back."))
             }
             if model.backups.isEmpty {
                 ContentUnavailableView(L("No Backups"), systemImage: "externaldrive.badge.timemachine", description: Text(L("A backup is created before each write.")))

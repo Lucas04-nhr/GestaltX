@@ -351,5 +351,16 @@
   "Backup Name": "備份名稱",
   "Save": "儲存",
   "Leave the name empty to show the backup's type instead.": "名稱留空時顯示備份類型。",
-  "This backup could not be found. Refresh the list and try again.": "找不到這個備份，請重新整理列表後再試一次。"
+  "This backup could not be found. Refresh the list and try again.": "找不到這個備份，請重新整理列表後再試一次。",
+  "Import Backup Archive": "匯入備份封存",
+  "This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.": "此封存包含 %lld 個備份及 GestaltX 設定。要加入備份列表嗎？現有備份會保留。",
+  "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.": "此檔案不是由目前的安裝匯出的，因此每個本機備份都會與本機的裝置識別碼比對。無法核驗的備份會作為本地檔案備份加入。",
+  "Export All Backups": "匯出全部備份",
+  "Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.": "「匯出全部備份」會把所有備份、原值記錄和 GestaltX 設定儲存為一個檔案。重新安裝後從「檔案」匯入即可恢復。",
+  "Added %lld backups. %lld were already in the list.": "已加入 %lld 個備份，%lld 個已在列表中。",
+  "%lld device backups could not be verified for this device and were added as local file backups.": "有 %lld 個本機備份無法核驗屬於本機，已作為本地檔案備份加入。",
+  "%lld entries could not be read and were skipped.": "有 %lld 個項目無法讀取，已略過。",
+  "The original-value record was restored.": "已恢復原值記錄。",
+  "The current original-value record was kept.": "已保留目前的原值記錄。",
+  "This backup archive could not be read.": "無法讀取此備份封存。"
 }

@@ -263,6 +263,39 @@ struct BackupRecord: Identifiable, Codable, Sendable {
     var filename: String { id.uuidString + ".plist" }
 }
 
+/// The result of adding a backup archive to the library.
+struct BackupArchiveImport: @unchecked Sendable {
+    var added = 0
+    var alreadyPresent = 0
+    /// Device backups whose ownership could not be verified; they were added as local file backups.
+    var unverified = 0
+    var invalid = 0
+    var originalsRestored = false
+    var originalsKept = false
+    var settings: [String: Any] = [:]
+}
+
+enum BackupArchive {
+    static let rootKey = "GestaltXBackupArchive"
+    static let maximumByteCount = 256 * 1024 * 1024
+
+    /// Wraps an archive payload with its device-bound tag.
+    static func file(payload: Data, tag: Data) throws -> Data {
+        try PropertyListSerialization.data(fromPropertyList: [rootKey: ["version": 1, "payload": payload, "tag": tag]],
+                                           format: .binary, options: 0)
+    }
+    /// Returns the payload and tag when `data` is a GestaltX backup archive, or nil for any other plist.
+    static func contents(of data: Data) throws -> (payload: Data, tag: Data)? {
+        guard let root = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+              let archive = root[rootKey] else { return nil }
+        guard let archive = archive as? [String: Any], archive["version"] as? Int == 1,
+              let payload = archive["payload"] as? Data, let tag = archive["tag"] as? Data else {
+            throw GestaltFailure("This backup archive could not be read.")
+        }
+        return (payload, tag)
+    }
+}
+
 actor GestaltFileStore {
     private let deviceURL: URL
     private let backupDirectory: URL
@@ -467,6 +500,63 @@ actor GestaltFileStore {
         current.name = trimmed.isEmpty ? nil : trimmed
         try JSONEncoder().encode(current).write(to: metadata, options: .atomic)
         return current
+    }
+
+    /// Everything needed to rebuild the backup library after reinstalling: each record with its exact
+    /// bytes, the original-value record, and the given app settings.
+    func archivePayload(settings: [String: Any]) throws -> Data {
+        var entries: [[String: Any]] = []
+        for record in try backups() {
+            entries.append(["record": try JSONEncoder().encode(record), "data": try backupData(record)])
+        }
+        var payload: [String: Any] = ["version": 1, "created": Date(), "deviceID": deviceID, "backups": entries, "settings": settings]
+        if FileManager.default.fileExists(atPath: originalsURL.path) { payload["originalValues"] = try Data(contentsOf: originalsURL) }
+        return try PropertyListSerialization.data(fromPropertyList: payload, format: .binary, options: 0)
+    }
+
+    /// Adds an archive's backups to the library without replacing anything already there.
+    /// Device backups and the original-value record are rebound to this installation only when the
+    /// archive is `trusted` (its device-bound tag verified) or `owns` confirms their device identifiers.
+    /// Unverified device backups are kept as local file backups, which can never be restored to the device.
+    func importArchive(_ payload: Data, trusted: Bool, owns: @Sendable ([String: Any]) -> Bool) throws -> BackupArchiveImport {
+        guard let archive = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) as? [String: Any],
+              archive["version"] as? Int == 1, let entries = archive["backups"] as? [[String: Any]] else {
+            throw GestaltFailure("This backup archive could not be read.")
+        }
+        var result = BackupArchiveImport(settings: archive["settings"] as? [String: Any] ?? [:])
+        let existing = Set(try backups().map(\.id))
+        try FileManager.default.createDirectory(at: backupDirectory, withIntermediateDirectories: true)
+        for entry in entries {
+            guard let json = entry["record"] as? Data, let data = entry["data"] as? Data,
+                  let record = try? JSONDecoder().decode(BackupRecord.self, from: json),
+                  let document = try? GestaltDocument(data: data) else { result.invalid += 1; continue }
+            if existing.contains(record.id) { result.alreadyPresent += 1; continue }
+            var source = record.source
+            if source == .device && !trusted && !owns(document.extra) { source = .local; result.unverified += 1 }
+            var copy = BackupRecord(id: record.id, date: record.date, reason: record.reason, source: source,
+                                    deviceID: deviceID, byteCount: data.count)
+            copy.name = record.name
+            let url = backupDirectory.appendingPathComponent(copy.filename)
+            try data.write(to: url, options: .atomic)
+            guard try Data(contentsOf: url) == data else { throw GestaltFailure("The backup could not be verified. No system write was started.") }
+            try JSONEncoder().encode(copy).write(to: backupDirectory.appendingPathComponent(copy.id.uuidString + ".json"), options: .atomic)
+            result.added += 1
+        }
+        if let journal = archive["originalValues"] as? Data {
+            if FileManager.default.fileExists(atPath: originalsURL.path) {
+                // The current record reflects this installation's writes; never replace it.
+                result.originalsKept = true
+            } else if var plist = try? PropertyListSerialization.propertyList(from: journal, options: [], format: nil) as? [String: Any],
+                      plist["version"] as? Int == 1, let identity = plist["identity"] as? [String: String],
+                      trusted || owns(identity) {
+                plist["deviceID"] = deviceID
+                let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .binary, options: 0)
+                try data.write(to: originalsURL, options: .atomic)
+                result.originalsRestored = true
+            }
+        }
+        eventSink("Archive: \(result.added) added, \(result.alreadyPresent) already present, \(result.unverified) unverified")
+        return result
     }
 
     func deleteBackup(_ record: BackupRecord) throws {

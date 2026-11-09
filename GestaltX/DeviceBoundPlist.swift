@@ -39,6 +39,21 @@ enum DeviceBoundPlist {
         try SharedPlistInbox.validate(payload)
         return payload
     }
+    /// Authenticates a backup archive with the same device-only key, separated from plist proofs by a domain prefix.
+    static func authenticateArchive(_ payload: Data) throws -> Data { authenticateArchive(payload, key: try key(create: true)) }
+    static func isAuthenticArchive(_ payload: Data, tag: Data) -> Bool {
+        guard let key = try? key(create: false) else { return false }
+        return isAuthenticArchive(payload, tag: tag, key: key)
+    }
+    static func authenticateArchive(_ payload: Data, key: Data) -> Data {
+        Data(HMAC<SHA256>.authenticationCode(for: archiveDomain + payload, using: SymmetricKey(data: key)))
+    }
+    static func isAuthenticArchive(_ payload: Data, tag: Data, key: Data) -> Bool {
+        key.count == 32 && tag.count == 32
+            && HMAC<SHA256>.isValidAuthenticationCode(tag, authenticating: archiveDomain + payload, using: SymmetricKey(data: key))
+    }
+    private static let archiveDomain = Data("GestaltX backup archive v1\0".utf8)
+
     private static func key(create: Bool) throws -> Data {
         lock.lock(); defer { lock.unlock() }
         let query: [CFString: Any] = [kSecClass: kSecClassGenericPassword, kSecAttrService: service,

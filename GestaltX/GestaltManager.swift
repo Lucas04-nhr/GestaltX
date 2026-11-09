@@ -10,6 +10,17 @@ struct PlistImportOffer: Identifiable {
     let name: String
     let identity: DevicePlistIdentity?
     let sharedSource: (SharedPlistInbox, SharedPlistEntry)?
+    /// Set when the file is a GestaltX backup archive rather than a MobileGestalt plist.
+    var archive: ArchiveOffer? = nil
+}
+
+struct ArchiveOffer {
+    let payload: Data
+    /// The archive's device-bound tag verified, so it was exported by this installation's key.
+    let trusted: Bool
+    let backupCount: Int
+    /// This device's identifiers, used to check each backup when the archive is not trusted.
+    let identity: DevicePlistIdentity?
 }
 
 @MainActor
@@ -350,10 +361,68 @@ final class GestaltManager: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
-            let bytes = try SharedPlistInbox.readDocument(at: url)
+            let bytes = try SharedPlistInbox.readFile(at: url, limit: BackupArchive.maximumByteCount)
+            if let (payload, tag) = try BackupArchive.contents(of: bytes) {
+                return await prepareArchive(payload: payload, tag: tag, name: url.lastPathComponent)
+            }
+            try SharedPlistInbox.validate(bytes)
             let (payload, identity) = try await verifyImport(bytes)
             return PlistImportOffer(data: payload, name: url.lastPathComponent, identity: identity, sharedSource: nil)
         } catch { failed(error); return nil }
+    }
+
+    private func prepareArchive(payload: Data, tag: Data, name: String) async -> PlistImportOffer {
+        let trusted = DeviceBoundPlist.isAuthenticArchive(payload, tag: tag)
+        let root = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) as? [String: Any]
+        let count = (root?["backups"] as? [Any])?.count ?? 0
+        var identity: DevicePlistIdentity?
+        if !trusted {
+            // After reinstalling or re-signing with another team, the archive key is gone.
+            // Check each backup against identifiers from the system and a fresh device read.
+            var current = (try? DevicePlistIdentity(properties: GXCopyCurrentDeviceIdentity())) ?? (try? DevicePlistIdentity(properties: [:]))
+            if let live = try? await files.loadDevice(), let base = current,
+               let merged = try? base.mergingTrusted(DevicePlistIdentity(properties: live.document.extra)) { current = merged }
+            if let current, current.values.count >= 2 { identity = current }
+        }
+        log("[archive] \(name): \(count) backups, trusted=\(trusted), identity=\(identity != nil)")
+        return PlistImportOffer(data: Data(), name: name, identity: nil, sharedSource: nil,
+                                archive: ArchiveOffer(payload: payload, trusted: trusted, backupCount: count, identity: identity))
+    }
+
+    /// Settings saved in a backup archive. The installation ID is not restored; imported backups are rebound instead.
+    static let archivedSettingKeys = ["GestaltX.acceptedWelcome.v1", "GestaltX.sharedImportNotice.v1"]
+
+    /// Exports every backup, the original-value record and the app settings as one authenticated file.
+    func exportAllBackups() async -> URL? {
+        guard !isBusy else { return nil }
+        isBusy = true; defer { isBusy = false }
+        do {
+            var settings: [String: Any] = [:]
+            for key in Self.archivedSettingKeys { if let value = UserDefaults.standard.object(forKey: key) { settings[key] = value } }
+            let payload = try await files.archivePayload(settings: settings)
+            let file = try BackupArchive.file(payload: payload, tag: DeviceBoundPlist.authenticateArchive(payload))
+            log("[archive] Exported \(backups.count) backups, \(file.count) bytes")
+            return try exportData(file, name: "GestaltX-Backups-" + timestamp(.now) + ".plist")
+        } catch { failed(error); return nil }
+    }
+
+    private func importArchive(_ archive: ArchiveOffer) async throws {
+        let identity = archive.identity
+        let result = try await files.importArchive(archive.payload, trusted: archive.trusted) { properties in
+            guard let identity, let incoming = try? DevicePlistIdentity(properties: properties) else { return false }
+            return (try? incoming.requireMatch(with: identity)) != nil
+        }
+        for key in Self.archivedSettingKeys { if let value = result.settings[key] as? Bool { UserDefaults.standard.set(value, forKey: key) } }
+        var lines = [String(format: L("Added %lld backups. %lld were already in the list."), Int64(result.added), Int64(result.alreadyPresent))]
+        if result.unverified > 0 {
+            lines.append(String(format: L("%lld device backups could not be verified for this device and were added as local file backups."), Int64(result.unverified)))
+        }
+        if result.invalid > 0 { lines.append(String(format: L("%lld entries could not be read and were skipped."), Int64(result.invalid))) }
+        if result.originalsRestored { lines.append(L("The original-value record was restored.")) }
+        if result.originalsKept { lines.append(L("The current original-value record was kept.")) }
+        message = lines.joined(separator: "\n")
+        log("[archive] " + lines.joined(separator: " "))
+        await reloadBackups()
     }
 
     /// Saves a verified plist to the backup library. It does not open or write it.
@@ -363,6 +432,7 @@ final class GestaltManager: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
+            if let archive = offer.archive { try await importArchive(archive); return true }
             // Use the immutable bytes that were verified for this confirmation.
             if let identity = offer.identity { try DevicePlistIdentity(plist: offer.data).requireMatch(with: identity) }
             let record = try await files.saveImport(offer.data)
@@ -511,11 +581,14 @@ final class GestaltManager: ObservableObject {
         }
         catch { failed(error); return nil }
     }
-    private func exportName(for date: Date, title: String? = nil) -> String {
+    private func timestamp(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyyMMdd-HHmmss"
-        let stamp = "MobileGestalt-" + formatter.string(from: date)
+        return formatter.string(from: date)
+    }
+    private func exportName(for date: Date, title: String? = nil) -> String {
+        let stamp = "MobileGestalt-" + timestamp(date)
         // Keep the name file-system safe; the date keeps names unique.
         let safe = (title ?? "").map { "/\\:*?\"<>|".contains($0) || $0.isNewline ? "-" : $0 }
         let cleaned = String(safe).trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: ".")))

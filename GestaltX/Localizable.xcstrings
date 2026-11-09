@@ -16238,6 +16238,512 @@
           }
         }
       }
+    },
+    "Import Backup Archive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Backup Archive"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入备份归档"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "وارد کردن بایگانی پشتیبان"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Импорт архива резервных копий"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nhập kho lưu trữ sao lưu"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "導入備份封存"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯入備份封存"
+          }
+        }
+      }
+    },
+    "This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This archive contains %lld backups and GestaltX settings. Add them to Backups? Existing backups are kept."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此归档包含 %lld 个备份及 GestaltX 设置。要添加到备份列表吗？现有备份会保留。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این بایگانی شامل %lld نسخهٔ پشتیبان و تنظیمات GestaltX است. به پشتیبان‌ها افزوده شوند؟ پشتیبان‌های موجود حفظ می‌شوند."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этот архив содержит резервные копии (%lld) и настройки GestaltX. Добавить их в резервные копии? Существующие копии сохранятся."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kho lưu trữ này chứa %lld bản sao lưu và thiết lập GestaltX. Thêm chúng vào Bản sao lưu? Các bản sao lưu hiện có được giữ nguyên."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此封存包含 %lld 個備份及 GestaltX 設定。要加入備份列表嗎？現有備份會保留。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此封存包含 %lld 個備份及 GestaltX 設定。要加入備份列表嗎？現有備份會保留。"
+          }
+        }
+      }
+    },
+    "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It was not exported by this installation, so each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件不是由当前安装导出的，因此每个本机备份都会与本机的设备标识比对。无法核验的备份会作为本地文件备份加入。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این فایل توسط نصب فعلی صادر نشده است، بنابراین هر پشتیبان دستگاه با شناسه‌های این دستگاه مقایسه می‌شود. پشتیبان‌هایی که تأیید نشوند به‌عنوان پشتیبان فایل محلی افزوده می‌شوند."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Файл экспортирован не этой установкой, поэтому каждая резервная копия устройства сверяется с идентификаторами этого устройства. Непроверенные копии добавляются как резервные копии локальных файлов."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp này không được xuất từ bản cài đặt hiện tại, nên mỗi bản sao lưu thiết bị sẽ được đối chiếu với mã định danh của thiết bị này. Các bản sao lưu không xác minh được sẽ được thêm dưới dạng bản sao lưu tệp cục bộ."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件不是由目前的安裝導出的，因此每個本機備份都會與本機的裝置識別碼比對。無法核驗的備份會作為本地文件備份加入。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此檔案不是由目前的安裝匯出的，因此每個本機備份都會與本機的裝置識別碼比對。無法核驗的備份會作為本地檔案備份加入。"
+          }
+        }
+      }
+    },
+    "Export All Backups": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export All Backups"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出全部备份"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "صدور همهٔ پشتیبان‌ها"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экспортировать все резервные копии"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất tất cả bản sao lưu"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "導出全部備份"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匯出全部備份"
+          }
+        }
+      }
+    },
+    "Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“导出全部备份”会把所有备份、原值记录和 GestaltX 设置保存为一个文件。重新安装后从“文件”导入即可恢复。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«صدور همهٔ پشتیبان‌ها» همهٔ پشتیبان‌ها، رکورد مقادیر اصلی و تنظیمات GestaltX را در یک فایل ذخیره می‌کند. پس از نصب دوباره، آن را از Files وارد کنید تا بازگردانده شوند."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Экспортировать все резервные копии» сохраняет все копии, запись исходных значений и настройки GestaltX в один файл. После переустановки импортируйте его из «Файлов», чтобы вернуть их."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Xuất tất cả bản sao lưu sẽ lưu mọi bản sao lưu, bản ghi giá trị gốc và thiết lập GestaltX vào một tệp. Sau khi cài đặt lại, hãy nhập tệp đó từ Tệp để khôi phục."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「導出全部備份」會把所有備份、原值記錄和 GestaltX 設定保存為一個文件。重新安裝後從「檔案」導入即可恢復。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「匯出全部備份」會把所有備份、原值記錄和 GestaltX 設定儲存為一個檔案。重新安裝後從「檔案」匯入即可恢復。"
+          }
+        }
+      }
+    },
+    "Added %lld backups. %lld were already in the list.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added %lld backups. %lld were already in the list."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已添加 %lld 个备份，%lld 个已在列表中。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld نسخهٔ پشتیبان افزوده شد. %lld مورد از قبل در فهرست بود."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Добавлено резервных копий: %lld. Уже были в списке: %lld."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã thêm %lld bản sao lưu. %lld bản đã có trong danh sách."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已加入 %lld 個備份，%lld 個已在列表中。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已加入 %lld 個備份，%lld 個已在列表中。"
+          }
+        }
+      }
+    },
+    "%lld device backups could not be verified for this device and were added as local file backups.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld device backups could not be verified for this device and were added as local file backups."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 个本机备份无法核验属于本机，已作为本地文件备份加入。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعلق %lld پشتیبان دستگاه به این دستگاه تأیید نشد و به‌عنوان پشتیبان فایل محلی افزوده شدند."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось подтвердить принадлежность этому устройству для резервных копий устройства (%lld); они добавлены как резервные копии локальных файлов."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld bản sao lưu thiết bị không xác minh được thuộc về thiết bị này và đã được thêm dưới dạng bản sao lưu tệp cục bộ."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 個本機備份無法核驗屬於本機，已作為本地文件備份加入。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 個本機備份無法核驗屬於本機，已作為本地檔案備份加入。"
+          }
+        }
+      }
+    },
+    "%lld entries could not be read and were skipped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld entries could not be read and were skipped."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 个条目无法读取，已跳过。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld مورد خوانده نشد و نادیده گرفته شد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать записи (%lld); они пропущены."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld mục không đọc được và đã bị bỏ qua."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 個項目無法讀取，已略過。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 個項目無法讀取，已略過。"
+          }
+        }
+      }
+    },
+    "The original-value record was restored.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The original-value record was restored."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复原值记录。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رکورد مقادیر اصلی بازیابی شد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запись исходных значений восстановлена."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã khôi phục bản ghi giá trị gốc."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢復原值記錄。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢復原值記錄。"
+          }
+        }
+      }
+    },
+    "The current original-value record was kept.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The current original-value record was kept."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已保留当前的原值记录。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رکورد فعلی مقادیر اصلی حفظ شد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Текущая запись исходных значений сохранена."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã giữ lại bản ghi giá trị gốc hiện tại."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已保留目前的原值記錄。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已保留目前的原值記錄。"
+          }
+        }
+      }
+    },
+    "This backup archive could not be read.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This backup archive could not be read."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取此备份归档。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این بایگانی پشتیبان خوانده نشد."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать этот архив резервных копий."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đọc kho lưu trữ sao lưu này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取此備份封存。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取此備份封存。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
