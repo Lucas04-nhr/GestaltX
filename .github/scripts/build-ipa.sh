@@ -9,13 +9,18 @@
 # upstream tag checked out next to it). Set BUILD_DATE (YYYY-MM-DD) to write it
 # to GestaltX/BuildDate.txt, which the About page shows.
 #
-# Set BUILD_NUMBER (a positive integer) to use it as CFBundleVersion for the app
-# and its share extension. The version users see stays the marketing version
-# (e.g. 1.0.3), and the About page shows it as "1.0.3 (4)". AltStore and
-# SideStore offer an update when the build number changes, so CI increments it
-# for every build. The IPA is then named GestaltX_<version>+<build>.ipa, which
-# the AltStore source reads as buildVersion. Without BUILD_NUMBER the project's
-# own CURRENT_PROJECT_VERSION is kept and the IPA is named GestaltX_<version>.ipa.
+# CFBundleVersion of the app and its share extension:
+# - BUILD_NUMBER (a positive integer) is used as is.
+# - Otherwise BUILD_INCREMENT (a positive integer) is added to the project's
+#   CURRENT_PROJECT_VERSION, e.g. 11100017 + 7 = 11100024. CI passes its run
+#   number, so every build is higher than the project's own build number and
+#   than every earlier CI build.
+# - With neither, the project's CURRENT_PROJECT_VERSION is kept.
+# The version users see stays the marketing version, shown on the About page as
+# "1.1.0 (11100024)". AltStore and SideStore offer an update when the build
+# number changes. With BUILD_NUMBER or BUILD_INCREMENT the IPA is named
+# GestaltX_<version>+<build>.ipa, which the AltStore source reads as
+# buildVersion; otherwise it is named GestaltX_<version>.ipa.
 #
 # In GitHub Actions, `version`, `build` and `ipa` are written to GITHUB_OUTPUT.
 set -euo pipefail
@@ -30,17 +35,33 @@ if [[ -z "$version" || "$(wc -l <<< "$version")" -ne 1 ]]; then
   echo "Error: expected one MARKETING_VERSION, found: ${version:-none}" >&2
   exit 1
 fi
+project_build="$(sed -n 's/^[[:space:]]*CURRENT_PROJECT_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u)"
+if [[ ! "$project_build" =~ ^[0-9]+$ ]]; then
+  echo "Error: expected one numeric CURRENT_PROJECT_VERSION, found: ${project_build:-none}" >&2
+  exit 1
+fi
 build_settings=()
+numbered=false
 if [[ -n "${BUILD_NUMBER:-}" ]]; then
   if [[ ! "$BUILD_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]]; then
     echo "Error: BUILD_NUMBER must be a positive integer, got: $BUILD_NUMBER" >&2
     exit 1
   fi
   build="$BUILD_NUMBER"
+  numbered=true
+elif [[ -n "${BUILD_INCREMENT:-}" ]]; then
+  if [[ ! "$BUILD_INCREMENT" =~ ^[1-9][0-9]{0,8}$ ]]; then
+    echo "Error: BUILD_INCREMENT must be a positive integer, got: $BUILD_INCREMENT" >&2
+    exit 1
+  fi
+  build="$((project_build + BUILD_INCREMENT))"
+  numbered=true
+else
+  build="$project_build"
+fi
+if $numbered; then
   # A command-line setting applies to every target, so the extension matches the app
   build_settings+=("CURRENT_PROJECT_VERSION=$build")
-else
-  build="$(sed -n 's/^[[:space:]]*CURRENT_PROJECT_VERSION = \(.*\);/\1/p' GestaltX.xcodeproj/project.pbxproj | sort -u | head -1)"
 fi
 echo "==> Building GestaltX $version ($build)"
 
@@ -91,7 +112,7 @@ for bundle in "${bundles[@]}"; do
   fi
 done
 
-if [[ -n "${BUILD_NUMBER:-}" ]]; then
+if $numbered; then
   ipa="$out/GestaltX_$version+$build.ipa"
 else
   ipa="$out/GestaltX_$version.ipa"

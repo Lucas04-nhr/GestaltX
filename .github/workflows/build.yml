@@ -10,12 +10,15 @@ name: Build IPA
 # is set to build.yml.
 #
 # source = fork: builds this repository at the branch the workflow runs on and
-# publishes it as a pre-release tagged v<version>+<build>, such as v1.0.3+12.
-# The AltStore source reads that tag as version 1.0.3, and skips pre-releases
-# unless an app entry sets includePrereleases.
+# publishes it as a beta pre-release tagged with its commit, such as
+# sha-557369f. Rebuilding the same commit replaces that pre-release's IPA. The
+# IPA name, GestaltX_<version>+<build>.ipa, carries the version and build
+# number; the AltStore source skips pre-releases unless an app entry sets
+# includePrereleases.
 #
-# Every build gets a new CFBundleVersion (the run number, unless one is given),
-# while the version users see stays the upstream version. AltStore and SideStore
+# Every build gets a new CFBundleVersion: the project's CURRENT_PROJECT_VERSION
+# plus the run number (e.g. 11100017 + 7), unless one is given. The version
+# users see stays the marketing version. AltStore and SideStore
 # offer an update when the build number changes, including when a tag is rebuilt.
 
 on:
@@ -35,7 +38,7 @@ on:
         type: boolean
         default: false
       build_number:
-        description: CFBundleVersion to use (empty for this run's number). Must be higher than the last build.
+        description: CFBundleVersion to use (empty for the project's build number plus this run's number). Must be higher than the last build.
         type: string
         default: ""
 
@@ -101,7 +104,8 @@ jobs:
         if: inputs.source == 'fork' || steps.check.outputs.skip == 'false'
         env:
           SOURCE_DIR: ${{ inputs.source == 'fork' && '.' || 'upstream' }}
-          BUILD_NUMBER: ${{ inputs.build_number || github.run_number }}
+          BUILD_NUMBER: ${{ inputs.build_number }}
+          BUILD_INCREMENT: ${{ github.run_number }}
         run: .github/scripts/build-ipa.sh "$RUNNER_TEMP/ipa"
 
       - name: Publish pre-release
@@ -113,12 +117,12 @@ jobs:
           VERSION: ${{ steps.build.outputs.version }}
           BUILD: ${{ steps.build.outputs.build }}
         run: |
-          tag="v$VERSION+$BUILD"
+          tag="sha-${GITHUB_SHA:0:7}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "source_sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
 
           notes="$RUNNER_TEMP/notes.md"
-          previous="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          previous="$(git describe --tags --abbrev=0 --exclude "$tag" 2>/dev/null || true)"
           {
             if [ -n "$previous" ]; then
               echo "Changes since ${previous}:"
@@ -126,11 +130,22 @@ jobs:
               git log --no-merges --format='- %s (%h)' -n 50 "$previous..HEAD"
               echo
             fi
-            echo "Pre-release built from ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA:0:7}) by GitHub Actions as version ${VERSION}, build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group."
+            echo "Beta built from ${GITHUB_REPOSITORY}@${GITHUB_REF_NAME} (${GITHUB_SHA:0:7}) by GitHub Actions as version ${VERSION}, build ${BUILD}. This IPA is ad-hoc signed with the entitlements of the app and its share extension, so SideStore and AltStore can register its App Group."
           } > "$notes"
 
-          gh release create "$tag" "$IPA" --prerelease --target "$GITHUB_SHA" \
-            --title "GestaltX $VERSION ($BUILD)" --notes-file "$notes"
+          title="GestaltX $VERSION beta ($BUILD)"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            # Rebuilding the same commit: replace the IPA, whose name carries the build number
+            gh release view "$tag" --json assets --jq '.assets[].name' \
+              | { grep -E '^GestaltX_.*\.ipa$' || true; } \
+              | while IFS= read -r old; do
+                  if [ "$old" != "$(basename "$IPA")" ]; then gh release delete-asset "$tag" "$old" --yes; fi
+                done
+            gh release upload "$tag" "$IPA" --clobber
+            gh release edit "$tag" --title "$title" --notes-file "$notes" --prerelease
+          else
+            gh release create "$tag" "$IPA" --prerelease --target "$GITHUB_SHA" --title "$title" --notes-file "$notes"
+          fi
 
       - name: Publish release
         id: publish
