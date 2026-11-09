@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 struct ProofTestError: Error {}
 func reject(_ action: () throws -> Void) throws {
     do { try action() } catch is ProofTestError { throw ProofTestError() } catch { return }
@@ -26,6 +27,13 @@ func reject(_ action: () throws -> Void) throws {
         outer[DeviceBoundPlist.proofKey] = proof
         let invalid = try PropertyListSerialization.data(fromPropertyList: outer, format: .binary, options: 0)
         try reject { _ = try DeviceBoundPlist.verify(invalid, key: key) }
+        let archivePayload = Data("archive payload".utf8)
+        let archiveTag = DeviceBoundPlist.authenticateArchive(archivePayload, key: key)
+        precondition(DeviceBoundPlist.isAuthenticArchive(archivePayload, tag: archiveTag, key: key))
+        precondition(!DeviceBoundPlist.isAuthenticArchive(archivePayload, tag: archiveTag, key: otherDevice), "Another device's key rejects the archive")
+        precondition(!DeviceBoundPlist.isAuthenticArchive(archivePayload + Data([0]), tag: archiveTag, key: key), "A changed archive is rejected")
+        precondition(archiveTag != Data(HMAC<SHA256>.authenticationCode(for: archivePayload, using: SymmetricKey(data: key))),
+                     "Archive tags are domain-separated from plist proofs")
         print("PASS: device-bound export proof, foreign-key rejection, exact typed payload, tampering rejection and proof stripping before restoration.")
     }
 }

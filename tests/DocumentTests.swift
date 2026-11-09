@@ -610,6 +610,51 @@ final class AccessTrace: @unchecked Sendable {
         do { _ = try await library.restore(importedRecord, onto: libraryLocal); throw TestFailure(message: "Restores require a fresh device read") }
         catch is GestaltFailure {}
         try expect(try Data(contentsOf: libraryDevice) == beforeLayoutRestore, "Rejected restores leave the device file untouched")
+
+        // Backup archives: export everything, then bring it back after a reinstall.
+        _ = try await library.renameBackup(importedRecord, to: "Imported copy")
+        let libraryRecords = try await library.backups()
+        let libraryJournal = root.appendingPathComponent("library/OriginalValues.plist")
+        try expect(fm.fileExists(atPath: libraryJournal.path), "A device write leaves an original-value record to archive")
+        let payload = try await library.archivePayload(settings: ["GestaltX.acceptedWelcome.v1": true])
+        let reinstalled = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library-reinstalled"),
+                                           deviceID: "reinstalled", acquire: { 1 }, release: { _ in })
+        let trustedImport = try await reinstalled.importArchive(payload, trusted: true, owns: { _ in false })
+        let reinstalledRecords = try await reinstalled.backups()
+        try expect(trustedImport.added == libraryRecords.count && reinstalledRecords.count == libraryRecords.count, "A trusted archive restores every backup")
+        try expect(trustedImport.originalsRestored, "A trusted archive restores the original-value record")
+        try expect(trustedImport.settings["GestaltX.acceptedWelcome.v1"] as? Bool == true, "Archived settings are returned")
+        for record in reinstalledRecords {
+            let source = libraryRecords.first { $0.id == record.id }!
+            try expect(record.deviceID == "reinstalled" && record.source == source.source && record.name == source.name,
+                       "Archived backups are rebound to the new installation with their source and name")
+            try expect(try await reinstalled.backupData(record) == library.backupData(source), "Archived backups keep their exact bytes")
+        }
+        let reinstalledLive = try await reinstalled.loadDevice()
+        let reinstalledImport = reinstalledRecords.first { $0.id == importedRecord.id }!
+        let restoredAfterReinstall = try await reinstalled.restore(reinstalledImport, onto: reinstalledLive)
+        try expect(restoredAfterReinstall.document.extra["value"] as? String == "imported", "Archived device backups can be restored after reinstalling")
+        let repeated = try await reinstalled.importArchive(payload, trusted: true, owns: { _ in false })
+        try expect(repeated.added == 0 && repeated.alreadyPresent == libraryRecords.count && repeated.originalsKept,
+                   "Importing an archive again keeps existing backups and the current original-value record")
+        let checked = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library-checked"),
+                                       deviceID: "checked", acquire: { 1 }, release: { _ in })
+        let checkedImport = try await checked.importArchive(payload, trusted: false, owns: { $0["re6Zb+zwFKJNlkQTUeT+/w"] as? String == "UDID-A" })
+        let foreignCopy = try await checked.backups().first { $0.id == otherDeviceRecord.id }!
+        try expect(checkedImport.unverified == 1 && foreignCopy.source == .local, "Untrusted archives demote device backups that do not match this device")
+        try expect(try await checked.backups().filter { $0.source == .device }.count == libraryRecords.filter { $0.source == .device }.count - 1,
+                   "Untrusted archives keep matching device backups restorable")
+        try expect(checkedImport.originalsRestored, "A matching original-value record is restored from an untrusted archive")
+        let blind = GestaltFileStore(deviceURL: libraryDevice, backupDirectory: root.appendingPathComponent("library-blind"),
+                                     deviceID: "blind", acquire: { 1 }, release: { _ in })
+        let blindImport = try await blind.importArchive(payload, trusted: false, owns: { _ in false })
+        try expect(try await blind.backups().allSatisfy { $0.source == .local } && !blindImport.originalsRestored,
+                   "Without a verified identity nothing becomes restorable")
+        do { _ = try await blind.importArchive(Data("not an archive".utf8), trusted: true, owns: { _ in true }); throw TestFailure(message: "Reject a malformed archive") }
+        catch is GestaltFailure {}
+        let archiveFile = try BackupArchive.file(payload: payload, tag: Data(repeating: 1, count: 32))
+        try expect(try BackupArchive.contents(of: archiveFile)?.payload == payload, "Archive files round-trip their payload")
+        try expect(try BackupArchive.contents(of: layoutData) == nil, "A MobileGestalt plist is not mistaken for an archive")
         let renamed = try await store.renameBackup(records[0], to: "  Before region change\n ")
         try expect(renamed.name == "Before region change", "Rename trims whitespace and newlines")
         try expect(try await store.backups().first { $0.id == records[0].id }?.name == "Before region change", "Renamed backups keep their name after reloading")
@@ -620,6 +665,6 @@ final class AccessTrace: @unchecked Sendable {
         try await store.deleteBackup(records[0])
         let remaining = try await store.backups()
         try expect(!remaining.contains { $0.id == records[0].id }, "Backup deletion updates library")
-        print("PASS: typed plist editing, nested roundtrip, durable backups, readback verification, stale-write rejection, owned restore, foreign-backup rejection, rollback, backup failure, local isolation, layout-checked library restores, backup renaming, and extension release.")
+        print("PASS: typed plist editing, nested roundtrip, durable backups, readback verification, stale-write rejection, owned restore, foreign-backup rejection, rollback, backup failure, local isolation, layout-checked library restores, backup renaming, backup archives, and extension release.")
     }
 }

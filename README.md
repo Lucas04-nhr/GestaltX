@@ -33,7 +33,7 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 | Advanced | Apple internal feature flags, internal storage view, Security Research Device flag |
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
-| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; verified import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete |
+| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; verified import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file |
 | Logs & respring | Actual exploit-stage logs and manual NeoSpring respring |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
@@ -62,6 +62,7 @@ The **Backups** tab is the single place to back up, import, restore and export. 
 | **Open** | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list. |
 | **Rename** | Swipe a backup or touch and hold it to give it a name. Only the name changes, never the backup itself. Exported files use the name. |
 | **Export** | Shares a backup as a file. Device backups are exported with a device-bound proof, so they can be imported again on this device. |
+| **Export All Backups** | Saves every backup (with its name), the original-value record and GestaltX settings in one file. To keep your backups when you delete GestaltX, export them first, then after reinstalling import the file with **Import from Files** or open it in GestaltX from Files. Existing backups are kept. The share sheet does not accept this file. |
 
 **Export Plist** in Tools exports the open document as it was last read or saved, with a device-bound proof. Staged changes are never exported, so apply or discard them first.
 
@@ -74,6 +75,8 @@ GestaltX accepts a file only if it carries a device-bound proof from a GestaltX 
 Some original plists contain no unique device identifiers. Export a copy from GestaltX on this device first. Its verification key stays in the device-only Keychain and is never included in the file.
 
 Local file backups made by earlier versions can still be opened and exported, but they cannot be restored to the device.
+
+An archive is signed with the same device-only Keychain key as exported plists. If GestaltX can verify that signature, every backup is restored as it was. If it cannot, for example after re-signing with another Apple ID, each device backup is checked against this device's identifiers. Backups that cannot be verified are added as local file backups, which can be opened and exported but not restored to the device. The original-value record is restored only if no record exists yet and it belongs to this device.
 
 ## Check unofficial settings
 
