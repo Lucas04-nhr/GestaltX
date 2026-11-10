@@ -445,5 +445,17 @@
   "Built in on this device": "Встроено в это устройство",
   "Presets for features this device already has are hidden.": "Предустановки функций, которые уже есть на этом устройстве, скрыты.",
   "US model for this device · %@": "Американская модель этого устройства · %@",
-  "The US model for this device is looked up from its hardware model and original model number.": "Американская модель этого устройства определяется по его аппаратной модели и исходному номеру модели."
+  "The US model for this device is looked up from its hardware model and original model number.": "Американская модель этого устройства определяется по его аппаратной модели и исходному номеру модели.",
+  "The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.": "Не удалось удалить файл кэша. Устройство не изменено. Расширение песочницы подписанного приложения может не разрешать удаление в этой версии ОС.",
+  "The cache file could not be deleted. The device was not changed.": "Не удалось удалить файл кэша. Устройство не изменено.",
+  "Read MobileGestalt on this device before rebuilding the cache.": "Прочитайте MobileGestalt на этом устройстве перед перестроением кэша.",
+  "Apply or discard your staged changes before rebuilding the cache.": "Примените или отмените подготовленные изменения перед перестроением кэша.",
+  "The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.": "Кэш удалён, резервная копия сохранена. Перезагрузите устройство сейчас, чтобы iOS пересоздала исходный заводской кэш по данным материнской платы.",
+  "Rebuild Factory Cache": "Перестроить заводской кэш",
+  "Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward.": "«Перестроить заводской кэш» удаляет файл MobileGestalt устройства, чтобы при следующей загрузке iOS заново создала исходный заводской кэш по данным материнской платы. Сначала сохраняется резервная копия. Используйте это, чтобы полностью отменить все изменения, даже если нет подходящей резервной копии. Сразу после этого перезагрузите устройство.",
+  "Rebuild the factory cache?": "Перестроить заводской кэш?",
+  "Rebuild": "Перестроить",
+  "The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.": "Текущий файл устройства сначала копируется, затем удаляется. При следующей загрузке iOS пересоздаёт исходный заводской кэш по данным материнской платы. Сразу после этого перезагрузите устройство.",
+  "Before cache rebuild": "Перед перестроением кэша",
+  "Cache removed; restart to rebuild": "Кэш удалён; перезагрузите для перестроения"
 }

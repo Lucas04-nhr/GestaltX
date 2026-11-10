@@ -462,6 +462,18 @@ Built in on this device	本机原生支持
 Presets for features this device already has are hidden.	已隐藏本机原生支持的功能预设。
 US model for this device · %@	本机美版型号 · %@
 The US model for this device is looked up from its hardware model and original model number.	本机美版型号根据硬件机型和原始型号查得。
+The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.	无法删除缓存文件，设备未发生更改。当前签名应用的沙盒扩展可能在此系统版本上不允许删除。
+The cache file could not be deleted. The device was not changed.	无法删除缓存文件，设备未发生更改。
+Read MobileGestalt on this device before rebuilding the cache.	重建缓存前请先在本设备上读取 MobileGestalt。
+Apply or discard your staged changes before rebuilding the cache.	重建缓存前请先应用或放弃暂存的更改。
+The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.	缓存已删除，并已保存一份备份。请立即重启设备，让 iOS 依据主板出厂数据重建原始缓存。
+Rebuild Factory Cache	重建出厂缓存
+Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward.	“重建出厂缓存”会删除设备上的 MobileGestalt 文件，使 iOS 在下次开机时依据主板出厂数据重新生成原始缓存。操作前会先保存备份。即使没有可匹配的备份，也可用它彻底撤销全部修改。完成后请立即重启设备。
+Rebuild the factory cache?	重建出厂缓存？
+Rebuild	重建
+The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.	会先备份当前设备文件，然后将其删除。iOS 会在下次开机时依据主板出厂数据重建原始缓存。完成后请立即重启设备。
+Before cache rebuild	重建缓存前
+Cache removed; restart to rebuild	缓存已删除，请重启以重建
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

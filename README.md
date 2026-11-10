@@ -19,27 +19,29 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 > - **Reorganized backup, restore, import and export.** The Backups tab now handles all of these. See [Backups, import and export](#backups-import-and-export).
 > - **Check Unofficial Settings.** A check in Tools lists values that are not official for this device and can stage fixes for them. See [Check unofficial settings](#check-unofficial-settings).
 > - **Device-aware presets.** Presets for features this device already has are hidden, Model Number offers this device's US model, and the check covers Collision SOS, the boot chime and PWM. Adapted from [Erosion-CN](https://github.com/Kianuni/Erosion-CN). See [Device-aware presets](#device-aware-presets).
+> - **Container cache cleaner.** Scan application caches by size and confirm single-container or batch cleanup from Tools. Inspired by [Erosion-CN](https://github.com/Kianuni/Erosion-CN), using the existing signed App Group access. See [Container cache cleaner](#container-cache-cleaner).
 > - **CI.** The IPA is ad-hoc signed with the entitlements of the app and its share extension, so AltStore and SideStore can register the App Group when they re-sign it.
 >
 > Report issues with these changes in this repository, and all other issues in the [upstream repository](https://github.com/huamidev/GestaltX/issues).
 
 ## Features
 
-| Category | Presets and tools |
-| --- | --- |
-| Display | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, high-luminance AOD, AOD flipbook, HDR photo display, wallpaper parallax, Liquid Glass low-power rendering, experimental PWM and DisplayPort flags |
-| Device | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio |
-| iPad | Apple Pencil settings, Stage Manager capability, iPad app compatibility |
-| Intelligence | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, and sales-region options for activation attempts on China-mainland devices |
-| Advanced | Apple internal feature flags, internal storage view, internal settings bundle, Security Research Device flag |
-| Field editor | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
-| Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
-| Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file |
-| Logs & respring | Actual exploit-stage logs and manual NeoSpring respring |
+| Category        | Presets and tools                                                                                                                                                                                                                                                           |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Display         | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, high-luminance AOD, AOD flipbook, HDR photo display, wallpaper parallax, Liquid Glass low-power rendering, experimental PWM and DisplayPort flags                                                    |
+| Device          | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio                                                                                                               |
+| iPad            | Apple Pencil settings, Stage Manager capability, iPad app compatibility                                                                                                                                                                                                     |
+| Intelligence    | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, and sales-region options for activation attempts on China-mainland devices |
+| Advanced        | Apple internal feature flags, internal storage view, internal settings bundle, Security Research Device flag                                                                                                                                                                |
+| Field editor    | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values                                                                                             |
+| Changes         | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore                                                                                                                                                                       |
+| Backups         | Automatic initial backup and a backup before every write, manual device backup, original-value records; import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file       |
+| Logs & respring | Actual exploit-stage logs and manual NeoSpring respring                                                                                                                                                                                                                     |
+| Extended tools  | Container cache scanning, size ranking, Bundle ID search, selection and confirmed cleanup                                                                                                                                                                                   |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
 
-*If you previously changed Sales Region, restore your device’s original sales region and apply it first.*
+_If you previously changed Sales Region, restore your device’s original sales region and apply it first._
 
 Disabling a preset or using its Revert button restores the recorded original values and types. Keys that were originally absent are removed. If an older change has no original record, use Remove Added Fields only when you know those fields were added.
 
@@ -55,15 +57,15 @@ Signing requires a certificate and provisioning profile with at least one usable
 
 The **Backups** tab is the single place to back up, import, restore and export. Each action does one thing:
 
-| Action | What it does |
-| --- | --- |
-| **Create Backup** | Saves this device's current MobileGestalt file, whatever document is open. GestaltX also backs up automatically on the first read and before every write. |
-| **Import from Files** | Adds a plist to the backups list as **Imported**, after you confirm it. Importing never opens the file or writes it to the device, and staged edits are kept. |
-| **Restore** | Writes a backup to this device. GestaltX reads the device file again first. The backup must belong to this device and use the same system cache layout (`CacheUUID`, `CacheVersion` and `CacheData` size), so a backup made before an iOS update is refused. The current file is backed up first and the write is read back and verified. Apply or discard staged changes before restoring, and restart the device afterward. |
-| **Open** | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list. |
-| **Rename** | Swipe a backup or touch and hold it to give it a name. Only the name changes, never the backup itself. Exported files use the name. |
-| **Export** | Shares a backup as its plain plist, exactly as saved. It can be imported again here or opened in other apps. |
-| **Export All Backups** | Saves every backup (with its name), the original-value record and GestaltX settings in one file. To keep your backups when you delete GestaltX, export them first, then after reinstalling import the file with **Import from Files** or open it in GestaltX from Files. Existing backups are kept. The share sheet does not accept this file. |
+| Action                 | What it does                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Create Backup**      | Saves this device's current MobileGestalt file, whatever document is open. GestaltX also backs up automatically on the first read and before every write.                                                                                                                                                                                                                                                                     |
+| **Import from Files**  | Adds a plist to the backups list as **Imported**, after you confirm it. Importing never opens the file or writes it to the device, and staged edits are kept.                                                                                                                                                                                                                                                                 |
+| **Restore**            | Writes a backup to this device. GestaltX reads the device file again first. The backup must belong to this device and use the same system cache layout (`CacheUUID`, `CacheVersion` and `CacheData` size), so a backup made before an iOS update is refused. The current file is backed up first and the write is read back and verified. Apply or discard staged changes before restoring, and restart the device afterward. |
+| **Open**               | Loads a backup as a local document to view or edit it in **MG Control**. Saving a local document changes only the copy in GestaltX: never the device file and never the backups list.                                                                                                                                                                                                                                         |
+| **Rename**             | Swipe a backup or touch and hold it to give it a name. Only the name changes, never the backup itself. Exported files use the name.                                                                                                                                                                                                                                                                                           |
+| **Export**             | Shares a backup as its plain plist, exactly as saved. It can be imported again here or opened in other apps.                                                                                                                                                                                                                                                                                                                  |
+| **Export All Backups** | Saves every backup (with its name), the original-value record and GestaltX settings in one file. To keep your backups when you delete GestaltX, export them first, then after reinstalling import the file with **Import from Files** or open it in GestaltX from Files. Existing backups are kept. The share sheet does not accept this file.                                                                                |
 
 **Export Plist** in Tools exports the open document as a plain plist, as it was last read or saved. Staged changes are never exported, so apply or discard them first.
 
@@ -102,20 +104,36 @@ The presets in Tools use the same reference table as the check, and the real mod
 
 The feature lists for Collision SOS, the boot chime and PWM, and the US model numbers, are adapted from [Erosion-CN](https://github.com/Kianuni/Erosion-CN). The table also lists the iPhone 18 lineup with every feature, and iPad Air (M4) and iPad Pro (M5) with Apple Intelligence and Charge Limit. iPhone 17e is not in the table yet, so it is not checked.
 
+## Container cache cleaner
+
+Open **Tools > Extended Tools > Container Cache Cleaner**, then tap **Scan Caches**. No MobileGestalt document needs to be open. The tool lists application data containers by Bundle ID and descending cache size; system containers are hidden by default except Safari. You can select the visible results, clean one container, or confirm a batch cleanup. Selection is never automatic.
+
+Only the contents of `Library/Caches`, `tmp`, and `Library/WebKit/WebsiteData/CacheStorage` are targeted. Their root directories and permissions are retained. `Documents`, `Library/Preferences`, GestaltX's own container and selected critical system containers are excluded. The cleaner rechecks each container identifier, uses directory-relative access without following symlinks, and skips hardlinks, sockets, FIFOs and other special files. Failed operations are reported and remaining or failed entries stay in the list.
+
+Close the selected apps and back up important data first. Cache removal is irreversible: offline content may be lost, and an app may need to download data or sign in again. Restricting cleanup paths cannot guarantee the behavior of every application. This is not a full system-storage cleaner, and it does not provide a file browser or modify MobileGestalt.
+
+When normal directory listing is unavailable, the tool uses a cancellable, bounded adaptation of Taj C's `pathleak` from Erosion-CN. The default limit is 15 million inodes, adjustable from 1 to 30 million; containers above the limit can be missed. Access also depends on OS support and usable signed App Groups. The Simulator does not perform device scans. Displayed sizes and deletion history are logical file bytes, not guaranteed physical disk-space savings (open files, APFS clones and snapshots can retain storage).
+
+Standalone safety regression test on macOS:
+
+```sh
+xcrun swiftc -parse-as-library GestaltX/ContainerCache.swift GestaltX/Localization.swift tests/ContainerCacheTests.swift -o /tmp/GestaltXContainerCacheTests && /tmp/GestaltXContainerCacheTests
+```
+
 ## Language support
 
 GestaltX follows your iOS language settings, with English as the default and fallback. Persian includes right-to-left layout support.
 
-| Language | Locale |
-| --- | --- |
-| English | `en` |
-| 简体中文 — Simplified Chinese | `zh-Hans` |
-| 繁體中文（台灣）— Traditional Chinese (Taiwan) | `zh-Hant-TW` |
+| Language                                          | Locale       |
+| ------------------------------------------------- | ------------ |
+| English                                           | `en`         |
+| 简体中文 — Simplified Chinese                     | `zh-Hans`    |
+| 繁體中文（台灣）— Traditional Chinese (Taiwan)    | `zh-Hant-TW` |
 | 繁體中文（香港）— Traditional Chinese (Hong Kong) | `zh-Hant-HK` |
-| Tiếng Việt — Vietnamese | `vi` |
-| Русский — Russian | `ru` |
-| فارسی — Persian | `fa` |
-| 한국어 — Korean | `ko` |
+| Tiếng Việt — Vietnamese                           | `vi`         |
+| Русский — Russian                                 | `ru`         |
+| فارسی — Persian                                   | `fa`         |
+| 한국어 — Korean                                   | `ko`         |
 
 ## Credits
 

@@ -1,6 +1,1566 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Extended Tools": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extended Tools"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扩展工具"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابزارهای تکمیلی"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "확장 도구"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Дополнительные инструменты"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Công cụ mở rộng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "擴展工具"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "擴充工具"
+          }
+        }
+      }
+    },
+    "Container Cache Cleaner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Container Cache Cleaner"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器缓存清理"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پاک‌سازی حافظهٔ نهان محفظه‌ها"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨테이너 캐시 정리"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистка кэша контейнеров"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dọn bộ nhớ đệm vùng chứa"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器快取清理"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器快取清理"
+          }
+        }
+      }
+    },
+    "Estimated Cache Data": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estimated Cache Data"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "预计缓存数据量"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دادهٔ تخمینی حافظهٔ نهان"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예상 캐시 데이터"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оценка объёма кэша"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dữ liệu đệm ước tính"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預計快取資料量"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預估快取資料量"
+          }
+        }
+      }
+    },
+    "Total Deleted File Data": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total Deleted File Data"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "累计删除文件数据量"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مجموع دادهٔ فایل‌های حذف‌شده"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "삭제된 파일 데이터 합계"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Всего удалено данных файлов"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tổng dữ liệu tệp đã xóa"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "累計刪除檔案資料量"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "累計刪除檔案資料量"
+          }
+        }
+      }
+    },
+    "Include System Containers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include System Containers"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示系统组件容器"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نمایش محفظه‌های سیستم"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템 컨테이너 표시"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Показать системные контейнеры"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hiển thị vùng chứa hệ thống"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示系統組件容器"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示系統元件容器"
+          }
+        }
+      }
+    },
+    "Inode Scan Limit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inode Scan Limit"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inode 扫描上限"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حد اسکن Inode"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inode 검색 상한"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Предел сканирования Inode"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giới hạn quét Inode"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inode 掃描上限"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inode 掃描上限"
+          }
+        }
+      }
+    },
+    "%lld million": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld million"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 百万"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld میلیون"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld백만"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld млн"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld triệu"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 百萬"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 百萬"
+          }
+        }
+      }
+    },
+    "Scan Caches": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan Caches"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扫描缓存"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکن حافظهٔ نهان"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 검색"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сканировать кэш"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "掃描快取"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "掃描快取"
+          }
+        }
+      }
+    },
+    "Clean Selected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean Selected"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理所选"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پاک‌سازی انتخاب‌شده‌ها"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택 항목 정리"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистить выбранное"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dọn mục đã chọn"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理所選"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理所選"
+          }
+        }
+      }
+    },
+    "Scanning Containers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanning Containers"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在扫描容器"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال اسکن محفظه‌ها"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨테이너 검색 중"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сканирование контейнеров"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang quét vùng chứa"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在掃描容器"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在掃描容器"
+          }
+        }
+      }
+    },
+    "Cleaning Caches": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cleaning Caches"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在清理缓存"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال پاک‌سازی حافظهٔ نهان"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 정리 중"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистка кэша"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang dọn bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在清理快取"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在清理快取"
+          }
+        }
+      }
+    },
+    "Incomplete scan: %lld access or read errors.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incomplete scan: %lld access or read errors."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扫描不完整：%lld 项访问或读取错误。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکن ناقص: %lld خطای دسترسی یا خواندن."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "불완전한 검색: 접근 또는 읽기 오류 %lld개."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сканирование неполное: %lld ошибок доступа или чтения."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét chưa đầy đủ: %lld lỗi truy cập hoặc đọc."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "掃描不完整：%lld 項存取或讀取錯誤。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "掃描不完整：%lld 項存取或讀取錯誤。"
+          }
+        }
+      }
+    },
+    "No Cache Results": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Cache Results"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂无缓存结果"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نتیجه‌ای برای حافظهٔ نهان وجود ندارد"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 결과 없음"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет результатов сканирования"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa có kết quả bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暫無快取結果"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚無快取結果"
+          }
+        }
+      }
+    },
+    "Clean Caches": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean Caches"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理缓存"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پاک‌سازی حافظهٔ نهان"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 정리"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистить кэш"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dọn bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理快取"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理快取"
+          }
+        }
+      }
+    },
+    "Some cache paths could not be read.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some cache paths could not be read."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分缓存路径无法读取。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "برخی مسیرهای حافظهٔ نهان قابل خواندن نبودند."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일부 캐시 경로를 읽을 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать некоторые пути кэша."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đọc một số đường dẫn bộ nhớ đệm."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分快取路徑無法讀取。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分快取路徑無法讀取。"
+          }
+        }
+      }
+    },
+    "Container Caches": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Container Caches"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器缓存"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ نهان محفظه‌ها"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨테이너 캐시"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кэш контейнеров"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ nhớ đệm vùng chứa"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器快取"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器快取"
+          }
+        }
+      }
+    },
+    "Deselect All": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deselect All"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消全选"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لغو انتخاب همه"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 선택 해제"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Снять выделение"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bỏ chọn tất cả"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消全選"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消全選"
+          }
+        }
+      }
+    },
+    "Select All": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select All"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全选"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انتخاب همه"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 선택"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать всё"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn tất cả"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全選"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全選"
+          }
+        }
+      }
+    },
+    "Search Bundle ID": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search Bundle ID"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索 Bundle ID"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "جستجوی Bundle ID"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bundle ID 검색"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поиск Bundle ID"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tìm Bundle ID"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋 Bundle ID"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋 Bundle ID"
+          }
+        }
+      }
+    },
+    "Clean Caches?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean Caches?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理缓存？"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ نهان پاک شود؟"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시를 정리하시겠습니까?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистить кэш?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dọn bộ nhớ đệm?"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理快取？"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理快取？"
+          }
+        }
+      }
+    },
+    "Clean cache data in %lld containers (estimated %@)? Only Library/Caches, tmp and WebKit CacheStorage are targeted. Close the selected apps first. Cached offline content may be lost; apps may need to download data or sign in again. This cannot be undone.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean cache data in %lld containers (estimated %@)? Only Library/Caches, tmp and WebKit CacheStorage are targeted. Close the selected apps first. Cached offline content may be lost; apps may need to download data or sign in again. This cannot be undone."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理 %lld 个容器的缓存数据（预计 %@）？仅处理 Library/Caches、tmp 和 WebKit CacheStorage。请先关闭所选应用。离线缓存内容可能丢失，应用可能需要重新下载数据或登录。此操作无法撤销。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دادهٔ نهان %lld محفظه (تقریباً %@) پاک شود؟ فقط Library/Caches، tmp و WebKit CacheStorage پردازش می‌شوند. ابتدا برنامه‌های انتخاب‌شده را ببندید. محتوای آفلاین ذخیره‌شده ممکن است از بین برود؛ شاید بارگیری دوبارهٔ داده یا ورود مجدد لازم شود. این عملیات قابل بازگشت نیست."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld개 컨테이너의 캐시 데이터(예상 %@)를 정리하시겠습니까? Library/Caches, tmp 및 WebKit CacheStorage만 처리합니다. 먼저 선택한 앱을 종료하십시오. 오프라인 캐시가 사라질 수 있으며 데이터를 다시 다운로드하거나 로그인해야 할 수 있습니다. 이 작업은 되돌릴 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистить кэш в %lld контейнерах (примерно %@)? Обрабатываются только Library/Caches, tmp и WebKit CacheStorage. Сначала закройте выбранные приложения. Кэшированный офлайн-контент может быть потерян; может потребоваться повторная загрузка данных или вход в аккаунт. Это действие нельзя отменить."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dọn dữ liệu đệm trong %lld vùng chứa (ước tính %@)? Chỉ xử lý Library/Caches, tmp và WebKit CacheStorage. Hãy đóng các ứng dụng đã chọn trước. Nội dung đệm ngoại tuyến có thể bị mất; ứng dụng có thể cần tải lại dữ liệu hoặc đăng nhập lại. Không thể hoàn tác thao tác này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理 %lld 個容器的快取資料（預計 %@）？僅處理 Library/Caches、tmp 和 WebKit CacheStorage。請先關閉所選 App。離線快取內容可能遺失，App 可能需要重新下載資料或登入。此操作無法還原。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清理 %lld 個容器的快取資料（預估 %@）？僅處理 Library/Caches、tmp 和 WebKit CacheStorage。請先關閉所選 App。離線快取內容可能遺失，App 可能需要重新下載資料或登入。此操作無法復原。"
+          }
+        }
+      }
+    },
+    "Deleted file data: %@. Errors: %lld. Skipped links or special files: %lld.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted file data: %@. Errors: %lld. Skipped links or special files: %lld."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已删除文件数据：%@。错误：%lld 项。跳过链接或特殊文件：%lld 项。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دادهٔ فایل حذف‌شده: %@. خطاها: %lld. پیوندها یا فایل‌های ویژهٔ ردشده: %lld."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "삭제된 파일 데이터: %@. 오류: %lld개. 건너뛴 링크 또는 특수 파일: %lld개."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Удалено данных файлов: %@. Ошибок: %lld. Пропущено ссылок или специальных файлов: %lld."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dữ liệu tệp đã xóa: %@. Lỗi: %lld. Liên kết hoặc tệp đặc biệt đã bỏ qua: %lld."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已刪除檔案資料：%@。錯誤：%lld 項。略過連結或特殊檔案：%lld 項。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已刪除檔案資料：%@。錯誤：%lld 項。略過連結或特殊檔案：%lld 項。"
+          }
+        }
+      }
+    },
+    "Container scanning requires a supported physical device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Container scanning requires a supported physical device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器扫描需要受支持的真实设备。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اسکن محفظه‌ها به دستگاه واقعی پشتیبانی‌شده نیاز دارد."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨테이너 검색에는 지원되는 실제 기기가 필요합니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Для сканирования контейнеров требуется поддерживаемое физическое устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quét vùng chứa yêu cầu thiết bị thực được hỗ trợ."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器掃描需要受支援的實體裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器掃描需要受支援的實體裝置。"
+          }
+        }
+      }
+    },
+    "Container discovery failed. Check device access and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Container discovery failed. Check device access and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器发现失败，请检查设备访问权限后重试。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "یافتن محفظه‌ها ناموفق بود. دسترسی دستگاه را بررسی و دوباره تلاش کنید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨테이너 검색에 실패했습니다. 기기 접근 권한을 확인하고 다시 시도하십시오."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось найти контейнеры. Проверьте доступ к устройству и повторите попытку."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể tìm vùng chứa. Hãy kiểm tra quyền truy cập thiết bị và thử lại."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器搜尋失敗，請檢查裝置存取權限後重試。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器探索失敗，請檢查裝置存取權限後重試。"
+          }
+        }
+      }
+    },
+    "The container identifier could not be read.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The container identifier could not be read."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取容器标识符。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "شناسهٔ محفظه قابل خواندن نبود."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨테이너 식별자를 읽을 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось прочитать идентификатор контейнера."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể đọc mã định danh vùng chứa."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取容器識別碼。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取容器識別碼。"
+          }
+        }
+      }
+    },
+    "This container is protected and cannot be cleaned.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This container is protected and cannot be cleaned."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此容器受到保护，无法清理。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "این محفظه محافظت‌شده است و قابل پاک‌سازی نیست."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보호된 컨테이너는 정리할 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этот контейнер защищён и не может быть очищен."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vùng chứa này được bảo vệ và không thể dọn."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此容器受到保護，無法清理。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此容器受到保護，無法清理。"
+          }
+        }
+      }
+    },
+    "The container changed since scanning. Scan again before cleaning.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The container changed since scanning. Scan again before cleaning."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器在扫描后已发生变化，请重新扫描后再清理。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محفظه پس از اسکن تغییر کرده است. پیش از پاک‌سازی دوباره اسکن کنید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검색 이후 컨테이너가 변경되었습니다. 정리하기 전에 다시 검색하십시오."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Контейнер изменился после сканирования. Выполните сканирование заново перед очисткой."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vùng chứa đã thay đổi sau khi quét. Hãy quét lại trước khi dọn."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器在掃描後已變更，請重新掃描後再清理。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "容器在掃描後已變更，請重新掃描後再清理。"
+          }
+        }
+      }
+    },
+    "Invalid application container path.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid application container path."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用容器路径无效。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "مسیر محفظهٔ برنامه نامعتبر است."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잘못된 앱 컨테이너 경로입니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Недопустимый путь контейнера приложения."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đường dẫn vùng chứa ứng dụng không hợp lệ."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App 容器路徑無效。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App 容器路徑無效。"
+          }
+        }
+      }
+    },
+    "The application container could not be opened.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The application container could not be opened."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法打开应用容器。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "محفظهٔ برنامه باز نشد."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "앱 컨테이너를 열 수 없습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось открыть контейнер приложения."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể mở vùng chứa ứng dụng."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法開啟 App 容器。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法開啟 App 容器。"
+          }
+        }
+      }
+    },
+    "Device file access was denied. Check the OS version and App Group signing.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device file access was denied. Check the OS version and App Group signing."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备文件访问被拒绝，请检查系统版本和 App Group 签名。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "دسترسی به فایل دستگاه رد شد. نسخهٔ سیستم‌عامل و امضای App Group را بررسی کنید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기기 파일 접근이 거부되었습니다. OS 버전과 App Group 서명을 확인하십시오."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Доступ к файлам устройства запрещён. Проверьте версию ОС и подпись App Group."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Truy cập tệp thiết bị bị từ chối. Hãy kiểm tra phiên bản OS và chữ ký App Group."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置檔案存取被拒，請檢查系統版本和 App Group 簽署。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "裝置檔案存取遭拒，請檢查系統版本和 App Group 簽署。"
+          }
+        }
+      }
+    },
     "WAPI": {
       "localizations": {
         "en": {
@@ -21681,6 +23241,630 @@
           "stringUnit": {
             "state": "translated",
             "value": "本機美版型號根據硬體機型和原始型號查得。"
+          }
+        }
+      }
+    },
+    "The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法删除缓存文件，设备未发生更改。当前签名应用的沙盒扩展可能在此系统版本上不允许删除。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فایل حافظهٔ پنهان حذف نشد. دستگاه تغییری نکرد. افزونهٔ sandbox برنامهٔ امضاشده ممکن است در این نسخهٔ سیستم‌عامل اجازهٔ حذف را ندهد."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 파일을 삭제할 수 없습니다. 기기는 변경되지 않았습니다. 서명된 앱의 샌드박스 확장이 이 OS 버전에서 삭제를 허용하지 않을 수 있습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось удалить файл кэша. Устройство не изменено. Расширение песочницы подписанного приложения может не разрешать удаление в этой версии ОС."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xóa tệp bộ nhớ đệm. Thiết bị không bị thay đổi. Tiện ích mở rộng hộp cát của ứng dụng đã ký có thể không cho phép xóa trên phiên bản hệ điều hành này."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法刪除快取檔案，裝置未發生變更。目前簽署應用程式的沙盒擴充功能可能在此系統版本上不允許刪除。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法刪除快取檔案，裝置未發生變更。目前簽署應用程式的沙盒擴充功能可能在此系統版本上不允許刪除。"
+          }
+        }
+      }
+    },
+    "The cache file could not be deleted. The device was not changed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cache file could not be deleted. The device was not changed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法删除缓存文件，设备未发生更改。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فایل حافظهٔ پنهان حذف نشد. دستگاه تغییری نکرد."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 파일을 삭제할 수 없습니다. 기기는 변경되지 않았습니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось удалить файл кэша. Устройство не изменено."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể xóa tệp bộ nhớ đệm. Thiết bị không bị thay đổi."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法刪除快取檔案，裝置未發生變更。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法刪除快取檔案，裝置未發生變更。"
+          }
+        }
+      }
+    },
+    "Read MobileGestalt on this device before rebuilding the cache.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read MobileGestalt on this device before rebuilding the cache."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建缓存前请先在本设备上读取 MobileGestalt。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش از بازسازی حافظهٔ پنهان، ابتدا MobileGestalt را روی این دستگاه بخوانید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시를 재생성하기 전에 이 기기에서 MobileGestalt를 읽으세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Прочитайте MobileGestalt на этом устройстве перед перестроением кэша."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy đọc MobileGestalt trên thiết bị này trước khi tạo lại bộ nhớ đệm."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建快取前請先在本裝置上讀取 MobileGestalt。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建快取前請先在本裝置上讀取 MobileGestalt。"
+          }
+        }
+      }
+    },
+    "Apply or discard your staged changes before rebuilding the cache.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply or discard your staged changes before rebuilding the cache."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建缓存前请先应用或放弃暂存的更改。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش از بازسازی حافظهٔ پنهان، تغییرات مرحله‌بندی‌شده را اعمال یا لغو کنید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시를 재생성하기 전에 임시 변경사항을 적용하거나 취소하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Примените или отмените подготовленные изменения перед перестроением кэша."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hãy áp dụng hoặc hủy các thay đổi đang chờ trước khi tạo lại bộ nhớ đệm."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建快取前請先套用或捨棄暫存的變更。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建快取前請先套用或捨棄暫存的變更。"
+          }
+        }
+      }
+    },
+    "The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缓存已删除，并已保存一份备份。请立即重启设备，让 iOS 依据主板出厂数据重建原始缓存。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ پنهان حذف شد و یک نسخهٔ پشتیبان ذخیره شد. اکنون دستگاه را راه‌اندازی مجدد کنید تا iOS حافظهٔ پنهان اصلی کارخانه را از روی مِین‌بورد بازسازی کند."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시가 삭제되고 백업이 저장되었습니다. 지금 기기를 재시동하면 iOS가 메인보드의 공장 데이터로 원래 캐시를 다시 만듭니다."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кэш удалён, резервная копия сохранена. Перезагрузите устройство сейчас, чтобы iOS пересоздала исходный заводской кэш по данным материнской платы."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bộ nhớ đệm đã bị xóa và một bản sao lưu đã được lưu. Hãy khởi động lại thiết bị ngay để iOS tạo lại bộ nhớ đệm gốc từ dữ liệu xuất xưởng của bo mạch chính."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快取已刪除，並已儲存一份備份。請立即重新啟動裝置，讓 iOS 依據主機板出廠資料重建原始快取。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快取已刪除，並已儲存一份備份。請立即重新啟動裝置，讓 iOS 依據主機板出廠資料重建原始快取。"
+          }
+        }
+      }
+    },
+    "Rebuild Factory Cache": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild Factory Cache"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建出厂缓存"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بازسازی حافظهٔ پنهان کارخانه"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "공장 캐시 재생성"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перестроить заводской кэш"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo lại bộ nhớ đệm xuất xưởng"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建出廠快取"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建出廠快取"
+          }
+        }
+      }
+    },
+    "Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“重建出厂缓存”会删除设备上的 MobileGestalt 文件，使 iOS 在下次开机时依据主板出厂数据重新生成原始缓存。操作前会先保存备份。即使没有可匹配的备份，也可用它彻底撤销全部修改。完成后请立即重启设备。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«بازسازی حافظهٔ پنهان کارخانه» فایل MobileGestalt دستگاه را حذف می‌کند تا iOS در راه‌اندازی بعدی حافظهٔ پنهان اصلی کارخانه را از روی مِین‌بورد بازسازی کند. ابتدا یک نسخهٔ پشتیبان ذخیره می‌شود. از این گزینه برای لغو کامل همهٔ تغییرات استفاده کنید، حتی وقتی هیچ نسخهٔ پشتیبان مطابقی وجود ندارد. بلافاصله پس از آن دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "‘공장 캐시 재생성’은 기기의 MobileGestalt 파일을 삭제하여 다음 부팅 시 iOS가 메인보드의 공장 데이터로 원래 캐시를 다시 생성하도록 합니다. 먼저 백업이 저장됩니다. 일치하는 백업이 없어도 모든 변경을 완전히 되돌릴 수 있습니다. 완료 후 즉시 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Перестроить заводской кэш» удаляет файл MobileGestalt устройства, чтобы при следующей загрузке iOS заново создала исходный заводской кэш по данным материнской платы. Сначала сохраняется резервная копия. Используйте это, чтобы полностью отменить все изменения, даже если нет подходящей резервной копии. Сразу после этого перезагрузите устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Tạo lại bộ nhớ đệm xuất xưởng» xóa tệp MobileGestalt của thiết bị để iOS tạo lại bộ nhớ đệm gốc từ dữ liệu xuất xưởng của bo mạch chính trong lần khởi động tiếp theo. Một bản sao lưu được lưu trước. Dùng tùy chọn này để hoàn tác hoàn toàn mọi thay đổi, ngay cả khi không có bản sao lưu phù hợp. Khởi động lại thiết bị ngay sau đó."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「重建出廠快取」會刪除裝置上的 MobileGestalt 檔案，使 iOS 於下次開機時依據主機板出廠資料重新產生原始快取。操作前會先儲存備份。即使沒有可對應的備份，也可用它徹底還原所有變更。完成後請立即重新啟動裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「重建出廠快取」會刪除裝置上的 MobileGestalt 檔案，使 iOS 於下次開機時依據主機板出廠資料重新產生原始快取。操作前會先儲存備份。即使沒有可對應的備份，也可用它徹底還原所有變更。完成後請立即重新啟動裝置。"
+          }
+        }
+      }
+    },
+    "Rebuild the factory cache?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild the factory cache?"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建出厂缓存？"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ پنهان کارخانه بازسازی شود؟"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "공장 캐시를 재생성하시겠습니까?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перестроить заводской кэш?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo lại bộ nhớ đệm xuất xưởng?"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建出廠快取？"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建出廠快取？"
+          }
+        }
+      }
+    },
+    "Rebuild": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بازسازی"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "재생성"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перестроить"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tạo lại"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建"
+          }
+        }
+      }
+    },
+    "The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会先备份当前设备文件，然后将其删除。iOS 会在下次开机时依据主板出厂数据重建原始缓存。完成后请立即重启设备。"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ابتدا از فایل فعلی دستگاه نسخهٔ پشتیبان گرفته و سپس حذف می‌شود. iOS در راه‌اندازی بعدی حافظهٔ پنهان اصلی کارخانه را از روی مِین‌بورد بازسازی می‌کند. بلافاصله پس از آن دستگاه را راه‌اندازی مجدد کنید."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 기기 파일을 먼저 백업한 다음 삭제합니다. iOS는 다음 부팅 시 메인보드의 공장 데이터로 원래 캐시를 다시 만듭니다. 완료 후 즉시 기기를 재시동하세요."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Текущий файл устройства сначала копируется, затем удаляется. При следующей загрузке iOS пересоздаёт исходный заводской кэш по данным материнской платы. Сразу после этого перезагрузите устройство."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tệp thiết bị hiện tại được sao lưu trước, sau đó bị xóa. iOS tạo lại bộ nhớ đệm gốc từ dữ liệu xuất xưởng của bo mạch chính trong lần khởi động tiếp theo. Khởi động lại thiết bị ngay sau đó."
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "會先備份目前的裝置檔案，然後將其刪除。iOS 會於下次開機時依據主機板出廠資料重建原始快取。完成後請立即重新啟動裝置。"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "會先備份目前的裝置檔案，然後將其刪除。iOS 會於下次開機時依據主機板出廠資料重建原始快取。完成後請立即重新啟動裝置。"
+          }
+        }
+      }
+    },
+    "Before cache rebuild": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before cache rebuild"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建缓存前"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "پیش از بازسازی حافظهٔ پنهان"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시 재생성 전"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Перед перестроением кэша"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trước khi tạo lại bộ nhớ đệm"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建快取前"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重建快取前"
+          }
+        }
+      }
+    },
+    "Cache removed; restart to rebuild": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache removed; restart to rebuild"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缓存已删除，请重启以重建"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "حافظهٔ پنهان حذف شد؛ برای بازسازی راه‌اندازی مجدد کنید"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "캐시가 제거됨. 재시동하여 재생성하세요"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кэш удалён; перезагрузите для перестроения"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đã xóa bộ nhớ đệm; khởi động lại để tạo lại"
+          }
+        },
+        "zh-Hant-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快取已刪除，請重新啟動以重建"
+          }
+        },
+        "zh-Hant-TW": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快取已刪除，請重新啟動以重建"
           }
         }
       }

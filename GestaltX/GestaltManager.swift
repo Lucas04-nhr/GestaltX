@@ -519,6 +519,29 @@ final class GestaltManager: ObservableObject {
             log(message ?? ""); await reloadBackups()
         } catch { failed(error); await reloadBackups() }
     }
+    var canRebuildCache: Bool { !isBusy && deviceAccessible && changeCount == 0 }
+
+    /// Deletes the device cache so iOS rebuilds it from the mainboard's factory data on
+    /// the next boot. A backup is saved first. The device must be restarted immediately.
+    func rebuildCacheFromSystem() async {
+        guard !isBusy else { return }
+        guard deviceAccessible else {
+            failed(GestaltFailure("Read MobileGestalt on this device before rebuilding the cache.")); return
+        }
+        guard changeCount == 0 else {
+            failed(GestaltFailure("Apply or discard your staged changes before rebuilding the cache.")); return
+        }
+        isBusy = true; defer { isBusy = false }
+        do {
+            let record = try await files.rebuildFromSystem()
+            log("[rebuild] Saved backup \(record.filename), then removed the device cache")
+            needsRespring = true
+            status = "Cache removed; restart to rebuild"
+            message = L("The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.")
+            log(message ?? ""); await reloadBackups()
+        } catch { failed(error); await reloadBackups() }
+    }
+
     /// Opens a backup for viewing or editing. Saving it never changes the device.
     func openBackup(_ record: BackupRecord) async {
         guard !isBusy else { return }

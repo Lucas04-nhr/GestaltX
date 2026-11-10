@@ -445,5 +445,17 @@
   "Built in on this device": "Có sẵn trên thiết bị này",
   "Presets for features this device already has are hidden.": "Đã ẩn các thiết lập sẵn cho tính năng mà thiết bị này đã có.",
   "US model for this device · %@": "Mẫu Mỹ của thiết bị này · %@",
-  "The US model for this device is looked up from its hardware model and original model number.": "Mẫu Mỹ của thiết bị này được tra cứu từ mẫu phần cứng và số kiểu máy gốc."
+  "The US model for this device is looked up from its hardware model and original model number.": "Mẫu Mỹ của thiết bị này được tra cứu từ mẫu phần cứng và số kiểu máy gốc.",
+  "The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.": "Không thể xóa tệp bộ nhớ đệm. Thiết bị không bị thay đổi. Tiện ích mở rộng hộp cát của ứng dụng đã ký có thể không cho phép xóa trên phiên bản hệ điều hành này.",
+  "The cache file could not be deleted. The device was not changed.": "Không thể xóa tệp bộ nhớ đệm. Thiết bị không bị thay đổi.",
+  "Read MobileGestalt on this device before rebuilding the cache.": "Hãy đọc MobileGestalt trên thiết bị này trước khi tạo lại bộ nhớ đệm.",
+  "Apply or discard your staged changes before rebuilding the cache.": "Hãy áp dụng hoặc hủy các thay đổi đang chờ trước khi tạo lại bộ nhớ đệm.",
+  "The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.": "Bộ nhớ đệm đã bị xóa và một bản sao lưu đã được lưu. Hãy khởi động lại thiết bị ngay để iOS tạo lại bộ nhớ đệm gốc từ dữ liệu xuất xưởng của bo mạch chính.",
+  "Rebuild Factory Cache": "Tạo lại bộ nhớ đệm xuất xưởng",
+  "Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward.": "«Tạo lại bộ nhớ đệm xuất xưởng» xóa tệp MobileGestalt của thiết bị để iOS tạo lại bộ nhớ đệm gốc từ dữ liệu xuất xưởng của bo mạch chính trong lần khởi động tiếp theo. Một bản sao lưu được lưu trước. Dùng tùy chọn này để hoàn tác hoàn toàn mọi thay đổi, ngay cả khi không có bản sao lưu phù hợp. Khởi động lại thiết bị ngay sau đó.",
+  "Rebuild the factory cache?": "Tạo lại bộ nhớ đệm xuất xưởng?",
+  "Rebuild": "Tạo lại",
+  "The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.": "Tệp thiết bị hiện tại được sao lưu trước, sau đó bị xóa. iOS tạo lại bộ nhớ đệm gốc từ dữ liệu xuất xưởng của bo mạch chính trong lần khởi động tiếp theo. Khởi động lại thiết bị ngay sau đó.",
+  "Before cache rebuild": "Trước khi tạo lại bộ nhớ đệm",
+  "Cache removed; restart to rebuild": "Đã xóa bộ nhớ đệm; khởi động lại để tạo lại"
 }

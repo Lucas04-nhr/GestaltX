@@ -445,5 +445,17 @@
   "Built in on this device": "در این دستگاه داخلی است",
   "Presets for features this device already has are hidden.": "پیش‌تنظیم‌های قابلیت‌هایی که این دستگاه از قبل دارد پنهان شده‌اند.",
   "US model for this device · %@": "مدل آمریکایی این دستگاه · %@",
-  "The US model for this device is looked up from its hardware model and original model number.": "مدل آمریکایی این دستگاه از روی مدل سخت‌افزار و شمارهٔ مدل اصلی آن پیدا می‌شود."
+  "The US model for this device is looked up from its hardware model and original model number.": "مدل آمریکایی این دستگاه از روی مدل سخت‌افزار و شمارهٔ مدل اصلی آن پیدا می‌شود.",
+  "The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.": "فایل حافظهٔ پنهان حذف نشد. دستگاه تغییری نکرد. افزونهٔ sandbox برنامهٔ امضاشده ممکن است در این نسخهٔ سیستم‌عامل اجازهٔ حذف را ندهد.",
+  "The cache file could not be deleted. The device was not changed.": "فایل حافظهٔ پنهان حذف نشد. دستگاه تغییری نکرد.",
+  "Read MobileGestalt on this device before rebuilding the cache.": "پیش از بازسازی حافظهٔ پنهان، ابتدا MobileGestalt را روی این دستگاه بخوانید.",
+  "Apply or discard your staged changes before rebuilding the cache.": "پیش از بازسازی حافظهٔ پنهان، تغییرات مرحله‌بندی‌شده را اعمال یا لغو کنید.",
+  "The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.": "حافظهٔ پنهان حذف شد و یک نسخهٔ پشتیبان ذخیره شد. اکنون دستگاه را راه‌اندازی مجدد کنید تا iOS حافظهٔ پنهان اصلی کارخانه را از روی مِین‌بورد بازسازی کند.",
+  "Rebuild Factory Cache": "بازسازی حافظهٔ پنهان کارخانه",
+  "Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward.": "«بازسازی حافظهٔ پنهان کارخانه» فایل MobileGestalt دستگاه را حذف می‌کند تا iOS در راه‌اندازی بعدی حافظهٔ پنهان اصلی کارخانه را از روی مِین‌بورد بازسازی کند. ابتدا یک نسخهٔ پشتیبان ذخیره می‌شود. از این گزینه برای لغو کامل همهٔ تغییرات استفاده کنید، حتی وقتی هیچ نسخهٔ پشتیبان مطابقی وجود ندارد. بلافاصله پس از آن دستگاه را راه‌اندازی مجدد کنید.",
+  "Rebuild the factory cache?": "حافظهٔ پنهان کارخانه بازسازی شود؟",
+  "Rebuild": "بازسازی",
+  "The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.": "ابتدا از فایل فعلی دستگاه نسخهٔ پشتیبان گرفته و سپس حذف می‌شود. iOS در راه‌اندازی بعدی حافظهٔ پنهان اصلی کارخانه را از روی مِین‌بورد بازسازی می‌کند. بلافاصله پس از آن دستگاه را راه‌اندازی مجدد کنید.",
+  "Before cache rebuild": "پیش از بازسازی حافظهٔ پنهان",
+  "Cache removed; restart to rebuild": "حافظهٔ پنهان حذف شد؛ برای بازسازی راه‌اندازی مجدد کنید"
 }

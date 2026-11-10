@@ -531,6 +531,29 @@ actor GestaltFileStore {
         _ = try withAccess { try saveBackup(Data(contentsOf: deviceURL), source: .device, reason: "Manual backup") }
     }
 
+    /// Deletes the device MobileGestalt cache so the system regenerates it from the
+    /// mainboard's factory data (SysCfg) on the next boot. A verified backup of the
+    /// current file is saved first. If the delete is denied, nothing is changed.
+    @discardableResult
+    func rebuildFromSystem() throws -> BackupRecord {
+        try withAccess {
+            let current = try Data(contentsOf: deviceURL)
+            let record = try saveBackup(current, source: .device, reason: "Before cache rebuild")
+            eventSink("Rebuild: removing \(current.count)-byte device cache")
+            do {
+                try FileManager.default.removeItem(at: deviceURL)
+            } catch {
+                eventSink("Rebuild: delete failed: " + error.localizedDescription)
+                throw GestaltFailure("The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.")
+            }
+            guard !FileManager.default.fileExists(atPath: deviceURL.path) else {
+                throw GestaltFailure("The cache file could not be deleted. The device was not changed.")
+            }
+            eventSink("Rebuild: device cache removed; restart to regenerate")
+            return record
+        }
+    }
+
     /// Saves an imported plist as a device backup. Its source is not verified; the user confirms it.
     /// Imports are only ever added to the backup library; restoring is a separate step, which still checks
     /// the device identifiers and system cache layout.

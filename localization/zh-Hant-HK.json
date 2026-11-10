@@ -445,5 +445,17 @@
   "Built in on this device": "本機原生支援",
   "Presets for features this device already has are hidden.": "已隱藏本機原生支援的功能預設。",
   "US model for this device · %@": "本機美版型號 · %@",
-  "The US model for this device is looked up from its hardware model and original model number.": "本機美版型號根據硬件機型和原始型號查得。"
+  "The US model for this device is looked up from its hardware model and original model number.": "本機美版型號根據硬件機型和原始型號查得。",
+  "The cache file could not be deleted. The device was not changed. The signed app's sandbox extension may not allow deletion on this OS version.": "無法刪除快取檔案，裝置未發生變更。目前簽署應用程式的沙盒擴充功能可能在此系統版本上不允許刪除。",
+  "The cache file could not be deleted. The device was not changed.": "無法刪除快取檔案，裝置未發生變更。",
+  "Read MobileGestalt on this device before rebuilding the cache.": "重建快取前請先在本裝置上讀取 MobileGestalt。",
+  "Apply or discard your staged changes before rebuilding the cache.": "重建快取前請先套用或捨棄暫存的變更。",
+  "The cache was deleted and a backup was saved. Restart the device now so iOS rebuilds the original factory cache from the mainboard.": "快取已刪除，並已儲存一份備份。請立即重新啟動裝置，讓 iOS 依據主機板出廠資料重建原始快取。",
+  "Rebuild Factory Cache": "重建出廠快取",
+  "Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward.": "「重建出廠快取」會刪除裝置上的 MobileGestalt 檔案，使 iOS 於下次開機時依據主機板出廠資料重新產生原始快取。操作前會先儲存備份。即使沒有可對應的備份，也可用它徹底還原所有變更。完成後請立即重新啟動裝置。",
+  "Rebuild the factory cache?": "重建出廠快取？",
+  "Rebuild": "重建",
+  "The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.": "會先備份目前的裝置檔案，然後將其刪除。iOS 會於下次開機時依據主機板出廠資料重建原始快取。完成後請立即重新啟動裝置。",
+  "Before cache rebuild": "重建快取前",
+  "Cache removed; restart to rebuild": "快取已刪除，請重新啟動以重建"
 }

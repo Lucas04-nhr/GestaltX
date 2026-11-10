@@ -695,6 +695,7 @@ struct BackupsView: View {
     @State private var renames: BackupRecord?
     @State private var newName = ""
     @State private var showsImporter = false
+    @State private var asksRebuild = false
     var body: some View {
         List {
             Section {
@@ -710,6 +711,14 @@ struct BackupsView: View {
                 Text(L("Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know."))
                 + Text(verbatim: " ")
                 + Text(L("Export All Backups saves every backup, the original-value record and GestaltX settings in one file. Import it from Files after reinstalling to bring them back."))
+            }
+            Section {
+                Button(role: .destructive) { asksRebuild = true } label: {
+                    Label(L("Rebuild Factory Cache"), systemImage: "arrow.triangle.2.circlepath.circle.fill")
+                }
+                .disabled(!model.canRebuildCache)
+            } footer: {
+                Text(L("Rebuild Factory Cache deletes the device MobileGestalt file so iOS regenerates the original factory cache from the mainboard on the next boot. A backup is saved first. Use this to fully undo every change, even when no backup matches. Restart the device immediately afterward."))
             }
             if model.backups.isEmpty {
                 ContentUnavailableView(L("No Backups"), systemImage: "externaldrive.badge.timemachine", description: Text(L("A backup is created before each write.")))
@@ -743,6 +752,10 @@ struct BackupsView: View {
             Button(L("Cancel"), role: .cancel) { restores = nil }
             Button(L("Restore"), role: .destructive) { if let record = restores { Task { await model.restore(record) } }; restores = nil }
         } message: { Text(L("The current device file is backed up first. The restored file is read back and verified. Restart the device afterward.")) }
+        .alert(L("Rebuild the factory cache?"), isPresented: $asksRebuild) {
+            Button(L("Cancel"), role: .cancel) { asksRebuild = false }
+            Button(L("Rebuild"), role: .destructive) { asksRebuild = false; Task { await model.rebuildCacheFromSystem() } }
+        } message: { Text(L("The current device file is backed up first, then deleted. iOS rebuilds the original factory cache from the mainboard on the next boot. Restart the device immediately afterward.")) }
         .alert(L("Rename Backup"), isPresented: Binding(get: { renames != nil }, set: { if !$0 { renames = nil } })) {
             TextField(L("Backup Name"), text: $newName)
             Button(L("Cancel"), role: .cancel) { renames = nil }

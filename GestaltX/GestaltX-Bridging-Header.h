@@ -1,5 +1,3 @@
-#import <Foundation/Foundation.h>
-NSArray<NSString *> * _Nullable GXContainerPaths(uint64_t maximumInode, BOOL (^ _Nonnull shouldContinue)(uint64_t));
 //
 //  GestaltX-Bridging-Header.h
 //  GestaltX
@@ -12,3 +10,5 @@ NSArray<NSString *> * _Nullable GXContainerPaths(uint64_t maximumInode, BOOL (^ 
 #import "GXEntitlementsReader.h"
 
 #import "GXMobileGestaltImage.h"
+
+NSArray<NSString *> * _Nullable GXContainerPaths(uint64_t maximumInode, BOOL (^ _Nonnull shouldContinue)(uint64_t));
