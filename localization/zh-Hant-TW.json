@@ -410,5 +410,10 @@
   "Handwriting Synthesis": "Tổng hợp chữ viết tay",
   "Advertise the handwriting synthesis model capability.": "Khai báo khả năng mô hình tổng hợp chữ viết tay.",
   "Always-Listening Hey Siri": "Hey Siri luôn lắng nghe",
-  "Advertise always-listening Hey Siri support.": "Khai báo hỗ trợ Hey Siri luôn lắng nghe."
+  "Advertise always-listening Hey Siri support.": "Khai báo hỗ trợ Hey Siri luôn lắng nghe.",
+  "Show Built-in Features": "顯示本機原生支援的功能",
+  "Built in on this device": "本機原生支援",
+  "Presets for features this device already has are hidden.": "已隱藏本機原生支援的功能預設。",
+  "US model for this device · %@": "本機美版型號 · %@",
+  "The US model for this device is looked up from its hardware model and original model number.": "本機美版型號根據硬體機型和原始型號查得。"
 }

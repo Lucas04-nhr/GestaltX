@@ -146,6 +146,76 @@ struct ModelPreset: Identifiable {
         .init(id: "A3717", title: "A3717 — 18 Pro Max · Other regions", value: "A3717"),
         .init(id: "A3718", title: "A3718 — 18 Pro Max · China mainland", value: "A3718")
     ]
+
+    static let usEquivalentID = "usEquivalent"
+
+    var displayTitle: String {
+        id == Self.usEquivalentID ? String(format: L("US model for this device · %@"), value) : L(title)
+    }
+
+    /// The US (LL/A) model number of this hardware. Returns nil when the hardware is unknown,
+    /// already uses the US model, or a listed preset offers the same value.
+    static func usEquivalent(originalModelNumber: String?, machine: String) -> Self? {
+        let original = originalModelNumber ?? ""
+        guard let value = USModelNumber.byModelNumber[original] ?? USModelNumber.byProductType[machine],
+              value != original, !all.contains(where: { $0.value == value }) else { return nil }
+        return .init(id: usEquivalentID, title: "", value: value)
+    }
+}
+
+/// US (LL/A) regulatory model numbers. Adapted from Erosion-CN
+/// (https://github.com/Kianuni/Erosion-CN, GPL-3.0).
+enum USModelNumber {
+    /// Mainland China and international model numbers, mapped to the US model of the same hardware.
+    static let byModelNumber: [String: String] = [
+        // iPhone 18 Pro Max, iPhone 18 Pro and iPhone Duo
+        "A3718": "A3473", "A3717": "A3473", "A3716": "A3473",
+        "A3715": "A3472", "A3714": "A3472", "A3713": "A3472",
+        "A3721": "A3447", "A3720": "A3447", "A3719": "A3447",
+        // iPhone 17, 17 Pro, 17 Pro Max, Air and 17e
+        "A3520": "A3258", "A3519": "A3258",
+        "A3523": "A3256", "A3522": "A3256",
+        "A3526": "A3257", "A3525": "A3257",
+        "A3518": "A3260", "A3517": "A3260",
+        "A3635": "A3575", "A3634": "A3575",
+        // iPhone 16, 16 Plus, 16 Pro, 16 Pro Max and 16e
+        "A3288": "A3081", "A3287": "A3081",
+        "A3291": "A3082", "A3290": "A3082",
+        "A3294": "A3083", "A3293": "A3083",
+        "A3297": "A3084", "A3296": "A3084",
+        "A3410": "A3212", "A3409": "A3212",
+        // iPhone 15, 15 Plus, 15 Pro and 15 Pro Max
+        "A3092": "A2846", "A3090": "A2846",
+        "A3096": "A2847", "A3094": "A2847",
+        "A3104": "A2848", "A3102": "A2848",
+        "A3108": "A2849", "A3106": "A2849",
+    ]
+
+    /// The US model number of each hardware model, for model numbers missing above.
+    static let byProductType: [String: String] = [
+        // iPhone 14 lineup
+        "iPhone14,7": "A2649", "iPhone14,8": "A2632", "iPhone15,2": "A2650", "iPhone15,3": "A2651",
+        // iPhone 15 lineup
+        "iPhone15,4": "A2846", "iPhone15,5": "A2847", "iPhone16,1": "A2848", "iPhone16,2": "A2849",
+        // iPhone 16 lineup
+        "iPhone17,1": "A3083", "iPhone17,2": "A3084", "iPhone17,3": "A3081", "iPhone17,4": "A3082",
+        "iPhone17,5": "A3212",
+        // iPhone 17 lineup
+        "iPhone18,1": "A3256", "iPhone18,2": "A3257", "iPhone18,3": "A3258", "iPhone18,4": "A3260",
+        "iPhone18,5": "A3575",
+        // iPhone 18 lineup, including the regional board variants
+        "iPhone19,1": "A3471", "iPhone19,2": "A3472", "iPhone19,3": "A3473", "iPhone19,4": "A3447",
+        "iPhone19,5": "A3471", "iPhone19,6": "A3472", "iPhone19,7": "A3473", "iPhone19,8": "A3447",
+        // iPads that support Apple Intelligence
+        "iPad13,4": "A2377", "iPad13,5": "A2301", "iPad13,6": "A2301", "iPad13,7": "A2301",
+        "iPad13,8": "A2378", "iPad13,9": "A2379", "iPad13,10": "A2379", "iPad13,11": "A2379",
+        "iPad13,16": "A2588", "iPad13,17": "A2589",
+        "iPad14,3": "A2759", "iPad14,4": "A2435", "iPad14,5": "A2436", "iPad14,6": "A2764",
+        "iPad14,8": "A2902", "iPad14,9": "A2903", "iPad14,10": "A2898", "iPad14,11": "A2899",
+        "iPad15,3": "A3266", "iPad15,4": "A3267", "iPad15,5": "A3268", "iPad15,6": "A3269",
+        "iPad16,1": "A2993", "iPad16,2": "A2995",
+        "iPad16,3": "A2836", "iPad16,4": "A2837", "iPad16,5": "A2925", "iPad16,6": "A2926",
+    ]
 }
 
 struct FieldDraft: Identifiable {

@@ -410,5 +410,10 @@
   "Handwriting Synthesis": "필기 합성",
   "Advertise the handwriting synthesis model capability.": "필기 합성 모델 기능을 알립니다.",
   "Always-Listening Hey Siri": "상시 대기 Hey Siri",
-  "Advertise always-listening Hey Siri support.": "상시 대기 Hey Siri 지원을 알립니다."
+  "Advertise always-listening Hey Siri support.": "상시 대기 Hey Siri 지원을 알립니다.",
+  "Show Built-in Features": "Hiện tính năng có sẵn",
+  "Built in on this device": "Có sẵn trên thiết bị này",
+  "Presets for features this device already has are hidden.": "Đã ẩn các thiết lập sẵn cho tính năng mà thiết bị này đã có.",
+  "US model for this device · %@": "Mẫu Mỹ của thiết bị này · %@",
+  "The US model for this device is looked up from its hardware model and original model number.": "Mẫu Mỹ của thiết bị này được tra cứu từ mẫu phần cứng và số kiểu máy gốc."
 }

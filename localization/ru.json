@@ -410,5 +410,10 @@
   "Handwriting Synthesis": "سنتز دست‌نویس",
   "Advertise the handwriting synthesis model capability.": "قابلیت مدل سنتز دست‌نویس را اعلام می‌کند.",
   "Always-Listening Hey Siri": "Hey Siri همیشه‌شنوا",
-  "Advertise always-listening Hey Siri support.": "پشتیبانی از Hey Siri همیشه‌شنوا را اعلام می‌کند."
+  "Advertise always-listening Hey Siri support.": "پشتیبانی از Hey Siri همیشه‌شنوا را اعلام می‌کند.",
+  "Show Built-in Features": "Показывать встроенные функции",
+  "Built in on this device": "Встроено в это устройство",
+  "Presets for features this device already has are hidden.": "Предустановки функций, которые уже есть на этом устройстве, скрыты.",
+  "US model for this device · %@": "Американская модель этого устройства · %@",
+  "The US model for this device is looked up from its hardware model and original model number.": "Американская модель этого устройства определяется по его аппаратной модели и исходному номеру модели."
 }

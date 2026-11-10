@@ -318,6 +318,18 @@ struct ContentView: View {
 struct CategoryView: View {
     let category: CapabilityCategory
     @EnvironmentObject private var model: GestaltManager
+    @AppStorage("GestaltX.showsBuiltInPresets.v1") private var showsBuiltIn = false
+    private let machine = GestaltAudit.liveMachine()
+
+    private var capabilities: [Capability] { Capability.all.filter { $0.category == category } }
+    private func isBuiltIn(_ capability: Capability) -> Bool { GestaltAudit.isBuiltIn(capability.id, machine: machine) }
+    /// A built-in preset is hidden only while it has nothing to show: no staged choice
+    /// and no value that differs from the original.
+    private func isHidden(_ capability: Capability) -> Bool {
+        !showsBuiltIn && isBuiltIn(capability) && (model.choices[capability.id] ?? .keep) == .keep
+            && !model.differsFromOriginal(capability)
+    }
+
     var body: some View {
         Form {
             if category == .display {
@@ -369,7 +381,7 @@ struct CategoryView: View {
                 }
                 Section {
                     Picker(L("Model Number"), selection: $model.modelID) {
-                        ForEach(ModelPreset.all) { Text(L($0.title)).tag($0.id) }
+                        ForEach(model.modelPresets) { Text($0.displayTitle).tag($0.id) }
                     }
                     HStack(alignment: .firstTextBaseline) {
                         if model.modelID != "keep" {
@@ -381,11 +393,16 @@ struct CategoryView: View {
                             .disabled(!model.canRestore(ModelPreset.restoration))
                     }
                 } footer: {
-                    Text(L("Listed values apply to iPhone 18 Pro and iPhone 18 Pro Max only. Choosing a model number that does not match your hardware can make verification tools report a mismatch."))
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(L("Listed values apply to iPhone 18 Pro and iPhone 18 Pro Max only. Choosing a model number that does not match your hardware can make verification tools report a mismatch."))
+                        if model.modelPresets.contains(where: { $0.id == ModelPreset.usEquivalentID }) {
+                            Text(L("The US model for this device is looked up from its hardware model and original model number."))
+                        }
+                    }
                 }
             }
             Section {
-                ForEach(Capability.all.filter { $0.category == category }) { capability in
+                ForEach(capabilities.filter { !isHidden($0) }) { capability in
                     VStack(alignment: .leading, spacing: 4) {
                     Picker(selection: Binding(
                         get: { model.choices[capability.id] ?? .keep },
@@ -407,6 +424,8 @@ struct CategoryView: View {
                     HStack(alignment: .firstTextBaseline) {
                         if (model.choices[capability.id] ?? .keep) != .keep {
                             Text(L(capability.effectHint)).font(.caption).foregroundStyle(.secondary)
+                        } else if isBuiltIn(capability) {
+                            Text(L("Built in on this device")).font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer(minLength: 8)
                         Button(L("Revert")) { Task { await model.restoreCapability(capability) } }
@@ -419,8 +438,15 @@ struct CategoryView: View {
                     AdditionalOptionsRow()
                     WAPIPresetRow()
                 }
+                if capabilities.contains(where: isBuiltIn) {
+                    Toggle(L("Show Built-in Features"), isOn: $showsBuiltIn)
+                }
             } header: {
                 Text(L("Presets"))
+            } footer: {
+                if capabilities.contains(where: isHidden) {
+                    Text(L("Presets for features this device already has are hidden."))
+                }
             }
             if category == .ipad || category == .advanced {
                 Section { Text(L("Experimental settings. Back up before applying.")).font(.footnote).foregroundStyle(.secondary) }

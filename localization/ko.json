@@ -415,5 +415,10 @@
   "Original author": "원작자",
   "Copied": "복사됨",
   "Copy": "복사",
-  "Copies the version": "버전을 복사합니다"
+  "Copies the version": "버전을 복사합니다",
+  "Show Built-in Features": "기본 제공 기능 표시",
+  "Built in on this device": "이 기기에 기본 제공됨",
+  "Presets for features this device already has are hidden.": "이 기기에 이미 있는 기능의 프리셋은 숨겨져 있습니다.",
+  "US model for this device · %@": "이 기기의 미국 모델 · %@",
+  "The US model for this device is looked up from its hardware model and original model number.": "이 기기의 미국 모델은 하드웨어 모델과 원래 모델 번호로 찾습니다."
 }

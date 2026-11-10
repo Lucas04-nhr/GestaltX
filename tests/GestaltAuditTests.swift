@@ -23,7 +23,7 @@ import Foundation
         precondition(ids(report) == ["dynamicIsland", "srd", "ipadApps", "productType", "modelName", "region-" + GestaltKeys.regionInfo],
                      "Unexpected findings: \(ids(report))")
         precondition(report.findings.first?.certainty == .definite, "Definite findings sort first")
-        precondition(report.notChecked.contains("Boot & Shutdown Chime"), "Items without a reference are listed as not checked")
+        precondition(report.notChecked.contains("Audio Mix"), "Items without a reference are listed as not checked")
 
         // Applying every fix makes the document official, keeping number types.
         var fixed = spoofed
@@ -89,6 +89,34 @@ import Foundation
         precondition(ids(GestaltAudit.check(spoofedCode, machine: "iPad13,16")) == ["ai", "region-" + GestaltKeys.regionInfo])
         let usAI = try document(["A62OafQ85EJAiiqKn4agtg": true, GestaltKeys.regionCode: "LL", GestaltKeys.regionInfo: "LL/A"])
         precondition(GestaltAudit.check(usAI, machine: "iPad13,16").findings.isEmpty, "AI outside China is official")
-        print("PASS: unofficial-setting audit flags spoofed features, identity and region, and stays silent on stock or unknown references, and fixes resolve every finding.")
+
+        // Collision SOS and the boot chime start with iPhone 14, PWM with iPhone 17. Only the
+        // Collision SOS list matches a published Apple reference, so the other two are likely.
+        let extras = try document(["HCzWusHQwZDea6nNhaKndw": true, "QHxt+hGLaBPbQJbXiUJX3w": true, "6IejgN+1Fmu5/QrZFOIeNw": true])
+        let olderReport = GestaltAudit.check(extras, machine: "iPhone14,5")
+        let certainty = Dictionary(uniqueKeysWithValues: olderReport.findings.map { ($0.id, $0.certainty) })
+        precondition(certainty == ["collisionSOS": .definite, "bootChime": .likely, "pwm": .likely], "iPhone 13: \(certainty)")
+        precondition(ids(GestaltAudit.check(extras, machine: "iPhone14,7")) == ["pwm"], "iPhone 14 has Collision SOS and the boot chime")
+        precondition(ids(GestaltAudit.check(extras, machine: "iPhone17,5")) == ["pwm"], "iPhone 16e has Collision SOS and the boot chime")
+        precondition(GestaltAudit.check(extras, machine: "iPhone18,3").findings.isEmpty, "iPhone 17 has all three")
+        precondition(ids(GestaltAudit.check(extras, machine: "iPad16,3")) == ["collisionSOS", "bootChime", "pwm"], "No iPad has them")
+
+        // Built-in features follow the same table; unknown models and unreferenced presets never count.
+        precondition(GestaltAudit.isBuiltIn("collisionSOS", machine: "iPhone14,7"))
+        precondition(GestaltAudit.isBuiltIn("pwm", machine: "iPhone18,1") && !GestaltAudit.isBuiltIn("pwm", machine: "iPhone17,1"))
+        precondition(GestaltAudit.isBuiltIn("dynamicIsland", machine: "iPhone16,1") && !GestaltAudit.isBuiltIn("dynamicIsland", machine: "iPhone17,5"))
+        precondition(!GestaltAudit.isBuiltIn("dynamicIsland", machine: "iPhone99,1"), "Unknown models have no built-in features")
+        precondition(!GestaltAudit.isBuiltIn("audioMix", machine: "iPhone18,1"), "Presets without a reference are never built in")
+
+        // The US model comes from the original model number first, then from the hardware model.
+        precondition(ModelPreset.usEquivalent(originalModelNumber: "A3523", machine: "iPhone18,1")?.value == "A3256", "China 17 Pro")
+        precondition(ModelPreset.usEquivalent(originalModelNumber: "A9999", machine: "iPhone18,1")?.value == "A3256", "Hardware fallback")
+        precondition(ModelPreset.usEquivalent(originalModelNumber: nil, machine: "iPhone14,7")?.value == "A2649", "No original value")
+        precondition(ModelPreset.usEquivalent(originalModelNumber: "A3256", machine: "iPhone18,1") == nil, "Already the US model")
+        precondition(ModelPreset.usEquivalent(originalModelNumber: "A3715", machine: "iPhone19,2") == nil, "A listed preset offers the US model")
+        precondition(ModelPreset.usEquivalent(originalModelNumber: "A9999", machine: "iPhone99,1") == nil, "Unknown hardware")
+        let usPreset = ModelPreset.usEquivalent(originalModelNumber: "A3104", machine: "iPhone16,1")!
+        precondition(usPreset.id == ModelPreset.usEquivalentID && usPreset.displayTitle.hasSuffix("A2848"), usPreset.displayTitle)
+        print("PASS: unofficial-setting audit flags spoofed features, identity and region, and stays silent on stock or unknown references, and fixes resolve every finding; built-in features and US model numbers follow the reference tables.")
     }
 }

@@ -129,8 +129,14 @@ final class GestaltManager: ObservableObject {
         }
         doc.applyRegion(salesRegion: RegionPreset.all.first { $0.id == regionID },
                         regionCode: RegionPreset.all.first { $0.id == regionCodeID })
-        doc.applyModel(ModelPreset.all.first { $0.id == modelID })
+        doc.applyModel(modelPresets.first { $0.id == modelID })
         return doc
+    }
+    /// The model number presets, with the US model of this hardware when it is known.
+    var modelPresets: [ModelPreset] {
+        let original = snapshot?.originalValue(for: GestaltKeys.modelNumber) as? String
+        let usModel = ModelPreset.usEquivalent(originalModelNumber: original, machine: GestaltAudit.liveMachine())
+        return ModelPreset.all + (usModel.map { [$0] } ?? [])
     }
 
     private func log(_ text: String) {
@@ -216,10 +222,16 @@ final class GestaltManager: ObservableObject {
     }
 
     func canRestore(_ capability: Capability) -> Bool {
-        guard !isBusy, let snapshot, let working else { return false }
+        guard !isBusy, snapshot != nil, working != nil else { return false }
         if (choices[capability.id] ?? .keep) != .keep { return true }
         if capability.id == "dynamicIsland" && subtype != 0 { return true }
         if capability.id == ModelPreset.restoration.id && modelID != "keep" { return true }
+        return differsFromOriginal(capability)
+    }
+
+    /// Whether the open document holds values for these keys that differ from the originals.
+    func differsFromOriginal(_ capability: Capability) -> Bool {
+        guard let snapshot, let working else { return false }
         return capability.keys.contains { key in
             switch (snapshot.originalValue(for: key), working.extra[key]) {
             case (nil, nil): false

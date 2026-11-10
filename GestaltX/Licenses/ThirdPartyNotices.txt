@@ -22,7 +22,13 @@ License: GNU GPL v3 (copy included in the app).
 Included/adapted: the respring HTML in NeoSpringView.swift and the earlier GestaltX respring implementation.
 GestaltX changes dated 2026-11-09: fixed raw-string closing-tag escaping and Web Crypto request length; added timeout, cancellation, nonpersistent WebKit data store and Simulator exclusion. NeoSpring itself is credited as a project/technique reference, not assigned a license it does not declare.
 
-3. Research and workflow references (not bundled source)
+3. Erosion-CN
+Fork: Kianuni — https://github.com/Kianuni/Erosion-CN
+Based on Erosion: jailbreakdotparty / lunginspector — https://github.com/jailbreakdotparty/Erosion
+License: GNU GPL v3.
+Adapted: the device lists for Collision SOS, the boot chime and PWM in GestaltAudit.swift, the US regulatory model number tables in Capabilities.swift, and the idea of hiding presets for features the device already has. GestaltX implements its own reference table, presets and interface. No Erosion exploit, file-system or tweak code is included.
+
+4. Research and workflow references (not bundled source)
 PoomSmart/MGKeys: https://github.com/PoomSmart/MGKeys
 leminlimez/Nugget: https://github.com/leminlimez/Nugget
 rooootdev/mond: https://github.com/rooootdev/mond

@@ -32,7 +32,10 @@ enum GestaltAudit {
         let notChecked: [String]
     }
 
-    enum Feature { case dynamicIsland, alwaysOn, actionButton, cameraControl, appleIntelligence, chargeLimit }
+    enum Feature {
+        case dynamicIsland, alwaysOn, actionButton, cameraControl, appleIntelligence, chargeLimit
+        case collisionSOS, bootChime, pwm
+    }
 
     struct OfficialModel {
         let name: String
@@ -84,14 +87,20 @@ enum GestaltAudit {
         return Dictionary(uniqueKeysWithValues: entries)
     }()
 
+    /// The Collision SOS, boot chime and PWM lists are adapted from Erosion-CN
+    /// (https://github.com/Kianuni/Erosion-CN, GPL-3.0).
     static let iPhones: [String: OfficialModel] = {
         let none: Set<Feature> = []
+        // Crash Detection and the boot chime start with the iPhone 14 lineup.
+        let base14: Set<Feature> = [.collisionSOS, .bootChime]
         // Charge limit settings start with the iPhone 15 lineup.
-        let pro14: Set<Feature> = [.dynamicIsland, .alwaysOn]
-        let island: Set<Feature> = [.dynamicIsland, .chargeLimit]
-        let pro15: Set<Feature> = [.dynamicIsland, .alwaysOn, .actionButton, .appleIntelligence, .chargeLimit]
-        let base16: Set<Feature> = [.dynamicIsland, .actionButton, .cameraControl, .appleIntelligence, .chargeLimit]
-        let pro16: Set<Feature> = [.dynamicIsland, .alwaysOn, .actionButton, .cameraControl, .appleIntelligence, .chargeLimit]
+        let pro14 = base14.union([.dynamicIsland, .alwaysOn])
+        let island = base14.union([.dynamicIsland, .chargeLimit])
+        let pro15 = base14.union([.dynamicIsland, .alwaysOn, .actionButton, .appleIntelligence, .chargeLimit])
+        let base16 = base14.union([.dynamicIsland, .actionButton, .cameraControl, .appleIntelligence, .chargeLimit])
+        let pro16 = base16.union([.alwaysOn])
+        // The PWM display setting starts with the iPhone 17 lineup.
+        let pro17 = pro16.union([.pwm])
         return [
             "iPhone12,1": .init(name: "iPhone 11", features: none),
             "iPhone12,3": .init(name: "iPhone 11 Pro", features: none),
@@ -106,8 +115,8 @@ enum GestaltAudit {
             "iPhone14,2": .init(name: "iPhone 13 Pro", features: none),
             "iPhone14,3": .init(name: "iPhone 13 Pro Max", features: none),
             "iPhone14,6": .init(name: "iPhone SE", features: none),
-            "iPhone14,7": .init(name: "iPhone 14", features: none),
-            "iPhone14,8": .init(name: "iPhone 14 Plus", features: none),
+            "iPhone14,7": .init(name: "iPhone 14", features: base14),
+            "iPhone14,8": .init(name: "iPhone 14 Plus", features: base14),
             "iPhone15,2": .init(name: "iPhone 14 Pro", features: pro14),
             "iPhone15,3": .init(name: "iPhone 14 Pro Max", features: pro14),
             "iPhone15,4": .init(name: "iPhone 15", features: island),
@@ -118,18 +127,29 @@ enum GestaltAudit {
             "iPhone17,4": .init(name: "iPhone 16 Plus", features: base16),
             "iPhone17,1": .init(name: "iPhone 16 Pro", features: pro16),
             "iPhone17,2": .init(name: "iPhone 16 Pro Max", features: pro16),
-            "iPhone17,5": .init(name: "iPhone 16e", features: [.actionButton, .appleIntelligence, .chargeLimit]),
-            "iPhone18,3": .init(name: "iPhone 17", features: pro16),
-            "iPhone18,1": .init(name: "iPhone 17 Pro", features: pro16),
-            "iPhone18,2": .init(name: "iPhone 17 Pro Max", features: pro16),
-            "iPhone18,4": .init(name: "iPhone Air", features: pro16),
+            "iPhone17,5": .init(name: "iPhone 16e", features: base14.union([.actionButton, .appleIntelligence, .chargeLimit])),
+            "iPhone18,3": .init(name: "iPhone 17", features: pro17),
+            "iPhone18,1": .init(name: "iPhone 17 Pro", features: pro17),
+            "iPhone18,2": .init(name: "iPhone 17 Pro Max", features: pro17),
+            "iPhone18,4": .init(name: "iPhone Air", features: pro17),
         ]
     }()
 
     private static let featureOf: [String: Feature] = [
         "dynamicIsland": .dynamicIsland, "aod": .alwaysOn, "actionButton": .actionButton,
         "cameraControl": .cameraControl, "ai": .appleIntelligence, "chargeLimit": .chargeLimit,
+        "collisionSOS": .collisionSOS, "bootChime": .bootChime, "pwm": .pwm,
     ]
+    /// Features whose model lists have no Apple reference to check them against. A missing
+    /// feature is reported as likely, so its fix is not selected by default.
+    private static let unconfirmedFeatures: Set<Feature> = [.bootChime, .pwm]
+
+    /// Whether this hardware officially has the feature that a preset turns on.
+    /// Unknown models and presets without a reference never count as built in.
+    static func isBuiltIn(_ capabilityID: String, machine: String) -> Bool {
+        guard let feature = featureOf[capabilityID], let model = models[machine] else { return false }
+        return model.features.contains(feature)
+    }
     private static let iPadOnly: Set<String> = ["pencil", "stageManager", "ipadApps"]
     private static let internalOnly: Set<String> = ["internal", "storage", "srd"]
     private static let modelNameKeys = ["Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]
@@ -172,7 +192,8 @@ enum GestaltAudit {
             } else if let feature = featureOf[capability.id], let model {
                 if enabled.isEmpty { continue }
                 if !model.features.contains(feature) {
-                    flag(String(format: L("%@ does not officially support this feature."), model.name))
+                    flag(String(format: L("%@ does not officially support this feature."), model.name),
+                         unconfirmedFeatures.contains(feature) ? .likely : .definite)
                 } else if feature == .appleIntelligence, region == "CH" {
                     // Mainland China models do not offer Apple Intelligence. The region comes from the
                     // cache itself, so a spoofed region makes this a likely, not a definite, finding.

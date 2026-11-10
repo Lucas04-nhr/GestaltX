@@ -2,6 +2,19 @@
 
 English | [简体中文](CHANGELOG_ZH-CN.md)
 
+## [Unreleased]
+
+### Added
+
+- Presets for features this device already has are hidden, based on the
+  device's real model identifier. **Show Built-in Features** lists them all.
+- **Model Number** lists the US (LL/A) model number of this hardware.
+- **Check Unofficial Settings** also covers Collision SOS, the boot chime and
+  PWM. The boot chime and PWM lists have no Apple reference, so they are
+  reported as possibly not official.
+- The device lists and US model numbers are adapted from
+  [Erosion-CN](https://github.com/Kianuni/Erosion-CN) (GPL-3.0).
+
 ## [1.0.4] - 2026-11-10
 
 Build `11101436`.

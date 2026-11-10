@@ -110,6 +110,7 @@ struct CreditsView: View {
                 credit("MGKeys", author: "PoomSmart", url: "https://github.com/PoomSmart/MGKeys")
                 credit("Nugget", author: "leminlimez", url: "https://github.com/leminlimez/Nugget")
                 credit("GestaltEdit", author: "frs0n", url: "https://github.com/frs0n/GestaltEdit")
+                credit("Erosion-CN", author: "Kianuni · lunginspector", url: "https://github.com/Kianuni/Erosion-CN")
             }
         }
         .navigationTitle(L("Credits & Licenses"))

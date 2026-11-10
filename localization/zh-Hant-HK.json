@@ -410,5 +410,10 @@
   "Handwriting Synthesis": "Синтез рукописного текста",
   "Advertise the handwriting synthesis model capability.": "Объявляет возможность модели синтеза рукописного текста.",
   "Always-Listening Hey Siri": "Постоянно слушающая Hey Siri",
-  "Advertise always-listening Hey Siri support.": "Объявляет поддержку постоянно слушающей Hey Siri."
+  "Advertise always-listening Hey Siri support.": "Объявляет поддержку постоянно слушающей Hey Siri.",
+  "Show Built-in Features": "顯示本機原生支援的功能",
+  "Built in on this device": "本機原生支援",
+  "Presets for features this device already has are hidden.": "已隱藏本機原生支援的功能預設。",
+  "US model for this device · %@": "本機美版型號 · %@",
+  "The US model for this device is looked up from its hardware model and original model number.": "本機美版型號根據硬件機型和原始型號查得。"
 }

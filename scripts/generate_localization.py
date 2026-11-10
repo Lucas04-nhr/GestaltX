@@ -427,6 +427,11 @@ Handwriting Synthesis	手写合成
 Advertise the handwriting synthesis model capability.	声明手写合成模型能力。
 Always-Listening Hey Siri	常听 Hey Siri
 Advertise always-listening Hey Siri support.	声明支持常听 Hey Siri。
+Show Built-in Features	显示本机原生支持的功能
+Built in on this device	本机原生支持
+Presets for features this device already has are hidden.	已隐藏本机原生支持的功能预设。
+US model for this device · %@	本机美版型号 · %@
+The US model for this device is looked up from its hardware model and original model number.	本机美版型号根据硬件机型和原始型号查得。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():
