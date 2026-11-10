@@ -4,8 +4,21 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-10
+
+Build `11101441`.
+
 ### Added
 
+- **Rebuild Factory Cache** in the Backups tab deletes the device MobileGestalt
+  file, after saving a backup of it, so iOS regenerates the original factory
+  cache from the mainboard on the next boot. It fully reverts every change, even
+  when no backup matches, as a send-for-service fallback. Restart the device
+  afterward. Inspired by [Erosion-CN](https://github.com/Kianuni/Erosion-CN).
+- **Container cache cleaner** in Tools scans application caches by size and
+  cleans a single container or a batch, using the app's existing signed App
+  Group access. Only `Library/Caches`, `tmp` and WebKit CacheStorage are
+  targeted. Inspired by [Erosion-CN](https://github.com/Kianuni/Erosion-CN).
 - Presets for features this device already has are hidden, based on the
   device's real model identifier. **Show Built-in Features** lists them all.
 - **Model Number** lists the US (LL/A) model number of this hardware.
