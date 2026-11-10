@@ -16,10 +16,9 @@ name: Build IPA
 # source = upstream (by hand only): builds one upstream tag and publishes it
 # under the same tag. The source is checked out from upstream at that tag, so
 # the build matches the upstream version exactly. A tag that already has a
-# release here is skipped unless forced. Sync Upstream (sync_upstream.yml)
-# starts this for each new upstream tag when the UPSTREAM_BUILD_WORKFLOW
-# variable is set to build.yml. Sync Upstream pushes upstream tags with
-# GITHUB_TOKEN when it can, so the workflows inside them do not start here.
+# release here is skipped unless forced. Push the upstream tag here first so
+# the release points at upstream's commit. Push it with a token that starts no
+# workflows, or the workflows inside the tag run here too.
 #
 # Every build gets a new CFBundleVersion: the project's CURRENT_PROJECT_VERSION
 # plus the run number (e.g. 11100017 + 7), unless one is given. The version
@@ -200,8 +199,8 @@ jobs:
             gh release upload "$TAG" "$IPA" --clobber
             gh release edit "$TAG" --notes-file "$notes"
           else
-            # Sync Upstream has normally pushed the upstream tag here already, and the release uses it.
-            # For a tag that is not here yet, create it on the default branch.
+            # A pushed upstream tag is used as is. A tag that is not here yet is created on the
+            # default branch, so it does not point at upstream's commit.
             gh release create "$TAG" "$IPA" --title "$TAG" --notes-file "$notes"
           fi
 
