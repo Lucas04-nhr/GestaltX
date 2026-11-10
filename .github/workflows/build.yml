@@ -18,8 +18,8 @@ name: Build IPA
 # the build matches the upstream version exactly. A tag that already has a
 # release here is skipped unless forced. Sync Upstream (sync_upstream.yml)
 # starts this for each new upstream tag when the UPSTREAM_BUILD_WORKFLOW
-# variable is set to build.yml. Upstream tags contain no workflow files, so
-# pushing them here starts no tag build.
+# variable is set to build.yml. Sync Upstream pushes upstream tags with
+# GITHUB_TOKEN when it can, so the workflows inside them do not start here.
 #
 # Every build gets a new CFBundleVersion: the project's CURRENT_PROJECT_VERSION
 # plus the run number (e.g. 11100017 + 7), unless one is given. The version

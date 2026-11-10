@@ -62,10 +62,12 @@ jobs:
             esac
           }
 
-          # Each rejected token leaves a warning annotation; the final error lists every reason on the run page
+          # Each rejected token leaves a warning annotation; the final error lists every reason on the run page.
+          # PUSH_TOKENS sets the order. A push with GITHUB_TOKEN starts no workflows; a push with a PAT
+          # starts the workflows in the pushed commit, which for an upstream tag are upstream's own.
           push_with_fallback() {
             local name token output reason summary=""
-            for name in GH_PAT GH_TOKEN GITHUB_TOKEN; do
+            for name in ${PUSH_TOKENS:-GH_PAT GH_TOKEN GITHUB_TOKEN}; do
               token="${!name}"
               if [ -z "$token" ]; then
                 echo "   ⏭️  $name is not configured"
@@ -96,14 +98,79 @@ jobs:
         id: fetch_upstream
         run: git fetch upstream --tags --force
 
+      # Merges upstream into main, but this repository keeps its own copy of
+      # UPSTREAM_KEEP_PATHS and of the UPSTREAM_KEEP_SETTINGS build settings in
+      # UPSTREAM_KEEP_SETTINGS_FILE. Upstream's other changes to those files,
+      # such as new source files in the project, are still merged.
+      #
+      # It merges a copy of upstream in which those paths and settings already
+      # match main, so they merge cleanly and keep main's values, then records
+      # upstream itself as the second parent. The next sync starts from there.
+      # A real conflict elsewhere stops the sync before anything is pushed.
       - name: Sync main branch
         id: sync_branch
+        env:
+          KEEP_PATHS: ${{ vars.UPSTREAM_KEEP_PATHS || '.github' }}
+          KEEP_SETTINGS: ${{ vars.UPSTREAM_KEEP_SETTINGS || 'MARKETING_VERSION CURRENT_PROJECT_VERSION' }}
+          KEEP_SETTINGS_FILE: ${{ vars.UPSTREAM_KEEP_SETTINGS_FILE || 'GestaltX.xcodeproj/project.pbxproj' }}
         run: |
           echo "========================================="
           echo "🔄 Syncing main branch..."
           echo "========================================="
-          # git merge -X theirs "upstream/$UPSTREAM_BRANCH" --no-edit
-          git rebase -X ours "upstream/$UPSTREAM_BRANCH" --autosquash --keep-empty --reapply-cherry-picks
+          upstream_ref="upstream/$UPSTREAM_BRANCH"
+          if git merge-base --is-ancestor "$upstream_ref" HEAD; then
+            echo "✅ main already contains $upstream_ref"
+            exit 0
+          fi
+
+          # Build the upstream copy in a separate index so the checkout is untouched
+          export GIT_INDEX_FILE="$RUNNER_TEMP/upstream_overlay.index"
+          git read-tree "$upstream_ref"
+          for path in $KEEP_PATHS; do
+            echo "📌 Keeping this repository's $path"
+            git rm -r -q -f --cached --ignore-unmatch -- "$path"
+            git ls-tree -r HEAD -- "$path" | git update-index --index-info
+          done
+
+          if [ -n "$KEEP_SETTINGS" ] && git cat-file -e "$upstream_ref:$KEEP_SETTINGS_FILE" 2>/dev/null \
+            && git cat-file -e "HEAD:$KEEP_SETTINGS_FILE" 2>/dev/null; then
+            script=()
+            for key in $KEEP_SETTINGS; do
+              value=$(git show "HEAD:$KEEP_SETTINGS_FILE" | sed -n "s/^[[:space:]]*$key = \(.*\);$/\1/p" | sort -u)
+              if [ -z "$value" ]; then
+                echo "⏭️  $key is not set in $KEEP_SETTINGS_FILE, skipping"
+                continue
+              fi
+              if [ "$(wc -l <<< "$value")" -ne 1 ]; then
+                echo "::error title=Cannot keep $key::$KEEP_SETTINGS_FILE has more than one $key on main: $(tr '\n' ' ' <<< "$value")"
+                exit 1
+              fi
+              echo "📌 Keeping $key = $value (upstream: $(git show "$upstream_ref:$KEEP_SETTINGS_FILE" | sed -n "s/^[[:space:]]*$key = \(.*\);$/\1/p" | sort -u | tr '\n' ' '))"
+              escaped=$(printf '%s' "$value" | sed 's/[\/&]/\\&/g')
+              script+=(-e "s/^\([[:space:]]*$key = \).*;$/\1$escaped;/")
+            done
+            if [ ${#script[@]} -gt 0 ]; then
+              mode=$(git ls-tree "$upstream_ref" -- "$KEEP_SETTINGS_FILE" | awk '{print $1}')
+              blob=$(git show "$upstream_ref:$KEEP_SETTINGS_FILE" | sed "${script[@]}" | git hash-object -w --stdin)
+              git update-index --cacheinfo "$mode,$blob,$KEEP_SETTINGS_FILE"
+            fi
+          fi
+          overlay=$(git commit-tree "$(git write-tree)" -p "$upstream_ref" -m "upstream with this repository's kept files")
+          unset GIT_INDEX_FILE
+
+          if ! tree=$(git merge-tree --write-tree --name-only --no-messages HEAD "$overlay"); then
+            echo "::error title=Merge conflict::Upstream conflicts with main in: $(tail -n +2 <<< "$tree" | tr '\n' ' ')"
+            echo "Merge upstream by hand and push main, then run this workflow again."
+            exit 1
+          fi
+          tree=$(head -n1 <<< "$tree")
+          if [ "$tree" = "$(git rev-parse 'HEAD^{tree}')" ]; then
+            echo "ℹ️  Upstream only changed kept files"
+          fi
+          merge=$(git commit-tree "$tree" -p HEAD -p "$upstream_ref" \
+            -m "Merge $UPSTREAM_REPO $UPSTREAM_BRANCH ($(git rev-parse --short "$upstream_ref"))")
+          git merge --ff-only -q "$merge"
+          git log --oneline -1
           echo "✅ Branch sync completed"
 
       - name: Check for changes
@@ -128,8 +195,8 @@ jobs:
         run: |
           echo "📤 Pushing main branch changes..."
           source "$RUNNER_TEMP/push_with_fallback.sh"
-          # Pushing to a URL has no remote-tracking ref to lease on, so name the expected commit
-          push_with_fallback --force-with-lease="main:$(git rev-parse origin/main)" main
+          # main only moves forward now, so a plain push refuses to overwrite commits pushed during this run
+          push_with_fallback main
           echo "✅ Main branch pushed"
 
       - name: Sync tags
@@ -138,6 +205,9 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # main already holds upstream's commits, so GITHUB_TOKEN can usually push the tag without
+          # starting upstream's workflows; Start Builds then builds it with this repository's build.yml
+          PUSH_TOKENS: GITHUB_TOKEN GH_PAT GH_TOKEN
         run: |
           source "$RUNNER_TEMP/push_with_fallback.sh"
 
