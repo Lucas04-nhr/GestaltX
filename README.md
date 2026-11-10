@@ -100,7 +100,7 @@ The presets in Tools use the same reference table as the check, and the real mod
 - **Built-in features are hidden.** A preset is hidden when this device officially has its feature, such as Dynamic Island on an iPhone 15. Turning it on would change nothing. A hidden preset reappears while a change to it is staged or its value differs from the original. Turn on **Show Built-in Features** at the end of Presets to list them all. Models missing from the reference table hide nothing.
 - **US model for this device.** Under Intelligence, Model Number also lists the US (LL/A) model number of this hardware, for example A2848 for an iPhone 15 Pro. It is looked up from the original model number, then from the hardware model. It is not listed when the device already uses the US model or when a listed value already covers it.
 
-The feature lists for Collision SOS, the boot chime and PWM, and the US model numbers, are adapted from [Erosion-CN](https://github.com/Kianuni/Erosion-CN). iPhone 17e is not in the table yet, so it is not checked.
+The feature lists for Collision SOS, the boot chime and PWM, and the US model numbers, are adapted from [Erosion-CN](https://github.com/Kianuni/Erosion-CN). The table also lists the iPhone 18 lineup with every feature, and iPad Air (M4) and iPad Pro (M5) with Apple Intelligence and Charge Limit. iPhone 17e is not in the table yet, so it is not checked.
 
 ## Language support
 

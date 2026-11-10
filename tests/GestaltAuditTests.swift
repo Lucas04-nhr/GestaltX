@@ -101,6 +101,22 @@ import Foundation
         precondition(GestaltAudit.check(extras, machine: "iPhone18,3").findings.isEmpty, "iPhone 17 has all three")
         precondition(ids(GestaltAudit.check(extras, machine: "iPad16,3")) == ["collisionSOS", "bootChime", "pwm"], "No iPad has them")
 
+        // The iPhone 18 lineup has every feature; new iPads have Apple Intelligence and the charge limit.
+        let allFeatures = try document(["YlEtTtHlNesRBMal1CqRaA": true, "2OOJf1VhaM7NxfRok3HbWQ": true, "A62OafQ85EJAiiqKn4agtg": true,
+                                        "37NVydb//GP/GrhuTN+exg": true, "HCzWusHQwZDea6nNhaKndw": true,
+                                        "QHxt+hGLaBPbQJbXiUJX3w": true, "6IejgN+1Fmu5/QrZFOIeNw": true])
+        for machine in (1...8).map({ "iPhone19,\($0)" }) {
+            precondition(GestaltAudit.check(allFeatures, machine: machine).findings.isEmpty, "\(machine) has every feature")
+        }
+        let padFeatures = try document(["A62OafQ85EJAiiqKn4agtg": true, "37NVydb//GP/GrhuTN+exg": true])
+        for machine in ["iPad16,8", "iPad16,9", "iPad16,10", "iPad16,11", "iPad17,1", "iPad17,2", "iPad17,3", "iPad17,4"] {
+            precondition(GestaltAudit.check(padFeatures, machine: machine).findings.isEmpty, "\(machine) has AI and the charge limit")
+        }
+        // A model without a known name never reports a model-name mismatch.
+        let named = try document([GestaltKeys.artwork: ["ArtworkDeviceProductDescription": "iPhone 18"]])
+        precondition(GestaltAudit.check(named, machine: "iPhone19,1").findings.isEmpty, "Unnamed models skip the name check")
+        precondition(ids(GestaltAudit.check(named, machine: "iPhone19,6")) == ["modelName"], "Named regional boards are checked")
+
         // Built-in features follow the same table; unknown models and unreferenced presets never count.
         precondition(GestaltAudit.isBuiltIn("collisionSOS", machine: "iPhone14,7"))
         precondition(GestaltAudit.isBuiltIn("pwm", machine: "iPhone18,1") && !GestaltAudit.isBuiltIn("pwm", machine: "iPhone17,1"))

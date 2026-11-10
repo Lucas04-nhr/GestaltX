@@ -12,6 +12,8 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
 - **Check Unofficial Settings** also covers Collision SOS, the boot chime and
   PWM. The boot chime and PWM lists have no Apple reference, so they are
   reported as possibly not official.
+- The reference table now lists the iPhone 18 lineup, iPad Air (M4) and
+  iPad Pro (M5).
 - The device lists and US model numbers are adapted from
   [Erosion-CN](https://github.com/Kianuni/Erosion-CN) (GPL-3.0).
 

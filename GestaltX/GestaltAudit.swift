@@ -40,6 +40,9 @@ enum GestaltAudit {
     struct OfficialModel {
         let name: String
         let features: Set<Feature>
+        /// False when the marketing name is not known yet. The name is then the model
+        /// identifier, and the cached model name is not checked against it.
+        var hasOfficialName = true
     }
 
     /// iPhone models and the preset features they officially support.
@@ -84,6 +87,10 @@ enum GestaltAudit {
             + pair(["iPad14,5", "iPad14,6"], "iPad Pro 12.9-inch (6th generation)", ai)
             + pair(["iPad16,3", "iPad16,4"], "iPad Pro 11-inch (M4)", newAI)
             + pair(["iPad16,5", "iPad16,6"], "iPad Pro 13-inch (M4)", newAI)
+            + pair(["iPad16,8", "iPad16,9"], "iPad Air 11-inch (M4)", newAI)
+            + pair(["iPad16,10", "iPad16,11"], "iPad Air 13-inch (M4)", newAI)
+            + pair(["iPad17,1", "iPad17,2"], "iPad Pro 11-inch (M5)", newAI)
+            + pair(["iPad17,3", "iPad17,4"], "iPad Pro 13-inch (M5)", newAI)
         return Dictionary(uniqueKeysWithValues: entries)
     }()
 
@@ -132,6 +139,16 @@ enum GestaltAudit {
             "iPhone18,1": .init(name: "iPhone 17 Pro", features: pro17),
             "iPhone18,2": .init(name: "iPhone 17 Pro Max", features: pro17),
             "iPhone18,4": .init(name: "iPhone Air", features: pro17),
+            // iPhone 18 lineup. 19,6 to 19,8 are regional boards of 19,2 to 19,4. The name of
+            // 19,1 and 19,5 is not known yet.
+            "iPhone19,1": .init(name: "iPhone19,1", features: pro17, hasOfficialName: false),
+            "iPhone19,2": .init(name: "iPhone 18 Pro", features: pro17),
+            "iPhone19,3": .init(name: "iPhone 18 Pro Max", features: pro17),
+            "iPhone19,4": .init(name: "iPhone Duo", features: pro17),
+            "iPhone19,5": .init(name: "iPhone19,5", features: pro17, hasOfficialName: false),
+            "iPhone19,6": .init(name: "iPhone 18 Pro", features: pro17),
+            "iPhone19,7": .init(name: "iPhone 18 Pro Max", features: pro17),
+            "iPhone19,8": .init(name: "iPhone Duo", features: pro17),
         ]
     }()
 
@@ -212,7 +229,7 @@ enum GestaltAudit {
         }
         // Official names may carry a suffix such as "(3rd generation)". iPad names vary too much
         // in their official form to compare reliably, so only iPhone names are checked.
-        if isPhone, let model, let name = document.artwork["ArtworkDeviceProductDescription"] as? String,
+        if isPhone, let model, model.hasOfficialName, let name = document.artwork["ArtworkDeviceProductDescription"] as? String,
            name != model.name, !name.hasPrefix(model.name + " (") {
             var artwork = document.artwork
             artwork["ArtworkDeviceProductDescription"] = model.name

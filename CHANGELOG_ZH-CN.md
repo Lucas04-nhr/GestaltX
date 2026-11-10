@@ -11,6 +11,7 @@
 - “**型号号码**”会列出本机硬件对应的美版（LL/A）型号。
 - “**检查非官方设定**”新增检查车祸检测 SOS、开关机提示音和 PWM。开关机
   提示音和 PWM 的名单没有 Apple 官方依据，因此报告为“可能非官方”。
+- 参考表新增 iPhone 18 全系列、iPad Air (M4) 和 iPad Pro (M5)。
 - 机型名单与美版型号对照表改编自
   [Erosion-CN](https://github.com/Kianuni/Erosion-CN)（GPL-3.0）。
 
