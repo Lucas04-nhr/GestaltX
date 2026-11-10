@@ -5,7 +5,6 @@ import UIKit
 
 struct AboutView: View {
     @EnvironmentObject private var model: GestaltManager
-    @State private var unlock = AdvancedUnlockSequence()
     @State private var copiedVersion = false
     private var versionText: String { "\(GestaltBrand.version) (\(GestaltBrand.build))" }
     var body: some View {
@@ -61,7 +60,6 @@ struct AboutView: View {
         .listSectionSpacing(20)
         .safeAreaPadding(.bottom, 20)
         .navigationTitle(L("About"))
-        .onDisappear { unlock.reset() }
     }
 
     private var aboutFooter: some View {
@@ -70,14 +68,8 @@ struct AboutView: View {
             Text(copiedVersion ? L("Copied") : "Version: " + versionText)
                 .foregroundStyle(.secondary)
                 .contentShape(Rectangle())
-                // Each tap copies the version; ten taps still unlock the additional options.
-                .onTapGesture {
-                    copyVersion()
-                    if unlock.tap() {
-                        model.unlockAdditionalOptions()
-                        UINotificationFeedbackGenerator().notificationOccurred(.success)
-                    }
-                }
+                // Each tap copies the version.
+                .onTapGesture { copyVersion() }
                 .contextMenu {
                     Button { copyVersion() } label: { Label(L("Copy"), systemImage: "doc.on.doc") }
                 }

@@ -29,15 +29,15 @@ final class GestaltManager: ObservableObject {
     @Published private(set) var logs: [String] = []
     @Published var message: String?
     @Published var isRespringing = false
-    @Published private(set) var additionalOptionsUnlocked = false
-    func unlockAdditionalOptions() { additionalOptionsUnlocked = true }
     @Published var needsRespring = false
     @Published var choices: [String: PresetChoice] = [:]
     @Published var regionID = "keep"
     @Published var regionCodeID = "keep"
+    @Published var modelID = "keep"
     @Published var changesName = false
     @Published var modelName = ""
     @Published var subtype = 0
+    @Published private(set) var wapiChoice: WAPIChoice = .keep
     @Published private(set) var cacheOptionChoice: CacheOptionChoice = .keep
     private let files: GestaltFileStore
     private var exploitLogObserver: NSObjectProtocol?
@@ -53,16 +53,30 @@ final class GestaltManager: ObservableObject {
             #if targetEnvironment(simulator)
             throw GestaltFailure("Device access is unavailable in the Simulator. Open a plist to explore GestaltX.")
             #else
-            guard let signedGroup = GXEntitlementsReader.usableAppGroup() else {
+            let target = (GestaltKeys.devicePath as NSString).deletingLastPathComponent
+            let signedGroups = GXEntitlementsReader.usableAppGroups()
+            guard !signedGroups.isEmpty else {
                 throw GestaltFailure("The signed app has no usable App Group. Enable its App Group capability and sign it again.")
             }
-            let handle = worse_query((GestaltKeys.devicePath as NSString).deletingLastPathComponent,
-                                     signedGroup, false, false)
-            guard handle >= 0 else {
-                if handle == -1 { throw GestaltFailure("The signed app has no usable App Group. Enable its App Group capability and sign it again.") }
-                throw GestaltFailure("MobileGestalt access was denied. Check the OS version and App Group signing.")
+            // Re-signed certificates often carry several App Groups and only some of
+            // them hold a usable container, so try each one instead of trusting one.
+            var rejection: Int64 = -1
+            for signedGroup in signedGroups {
+                var handle = worse_query(target, signedGroup, false, false)
+                if handle == -4, let root = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: signedGroup) {
+                    // The exploit swaps Library/Caches for a symlink, so a container
+                    // without Library fails until the directory exists.
+                    try? FileManager.default.createDirectory(at: root.appendingPathComponent("Library/Caches"),
+                                                             withIntermediateDirectories: true)
+                    handle = worse_query(target, signedGroup, false, false)
+                }
+                if handle >= 0 { return handle }
+                rejection = handle
             }
-            return handle
+            if rejection == -1 {
+                throw GestaltFailure("The signed app has no usable App Group. Enable its App Group capability and sign it again.")
+            }
+            throw GestaltFailure("MobileGestalt access was denied. Check the OS version and App Group signing.")
             #endif
         }, release: { worse_query_release($0) }, eventSink: { text in
             NotificationCenter.default.post(name: Notification.Name("GestaltX.worse_query.log"), object: nil,
@@ -94,6 +108,10 @@ final class GestaltManager: ObservableObject {
     var changeCount: Int { changeKeys.count + cacheDataChanges.count }
     var hasDocument: Bool { snapshot != nil }
     var sourceIsDevice: Bool { snapshot?.source == .device }
+    var artworkEditingError: GestaltFailure? {
+        guard let working, !working.canEditArtwork else { return nil }
+        return GestaltFailure("The artwork field is not a dictionary. Edit it in MG Control before using these presets.")
+    }
     var displayedName: String {
         working?.artwork["ArtworkDeviceProductDescription"] as? String ?? working?.extra["Z/dqyWS6OZTRy10UcmUAhw"] as? String ?? UIDevice.current.model
     }
@@ -102,17 +120,16 @@ final class GestaltManager: ObservableObject {
         for capability in Capability.all {
             capability.apply(choices[capability.id] ?? .keep, to: &doc, restoringFrom: snapshot)
         }
-        if subtype != 0 {
-            doc.setArtwork(NSNumber(value: subtype), for: "ArtworkDeviceSubType")
+        if subtype != 0, doc.setArtwork(NSNumber(value: subtype), for: "ArtworkDeviceSubType") {
             doc.set(NSNumber(value: true), for: "YlEtTtHlNesRBMal1CqRaA")
         }
-        if changesName {
-            doc.setArtwork(modelName.trimmingCharacters(in: .whitespacesAndNewlines), for: "ArtworkDeviceProductDescription")
+        if changesName, doc.setArtwork(modelName.trimmingCharacters(in: .whitespacesAndNewlines), for: "ArtworkDeviceProductDescription") {
             doc.set(modelName.trimmingCharacters(in: .whitespacesAndNewlines), for: "Z/dqyWS6OZTRy10UcmUAhw")
             doc.set(modelName.trimmingCharacters(in: .whitespacesAndNewlines), for: "bbtR9jQx50Fv5Af/affNtA")
         }
         doc.applyRegion(salesRegion: RegionPreset.all.first { $0.id == regionID },
                         regionCode: RegionPreset.all.first { $0.id == regionCodeID })
+        doc.applyModel(ModelPreset.all.first { $0.id == modelID })
         return doc
     }
 
@@ -124,8 +141,9 @@ final class GestaltManager: ObservableObject {
     private func failed(_ error: Error) { message = error.localizedDescription; log(error.localizedDescription) }
     private func accept(_ loaded: DocumentSnapshot) {
         snapshot = loaded; working = loaded.document
-        choices = [:]; regionID = "keep"; regionCodeID = "keep"; changesName = false; subtype = 0
+        choices = [:]; regionID = "keep"; regionCodeID = "keep"; modelID = "keep"; changesName = false; subtype = 0
         cacheOptionChoice = .keep
+        wapiChoice = .keep
         modelName = loaded.document.artwork["ArtworkDeviceProductDescription"] as? String ?? ""
     }
     func clearStaged() {
@@ -133,7 +151,7 @@ final class GestaltManager: ObservableObject {
     }
 
     func stageCacheOption(_ choice: CacheOptionChoice) {
-        guard additionalOptionsUnlocked, !isBusy, var document = working, let snapshot else { return }
+        guard !isBusy, var document = working, let snapshot else { return }
         do {
             let flags: CachedOptionFlags
             switch choice {
@@ -144,6 +162,21 @@ final class GestaltManager: ObservableObject {
             try document.setCacheOptions(flags)
             working = document
             cacheOptionChoice = choice
+        } catch { failed(error) }
+    }
+
+    func stageWAPI(_ choice: WAPIChoice) {
+        guard !isBusy, var document = working, let snapshot else { return }
+        do {
+            let value: Bool
+            switch choice {
+            case .keep: value = try DeviceCacheOptions.wapi(in: snapshot.document)
+            case .disable: value = false
+            case .restoreOriginal: value = try snapshot.originalWAPI()
+            }
+            try document.setWAPI(value)
+            working = document
+            wapiChoice = choice
         } catch { failed(error) }
     }
 
@@ -174,6 +207,8 @@ final class GestaltManager: ObservableObject {
             }
             snapshot = result
             working = before.rebasingPendingEdits(pending, onto: result.document, excluding: [], preservingCacheData: false)
+            if let value = try? DeviceCacheOptions.wapi(in: pending),
+               (try? DeviceCacheOptions.wapi(in: before.document)) != value { try working?.setWAPI(value) }
             cacheOptionChoice = .keep
             log("[restore-option] " + L("Original values restored."))
             await reloadBackups()
@@ -184,6 +219,7 @@ final class GestaltManager: ObservableObject {
         guard !isBusy, let snapshot, let working else { return false }
         if (choices[capability.id] ?? .keep) != .keep { return true }
         if capability.id == "dynamicIsland" && subtype != 0 { return true }
+        if capability.id == ModelPreset.restoration.id && modelID != "keep" { return true }
         return capability.keys.contains { key in
             switch (snapshot.originalValue(for: key), working.extra[key]) {
             case (nil, nil): false
@@ -215,6 +251,7 @@ final class GestaltManager: ObservableObject {
             working = before.rebasingPendingEdits(pending, onto: result.document, excluding: Set(capability.keys))
             choices[capability.id] = .keep
             if capability.id == "dynamicIsland" { subtype = 0 }
+            if capability.id == ModelPreset.restoration.id { modelID = "keep" }
             log("[restore-field] " + L(capability.title) + ": " + L("Original values restored."))
             await reloadBackups()
         } catch { failed(error); await reloadBackups() }
@@ -319,18 +356,19 @@ final class GestaltManager: ObservableObject {
         PlistImportOffer(data: try LegacyDeviceProof.plainPlist(bytes), name: name, sharedSource: sharedSource)
     }
 
-    func prepareSharedPlist(_ entry: SharedPlistEntry, from inbox: SharedPlistInbox) async -> PlistImportOffer? {
-        guard !isBusy else { return nil }
+    func prepareSharedPlist(_ entry: SharedPlistEntry, from inbox: SharedPlistInbox) async -> SharedImportPreparation<PlistImportOffer> {
+        guard !isBusy else { return .deferred(nil) }
         isBusy = true
         defer { isBusy = false }
         do {
             let offer = try prepareImport(inbox.read(entry), name: entry.name, sharedSource: (inbox, entry))
             log("[share] \(entry.name): waiting for import confirmation")
-            return offer
+            return .ready(offer)
         } catch {
+            // Imports are not verified, so a failure here is the file itself; set it aside.
+            log("[share] " + error.localizedDescription)
             inbox.reject(entry)
-            failed(error)
-            return nil
+            return .rejected(error.localizedDescription)
         }
     }
 
@@ -410,7 +448,7 @@ final class GestaltManager: ObservableObject {
         guard !key.isEmpty else { throw GestaltFailure("Enter a field key.") }
         guard var doc = working else { throw GestaltFailure("Load a document first.") }
         if draft.originalKey != key && doc.extra[key] != nil { throw GestaltFailure("That key already exists. Edit the existing field instead.") }
-        let value = try draft.kind.parse(draft.text)
+        let value = try draft.parsedValue()
         if let originalKey = draft.originalKey, originalKey != key { doc.set(nil, for: originalKey) }
         doc.set(value, for: key); working = doc
         // Explicit field edits take precedence: discard presets that would overwrite the key.
@@ -421,6 +459,7 @@ final class GestaltManager: ObservableObject {
         if !changedKeys.isDisjoint(with: [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo]) { regionID = "keep"; regionCodeID = "keep" }
         // A staged Dynamic Island layout also sets the Dynamic Island flag.
         if changedKeys.contains(GestaltKeys.artwork) || changedKeys.contains("YlEtTtHlNesRBMal1CqRaA") { subtype = 0 }
+        if changedKeys.contains(GestaltKeys.modelNumber) { modelID = "keep" }
         if !changedKeys.isDisjoint(with: [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]) { changesName = false }
     }
     /// Stages audit fixes like any other edit. Nothing is written until the changes are applied.
@@ -436,11 +475,14 @@ final class GestaltManager: ObservableObject {
         for capability in Capability.all where capability.keys.contains(key) { choices[capability.id] = .keep }
         if [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo].contains(key) { regionID = "keep"; regionCodeID = "keep" }
         if key == GestaltKeys.artwork { subtype = 0 }
+        if key == GestaltKeys.modelNumber { modelID = "keep" }
         if [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"].contains(key) { changesName = false }
     }
 
     func apply() async {
-        guard !isBusy, let snapshot, let edited = preview, changeCount > 0 else { return }
+        guard !isBusy, let snapshot, let edited = preview else { return }
+        if (changesName || subtype != 0), let error = artworkEditingError { failed(error); return }
+        guard changeCount > 0 else { return }
         if changesName && modelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { failed(GestaltFailure("Enter a model name before applying.")); return }
         isBusy = true
         defer { isBusy = false }

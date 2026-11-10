@@ -4,7 +4,7 @@
 
 <h1 align="center">GestaltX</h1>
 
-[![Version](https://img.shields.io/badge/version-1.0.3-blue)](https://github.com/huamidev/GestaltX)
+[![Version](https://img.shields.io/badge/version-1.0.4-blue)](https://github.com/huamidev/GestaltX)
 [![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#兼容性)
 [![SwiftUI](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://github.com/huamidev/GestaltX)
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
@@ -26,11 +26,11 @@
 
 | 分类 | 预设与工具 |
 | --- | --- |
-| 显示 | 灵动岛功能标记与布局、全天候显示、AOD 色彩、液态玻璃低性能渲染 |
-| 设备 | 机型名称、开关机提示音、充电上限、轻点唤醒、相机控制设置、操作按钮设置 |
+| 显示 | 灵动岛功能标记与布局、全天候显示、AOD 色彩、高亮度 AOD、AOD 翻页组件、HDR 照片显示、壁纸视差、液态玻璃低性能渲染，以及实验性的 PWM 与 DisplayPort 标记 |
+| 设备 | 机型名称、开关机提示音、充电上限、轻点唤醒、相机控制设置、操作按钮设置、车祸检测 SOS、音频混音、FaceTime 空间音频 |
 | iPad | Apple Pencil 设置、台前调度功能标记、iPad 应用兼容性 |
-| 智能 | 独立的地区代码选项、Apple 智能功能标记及销售地区选项；国行设备可尝试开启 AI |
-| 高级 | Apple 内部功能标记、内部存储视图、安全研究设备标记 |
+| 智能 | 独立的地区代码选项、Apple 智能功能标记、端侧 Siri、音频智能、个人翻译、照片 Clean Up、手写合成、常听 Hey Siri 及销售地区选项；国行设备可尝试开启 AI |
+| 高级 | Apple 内部功能标记、内部存储视图、内部设置包、安全研究设备标记 |
 | 字段编辑 | 读取、搜索、添加、编辑与删除 `CacheExtra` 字段；可将备份作为本地文稿打开并编辑；支持字符串、整数、浮点数、布尔值、数据、日期、数组和字典 |
 | 更改管理 | 启动自动读取、手动重新读取、暂存更改前后对比、写入验证、逐项还原 |
 | 备份 | 首次读取自动备份、每次写入前备份、手动备份本机文件、原值记录；从“文件”或分享面板导入；恢复到本机、作为本地文稿打开、重命名、导出和删除；用一个文件导出和导入全部备份 |
@@ -48,7 +48,7 @@
 
 支持 **iOS / iPadOS 27.x**。**iOS / iPadOS 26.x 不支持本机 MobileGestalt 访问。** 基于 [worse_query](https://github.com/forcequitOS/worse_query)。SystemGroup 访问需要 iOS 27，功能可用性因设备与系统而异，同时支持本地 plist 编辑。
 
-签名所用的证书及描述文件必须提供至少一个可用的 App Group。主应用和内置分享扩展必须签入至少一个**相同的 App Group**，重签时请保留分享扩展。两者均会在运行时读取实际签名中的 App Group。
+签名所用的证书及描述文件必须提供至少一个可用的 App Group。主应用和内置分享扩展必须签入至少一个**相同的 App Group**，重签时请保留分享扩展。两者均会在运行时读取实际签名中的 App Group。发布的 IPA 使用 ad-hoc 签名嵌入这些 entitlements，便于 SideStore、AltStore 在重签时识别，不使用开发者证书。
 
 ## 备份、导入与导出
 
@@ -105,6 +105,7 @@ GestaltX 跟随 iOS 的语言设置，默认及回退语言为英语。波斯语
 | Tiếng Việt（越南语） | `vi` |
 | Русский（俄语） | `ru` |
 | فارسی（波斯语） | `fa` |
+| 한국어（韩语） | `ko` |
 
 ## 鸣谢
 
@@ -127,3 +128,13 @@ GestaltX 跟随 iOS 的语言设置，默认及回退语言为英语。波斯语
 ## 许可证
 
 [GNU GPL v3](LICENSE) · Copyright © 2026 huamidev。
+
+## Star History
+
+<a href="https://www.star-history.com/#huamidev/GestaltX&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=huamidev/GestaltX&amp;type=Date&amp;theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=huamidev/GestaltX&amp;type=Date" />
+    <img width="480" alt="GestaltX Star 增长历史" src="https://api.star-history.com/svg?repos=huamidev/GestaltX&amp;type=Date" />
+  </picture>
+</a>

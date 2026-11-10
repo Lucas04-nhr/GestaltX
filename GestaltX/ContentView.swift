@@ -62,14 +62,17 @@ struct ContentView: View {
             Button(L("Cancel"), role: .cancel) {
                 if let offer = importOffer { model.discardImport(offer) }
                 importOffer = nil
+                pendingSharedImport = true
             }
             Button(L("Import")) {
                 guard let offer = importOffer else { return }
                 isCheckingSharedImport = true
                 importOffer = nil
+                pendingSharedImport = true
                 Task {
                     if await model.acceptImport(offer) { selectedTab = 2 }
                     isCheckingSharedImport = false
+                    resumePendingImports()
                 }
             }
         } message: {
@@ -156,6 +159,11 @@ struct ContentView: View {
                       Int64(archive.backupCount)) + "\n\n" + warning
     }
 
+    /// Imports go to the backup library, so staged edits do not need to be resolved first.
+    private var canPresentSharedImport: Bool {
+        !model.isBusy && !showsChanges && !model.isRespringing && importOffer == nil && !showsImportConfirmation
+    }
+
     /// Reads a plist from Files or Open In and asks to save it to Backups.
     /// Imports never depend on staged changes. While GestaltX is busy, the file waits
     /// instead of being refused, so opening a plist at launch works.
@@ -176,7 +184,17 @@ struct ContentView: View {
 
     private func resumePendingImports() {
         if let url = pendingFileImport { importFile(url) }
-        else if pendingSharedImport { Task { await checkSharedImport() } }
+        else if pendingSharedImport { Task { await resumeSharedImports() } }
+    }
+
+    private func resumeSharedImports() async {
+        guard acceptedWelcome, !isPreviewSession else { return }
+        if await checkSharedImport() { return }
+        // Initial automatic reading may have yielded to an import that was
+        // subsequently cancelled or rejected. Resume it when the queue empties.
+        if didAutoRead && !model.hasDocument && !model.isBusy {
+            await model.connect(showErrorAlert: false)
+        }
     }
 
     @discardableResult
@@ -184,12 +202,12 @@ struct ContentView: View {
         guard acceptedWelcome else { return false }
         guard !isCheckingSharedImport, importOffer == nil else { return true }
         do {
-            guard let (inbox, entry) = try SharedAppGroups.oldestEntry() else {
+            let entries = try SharedImportQueue.snapshot(in: SharedAppGroups.inboxes)
+            guard !entries.isEmpty else {
                 pendingSharedImport = false
                 return false
             }
-            // Imports go to the backup library, so staged edits do not need to be resolved first.
-            guard !model.isBusy, !showsChanges, !model.isRespringing else {
+            guard canPresentSharedImport else {
                 pendingSharedImport = true
                 return true
             }
@@ -197,9 +215,33 @@ struct ContentView: View {
             isCheckingSharedImport = true
             defer { isCheckingSharedImport = false }
             sharedImportNoticeShown = true
-            importOffer = await model.prepareSharedPlist(entry, from: inbox)
-            if importOffer != nil { showsImportConfirmation = true }
-            return true
+            let selection: SharedImportQueue.Selection<PlistImportOffer> = await SharedImportQueue.next(in: entries) { inbox, entry in
+                guard canPresentSharedImport else { return .deferred(nil) }
+                return await model.prepareSharedPlist(entry, from: inbox)
+            }
+            switch selection {
+            case .ready(let offer):
+                // Preparing the offer suspends, so recheck presentation after
+                // that await; the unacknowledged inbox file remains available
+                // when the new modal/busy gate clears.
+                guard canPresentSharedImport else {
+                    pendingSharedImport = true
+                    return true
+                }
+                importOffer = offer
+                pendingSharedImport = true
+                showsImportConfirmation = true
+            case .deferred(let message):
+                // A UI/busy gate resumes automatically. A deferral with a message
+                // waits for the next foreground/share event, avoiding an
+                // isBusy -> retry -> isBusy loop on the same retained file.
+                pendingSharedImport = message == nil
+                if let message { model.message = message }
+            case .empty(let lastRejection):
+                pendingSharedImport = false
+                if let lastRejection { model.message = lastRejection }
+            }
+            return selection.blocksAutomaticRead
         } catch {
             model.message = error.localizedDescription
             return true
@@ -288,7 +330,10 @@ struct CategoryView: View {
                         Text("iPhone 16 Pro Max · 2868").tag(2868)
                     }
                     .onChange(of: model.subtype) { _, value in if value != 0 { model.choices["dynamicIsland"] = .keep } }
-                }
+                    if let error = model.artworkEditingError {
+                        Text(error.localizedDescription).font(.caption).foregroundStyle(.secondary)
+                    }
+                }.disabled(model.artworkEditingError != nil)
             }
             if category == .device {
                 Section(L("Device Identity")) {
@@ -297,7 +342,10 @@ struct CategoryView: View {
                         TextField(L("Model Name"), text: $model.modelName).autocorrectionDisabled()
                         Text(L("A device restart may be required.")).font(.caption).foregroundStyle(.secondary)
                     }
-                }
+                    if let error = model.artworkEditingError {
+                        Text(error.localizedDescription).font(.caption).foregroundStyle(.secondary)
+                    }
+                }.disabled(model.artworkEditingError != nil)
             }
             if category == .intelligence {
                 Section {
@@ -318,6 +366,22 @@ struct CategoryView: View {
                     if model.regionID != "keep" { Text(L("Restart the device after changing the region.")).font(.caption).foregroundStyle(.secondary) }
                 } footer: {
                     Text(L("Changing the sales-region suffix may cause verification tools to report a mismatch with factory information."))
+                }
+                Section {
+                    Picker(L("Model Number"), selection: $model.modelID) {
+                        ForEach(ModelPreset.all) { Text(L($0.title)).tag($0.id) }
+                    }
+                    HStack(alignment: .firstTextBaseline) {
+                        if model.modelID != "keep" {
+                            Text(L("A device restart may be required after changing the model number.")).font(.caption).foregroundStyle(.secondary)
+                        }
+                        Spacer(minLength: 8)
+                        Button(L("Revert")) { Task { await model.restoreCapability(ModelPreset.restoration) } }
+                            .font(.caption).buttonStyle(.borderless)
+                            .disabled(!model.canRestore(ModelPreset.restoration))
+                    }
+                } footer: {
+                    Text(L("Listed values apply to iPhone 18 Pro and iPhone 18 Pro Max only. Choosing a model number that does not match your hardware can make verification tools report a mismatch."))
                 }
             }
             Section {
@@ -351,7 +415,10 @@ struct CategoryView: View {
                     }
                     }
                 }
-                if category == .device && model.additionalOptionsUnlocked { AdditionalOptionsRow() }
+                if category == .device {
+                    AdditionalOptionsRow()
+                    WAPIPresetRow()
+                }
             } header: {
                 Text(L("Presets"))
             }
@@ -409,6 +476,25 @@ struct AdditionalOptionsRow: View {
     }
 }
 
+struct WAPIPresetRow: View {
+    @EnvironmentObject private var model: GestaltManager
+    private var supported: Bool {
+        guard let document = model.preview else { return false }
+        return (try? DeviceCacheOptions.wapi(in: document)) != nil
+    }
+    var body: some View {
+        if supported {
+            Picker("WAPI", selection: Binding(get: { model.wapiChoice }, set: { model.stageWAPI($0) })) {
+                ForEach(WAPIChoice.allCases) { choice in Text(choice.title).tag(choice) }
+            }
+            .pickerStyle(.menu)
+            .accessibilityIdentifier("wapi-choice")
+        } else {
+            LabeledContent("WAPI") { Text(L("Unsupported")).foregroundStyle(.secondary) }
+        }
+    }
+}
+
 struct FieldsView: View {
     @EnvironmentObject private var model: GestaltManager
     @State private var search = ""
@@ -435,7 +521,7 @@ struct FieldsView: View {
                         Button {
                             guard let value = model.preview?.extra[key] else { return }
                             let kind = PlistValueKind.detect(value)
-                            draft = FieldDraft(originalKey: key, key: key, kind: kind, text: kind.text(for: value))
+                            draft = FieldDraft(originalKey: key, key: key, kind: kind, text: kind.text(for: value), originalValue: value)
                         } label: {
                             VStack(alignment: .leading, spacing: 6) {
                                 HStack(alignment: .firstTextBaseline) {

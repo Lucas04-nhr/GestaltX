@@ -2,6 +2,9 @@ from pathlib import Path
 import json
 ROOT = Path(__file__).resolve().parents[1]
 TRANSLATIONS = '''
+WAPI	WAPI
+Disable WAPI	关闭 WAPI
+Restore Original	恢复原值
 Special Thanks	特别鸣谢
 
 Supported	支持
@@ -375,6 +378,55 @@ Original author	原作者
 Copied	已复制
 Copy	复制
 Copies the version	复制版本号
+
+Share this device's plist to GestaltX to edit its keys and values or restore a verified backup. Export a copy from GestaltX first to keep a device-bound proof.	现在可将本机 plist 分享到 GestaltX，核验后导入、增删改键值并恢复。建议先从 GestaltX 导出一份带本机校验凭证的备份。
+Canada	加拿大
+Model Number	型号号码
+A device restart may be required after changing the model number.	修改型号号码后可能需要重启设备。
+Listed values apply to iPhone 18 Pro and iPhone 18 Pro Max only. Choosing a model number that does not match your hardware can make verification tools report a mismatch.	以下号码仅适用于 iPhone 18 Pro 和 iPhone 18 Pro Max。选择与硬件不符的号码，可能导致验机工具报告不匹配。
+A3472 — 18 Pro · United States	A3472 — 18 Pro · 美国
+A3713 — 18 Pro · Canada / Japan	A3713 — 18 Pro · 加拿大／日本
+A3714 — 18 Pro · Other regions	A3714 — 18 Pro · 其他地区
+A3715 — 18 Pro · China mainland	A3715 — 18 Pro · 中国大陆
+A3473 — 18 Pro Max · United States	A3473 — 18 Pro Max · 美国
+A3716 — 18 Pro Max · Canada / Japan	A3716 — 18 Pro Max · 加拿大／日本
+A3717 — 18 Pro Max · Other regions	A3717 — 18 Pro Max · 其他地区
+A3718 — 18 Pro Max · China mainland	A3718 — 18 Pro Max · 中国大陆
+The artwork field is not a dictionary. Edit it in MG Control before using these presets.	artwork 字段不是字典，请先在 MG 控制中编辑此字段，再使用这些预设。
+High-Luminance Always-On Display	高亮度始终显示
+Allow Always-On Display to reach a higher brightness level.	允许“始终显示”达到更高亮度。
+Always-On Display Flipbook	始终显示翻页组件
+Enable AOD flipbook widgets on the Lock Screen.	在锁屏上启用 AOD 翻页小组件。
+AOD Flipbook Count	AOD 翻页数量
+Set how many AOD flipbook entries are allowed. Experimental; the accepted range varies by build.	设置允许的 AOD 翻页条目数量。实验性功能，可用范围因系统版本而异。
+Disable Wallpaper Parallax	关闭壁纸视差
+Stop the wallpaper from moving with device motion.	停止壁纸随设备移动产生位移。
+HDR Photo Display	HDR 照片显示
+Enable true HDR rendering for photos.	为照片启用真正的 HDR 渲染。
+Pulse Width Modulation	脉宽调制 (PWM)
+Advertise PWM display support. Actual dimming behavior depends on the panel.	声明支持 PWM 调光。实际调光行为取决于屏幕面板。
+DisplayPort Output	DisplayPort 输出
+Advertise DisplayPort output support. Compatible hardware is still required.	声明支持 DisplayPort 输出，仍需要兼容硬件。
+Collision SOS	车祸检测 SOS
+Show collision detection in Emergency SOS settings. Hardware support is still required.	在“紧急 SOS”设置中显示车祸检测，仍需要硬件支持。
+Audio Mix	音频混音
+Enable the audio mix capability for supported media.	为支持的媒体启用音频混音能力。
+Spatial FaceTime Audio	FaceTime 空间音频
+Enable spatial audio playback for FaceTime.	为 FaceTime 启用空间音频播放。
+Internal Settings Bundle	内部设置包
+Expose Apple's internal settings bundle. Some system services may behave differently.	显示 Apple 内部设置包。部分系统服务可能表现异常。
+On-Device Siri	端侧 Siri
+Advertise on-device Siri understanding. Availability depends on hardware and region.	声明支持端侧 Siri 理解，可用性取决于硬件与地区。
+Audio Intelligence	音频智能
+Advertise the iOS 27 audio intelligence capability.	声明 iOS 27 音频智能能力。
+Personal Translator	个人翻译
+Advertise the personal translator capability.	声明个人翻译能力。
+Photos Clean Up	照片 Clean Up
+Advertise the photos inpainting (Clean Up) capability.	声明照片修复（Clean Up）能力。
+Handwriting Synthesis	手写合成
+Advertise the handwriting synthesis model capability.	声明手写合成模型能力。
+Always-Listening Hey Siri	常听 Hey Siri
+Advertise always-listening Hey Siri support.	声明支持常听 Hey Siri。
 '''
 entries = {}
 for line in TRANSLATIONS.strip().splitlines():

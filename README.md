@@ -4,7 +4,7 @@
 
 <h1 align="center">GestaltX</h1>
 
-[![Version](https://img.shields.io/badge/version-1.0.3-blue)](https://github.com/huamidev/GestaltX)
+[![Version](https://img.shields.io/badge/version-1.0.4-blue)](https://github.com/huamidev/GestaltX)
 [![Platform](https://img.shields.io/badge/iOS-27.x-black?logo=apple)](#compatibility)
 [![SwiftUI](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://github.com/huamidev/GestaltX)
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
@@ -26,11 +26,11 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 
 | Category | Presets and tools |
 | --- | --- |
-| Display | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, Liquid Glass low-power rendering |
-| Device | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings |
+| Display | Dynamic Island capability and layout, Always-On Display, AOD Vibrancy, high-luminance AOD, AOD flipbook, HDR photo display, wallpaper parallax, Liquid Glass low-power rendering, experimental PWM and DisplayPort flags |
+| Device | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio |
 | iPad | Apple Pencil settings, Stage Manager capability, iPad app compatibility |
-| Intelligence | Independent region-code options, Apple Intelligence capability flag, and sales-region options for activation attempts on China-mainland devices |
-| Advanced | Apple internal feature flags, internal storage view, Security Research Device flag |
+| Intelligence | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, and sales-region options for activation attempts on China-mainland devices |
+| Advanced | Apple internal feature flags, internal storage view, internal settings bundle, Security Research Device flag |
 | Field editor | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values |
 | Changes | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore |
 | Backups | Automatic initial backup and a backup before every write, manual device backup, original-value records; import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file |
@@ -48,7 +48,7 @@ Presets modify capability flags; actual effects depend on the device and OS. Chi
 
 Supports **iOS / iPadOS 27.x**. **iOS / iPadOS 26.x is not supported for on-device MobileGestalt access.** Powered by [worse_query](https://github.com/forcequitOS/worse_query). SystemGroup access requires iOS 27; available features depend on the device and OS. Local plist editing is also supported.
 
-Signing requires a certificate and provisioning profile with at least one usable App Group. Sign the app and its embedded share extension with at least one **common App Group**, and keep the extension when re-signing. Both processes detect their actual signed App Groups at runtime.
+Signing requires a certificate and provisioning profile with at least one usable App Group. Sign the app and its embedded share extension with at least one **common App Group**, and keep the extension when re-signing. Both processes detect their actual signed App Groups at runtime. Distributed IPAs carry ad-hoc signatures with these entitlements embedded so SideStore and AltStore can detect them when re-signing; they are not signed with a developer certificate.
 
 ## Backups, import and export
 
@@ -105,6 +105,7 @@ GestaltX follows your iOS language settings, with English as the default and fal
 | Tiếng Việt — Vietnamese | `vi` |
 | Русский — Russian | `ru` |
 | فارسی — Persian | `fa` |
+| 한국어 — Korean | `ko` |
 
 ## Credits
 
@@ -127,3 +128,13 @@ Back up your data before making changes. Modifying MobileGestalt may cause syste
 ## License
 
 [GNU GPL v3](LICENSE) · Copyright © 2026 huamidev.
+
+## Star History
+
+<a href="https://www.star-history.com/#huamidev/GestaltX&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=huamidev/GestaltX&amp;type=Date&amp;theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=huamidev/GestaltX&amp;type=Date" />
+    <img width="480" alt="GestaltX Star History" src="https://api.star-history.com/svg?repos=huamidev/GestaltX&amp;type=Date" />
+  </picture>
+</a>
