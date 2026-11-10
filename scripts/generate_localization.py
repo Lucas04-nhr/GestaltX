@@ -2,6 +2,36 @@ from pathlib import Path
 import json
 ROOT = Path(__file__).resolve().parents[1]
 TRANSLATIONS = '''
+Extended Tools	扩展工具
+Container Cache Cleaner	容器缓存清理
+Estimated Cache Data	预计缓存数据量
+Total Deleted File Data	累计删除文件数据量
+Include System Containers	显示系统组件容器
+Inode Scan Limit	Inode 扫描上限
+%lld million	%lld 百万
+Scan Caches	扫描缓存
+Clean Selected	清理所选
+Scanning Containers	正在扫描容器
+Cleaning Caches	正在清理缓存
+Incomplete scan: %lld access or read errors.	扫描不完整：%lld 项访问或读取错误。
+No Cache Results	暂无缓存结果
+Clean Caches	清理缓存
+Some cache paths could not be read.	部分缓存路径无法读取。
+Container Caches	容器缓存
+Deselect All	取消全选
+Select All	全选
+Search Bundle ID	搜索 Bundle ID
+Clean Caches?	清理缓存？
+Clean cache data in %lld containers (estimated %@)? Only Library/Caches, tmp and WebKit CacheStorage are targeted. Close the selected apps first. Cached offline content may be lost; apps may need to download data or sign in again. This cannot be undone.	清理 %lld 个容器的缓存数据（预计 %@）？仅处理 Library/Caches、tmp 和 WebKit CacheStorage。请先关闭所选应用。离线缓存内容可能丢失，应用可能需要重新下载数据或登录。此操作无法撤销。
+Deleted file data: %@. Errors: %lld. Skipped links or special files: %lld.	已删除文件数据：%@。错误：%lld 项。跳过链接或特殊文件：%lld 项。
+Container scanning requires a supported physical device.	容器扫描需要受支持的真实设备。
+Container discovery failed. Check device access and try again.	容器发现失败，请检查设备访问权限后重试。
+The container identifier could not be read.	无法读取容器标识符。
+This container is protected and cannot be cleaned.	此容器受到保护，无法清理。
+The container changed since scanning. Scan again before cleaning.	容器在扫描后已发生变化，请重新扫描后再清理。
+Invalid application container path.	应用容器路径无效。
+The application container could not be opened.	无法打开应用容器。
+Device file access was denied. Check the OS version and App Group signing.	设备文件访问被拒绝，请检查系统版本和 App Group 签名。
 WAPI	WAPI
 Disable WAPI	关闭 WAPI
 Restore Original	恢复原值

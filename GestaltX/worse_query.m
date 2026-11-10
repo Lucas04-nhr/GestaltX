@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdarg.h>
+#include <pthread.h>
 #include "worse_query.h"
 
 typedef void *(*container_query_create_fn)(void);
@@ -75,7 +76,7 @@ static void clean_symlink(NSString *group) {
 }
 
 // So, who's ready for round two?
-int64_t worse_query(NSString *target, NSString *group, bool alt_flags, bool create_dir) {
+static int64_t wq_perform(NSString *target, NSString *group, bool alt_flags, bool create_dir) {
     wq_log(@"Begin: target=%@ group=%@ alt_flags=%d create_dir=%d", target, group, alt_flags, create_dir);
     // Check if the target exists
     if (!create_dir) {
@@ -179,6 +180,14 @@ int64_t worse_query(NSString *target, NSString *group, bool alt_flags, bool crea
     clean_symlink(group);
 
     wq_log(@"End: return=%lld", (long long)handle);
+    return handle;
+}
+
+int64_t worse_query(NSString *target, NSString *group, bool alt_flags, bool create_dir) {
+    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_lock(&mutex);
+    int64_t handle = wq_perform(target, group, alt_flags, create_dir);
+    pthread_mutex_unlock(&mutex);
     return handle;
 }
 

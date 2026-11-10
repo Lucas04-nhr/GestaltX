@@ -308,6 +308,11 @@ struct ContentView: View {
             if model.needsRespring {
                 Section { Label(L("Some changes require a device restart."), systemImage: "info.circle").font(.footnote).foregroundStyle(.secondary) }
             }
+            Section(L("Extended Tools")) {
+                NavigationLink { ContainerCacheView() } label: {
+                    Label(L("Container Cache Cleaner"), systemImage: "externaldrive.badge.minus")
+                }.disabled(model.isBusy)
+            }
             Section { NavigationLink { SessionLogView() } label: { Label(L("Log"), systemImage: "text.alignleft") } }
         }
         .navigationTitle("GestaltX")
