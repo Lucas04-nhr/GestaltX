@@ -362,7 +362,7 @@
   "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "내보내기 전에 대기 중인 변경 사항을 적용하거나 취소하세요. 백업은 백업 탭에 있습니다.",
   "Apply or discard your staged changes before restoring a backup.": "백업을 복원하기 전에 대기 중인 변경 사항을 적용하거나 취소하세요.",
   "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.": "'백업 생성'은 이 기기의 현재 MobileGestalt 파일을 저장합니다. 출처를 알고 있는 가져온 파일만 복원하세요.",
-  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "백업 탭에서 '파일'의 plist를 가져오거나 GestaltX로 공유하세요. 가져온 파일은 백업에 저장되며, 이 기기에 복원하거나 열어서 편집할 수 있습니다.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.": "백업 탭에서 '파일'의 plist를 가져오거나 GestaltX로 공유하세요. 확인하면 파일이 백업에 저장되며, 이 기기에 복원하거나 열어서 편집할 수 있습니다.",
   "Import from Files": "'파일'에서 가져오기",
   "Imported": "가져옴",
   "Local file backups can be opened or exported, but not restored to this device.": "로컬 파일 백업은 열거나 내보낼 수 있지만 이 기기에 복원할 수는 없습니다.",

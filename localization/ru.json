@@ -306,7 +306,7 @@
   "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "Примените или отмените подготовленные изменения перед экспортом. Резервные копии находятся на вкладке «Резервные копии».",
   "Apply or discard your staged changes before restoring a backup.": "Примените или отмените подготовленные изменения перед восстановлением резервной копии.",
   "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.": "«Создать резервную копию» сохраняет текущий файл MobileGestalt этого устройства. Восстанавливайте только импортированные файлы, источник которых вам известен.",
-  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "Импортируйте plist из «Файлов» на вкладке «Резервные копии» или поделитесь им с GestaltX. Проверенные файлы сохраняются в резервные копии, откуда их можно восстановить на это устройство или открыть для редактирования.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.": "Импортируйте plist из «Файлов» на вкладке «Резервные копии» или поделитесь им с GestaltX. После подтверждения файл сохраняется в резервные копии, откуда его можно восстановить на это устройство или открыть для редактирования.",
   "Import from Files": "Импорт из «Файлов»",
   "Imported": "Импортировано",
   "Local file backups can be opened or exported, but not restored to this device.": "Резервные копии локальных файлов можно открыть или экспортировать, но нельзя восстановить на это устройство.",

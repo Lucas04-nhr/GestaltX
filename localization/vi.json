@@ -306,7 +306,7 @@
   "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "Hãy áp dụng hoặc bỏ các thay đổi đang chờ trước khi xuất. Các bản sao lưu nằm trong tab Bản sao lưu.",
   "Apply or discard your staged changes before restoring a backup.": "Hãy áp dụng hoặc bỏ các thay đổi đang chờ trước khi khôi phục bản sao lưu.",
   "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.": "Tạo bản sao lưu sẽ lưu tệp MobileGestalt hiện tại của thiết bị này. Chỉ khôi phục các tệp được nhập mà bạn biết rõ nguồn gốc.",
-  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "Nhập plist từ Tệp trong tab Bản sao lưu, hoặc chia sẻ nó tới GestaltX. Các tệp đã xác minh được lưu vào Bản sao lưu, nơi bạn có thể khôi phục chúng về thiết bị này hoặc mở để chỉnh sửa.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.": "Nhập plist từ Tệp trong tab Bản sao lưu, hoặc chia sẻ nó tới GestaltX. Sau khi bạn xác nhận, tệp được lưu vào Bản sao lưu, nơi bạn có thể khôi phục về thiết bị này hoặc mở để chỉnh sửa.",
   "Import from Files": "Nhập từ Tệp",
   "Imported": "Đã nhập",
   "Local file backups can be opened or exported, but not restored to this device.": "Bản sao lưu tệp cục bộ chỉ có thể mở hoặc xuất, không thể khôi phục về thiết bị này.",

@@ -319,7 +319,7 @@ The current device file will be backed up before restoring. Restart the device a
 Apply or discard staged changes before exporting. Backups are in the Backups tab.	请先应用或放弃暂存的更改，再导出。备份请在“备份”页查看。
 Apply or discard your staged changes before restoring a backup.	请先应用或放弃暂存的更改，再恢复备份。
 Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.	“创建备份”会保存本机当前的 MobileGestalt 文件。只恢复你确认来源的导入文件。
-Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.	可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。核验通过的文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。
+Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.	可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。确认后，文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。
 Import from Files	从“文件”导入
 Imported	已导入
 Local file backups can be opened or exported, but not restored to this device.	本地文件备份只能打开或导出，不能恢复到本机。

@@ -306,7 +306,7 @@
   "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "پیش از صدور، تغییرات آماده‌شده را اعمال یا کنار بگذارید. نسخه‌های پشتیبان در زبانهٔ پشتیبان‌ها هستند.",
   "Apply or discard your staged changes before restoring a backup.": "پیش از بازیابی نسخهٔ پشتیبان، تغییرات آماده‌شده را اعمال یا کنار بگذارید.",
   "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.": "«ساخت نسخهٔ پشتیبان» فایل فعلی MobileGestalt این دستگاه را ذخیره می‌کند. فقط فایل‌های واردشده‌ای را بازیابی کنید که منبعشان را می‌شناسید.",
-  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "یک plist را از Files در زبانهٔ پشتیبان‌ها وارد کنید یا آن را با GestaltX هم‌رسانی کنید. فایل‌های تأییدشده در پشتیبان‌ها ذخیره می‌شوند و می‌توانید آن‌ها را روی این دستگاه بازیابی یا برای ویرایش باز کنید.",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.": "یک plist را از Files در زبانهٔ پشتیبان‌ها وارد کنید یا آن را با GestaltX هم‌رسانی کنید. پس از تأیید شما، فایل در پشتیبان‌ها ذخیره می‌شود و می‌توانید آن را روی این دستگاه بازیابی کنید یا برای ویرایش باز کنید.",
   "Import from Files": "وارد کردن از Files",
   "Imported": "واردشده",
   "Local file backups can be opened or exported, but not restored to this device.": "پشتیبان‌های فایل محلی را می‌توان باز یا صادر کرد، اما نمی‌توان روی این دستگاه بازیابی کرد.",

@@ -81,7 +81,7 @@ struct ContentView: View {
         .alert(L("Import Plist"), isPresented: $showsShareNotice) {
             Button(L("OK"), role: .cancel) {}
         } message: {
-            Text(L("Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing."))
+            Text(L("Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing."))
         }
         .onOpenURL { url in
             if url.scheme?.lowercased() == "gestaltx", url.host == "share" {

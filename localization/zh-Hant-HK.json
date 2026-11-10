@@ -306,7 +306,7 @@
   "Apply or discard staged changes before exporting. Backups are in the Backups tab.": "請先應用或放棄暫存的更改，再導出。備份請在「備份」頁查看。",
   "Apply or discard your staged changes before restoring a backup.": "請先應用或放棄暫存的更改，再恢復備份。",
   "Create Backup saves this device's current MobileGestalt file. Only restore imported files whose source you know.": "「創建備份」會保存本機目前的 MobileGestalt 文件。只恢復你確認來源的導入文件。",
-  "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": "可在「備份」頁從「檔案」導入 plist，也可以將其分享到 GestaltX。核驗通過的文件會保存到備份列表，之後可恢復到本機，或打開進行編輯。",
+  "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.": "可在「備份」頁從「檔案」導入 plist，也可以將其分享到 GestaltX。確認後，文件會保存到備份列表，之後可恢復到本機，或打開進行編輯。",
   "Import from Files": "從「檔案」導入",
   "Imported": "已導入",
   "Local file backups can be opened or exported, but not restored to this device.": "本地文件備份只能打開或導出，不能恢復到本機。",

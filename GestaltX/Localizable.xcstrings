@@ -16121,54 +16121,54 @@
         }
       }
     },
-    "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing.": {
+    "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Import a plist from Files in the Backups tab, or share it to GestaltX. Verified files are saved to Backups, where you can restore them to this device or open them for editing."
+            "value": "Import a plist from Files in the Backups tab, or share it to GestaltX. After you confirm, the file is saved to Backups, where you can restore it to this device or open it for editing."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。核验通过的文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。"
+            "value": "可在“备份”页从“文件”导入 plist，也可以将其分享到 GestaltX。确认后，文件会保存到备份列表，之后可恢复到本机，或打开进行编辑。"
           }
         },
         "fa": {
           "stringUnit": {
             "state": "translated",
-            "value": "یک plist را از Files در زبانهٔ پشتیبان‌ها وارد کنید یا آن را با GestaltX هم‌رسانی کنید. فایل‌های تأییدشده در پشتیبان‌ها ذخیره می‌شوند و می‌توانید آن‌ها را روی این دستگاه بازیابی یا برای ویرایش باز کنید."
+            "value": "یک plist را از Files در زبانهٔ پشتیبان‌ها وارد کنید یا آن را با GestaltX هم‌رسانی کنید. پس از تأیید شما، فایل در پشتیبان‌ها ذخیره می‌شود و می‌توانید آن را روی این دستگاه بازیابی کنید یا برای ویرایش باز کنید."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "백업 탭에서 '파일'의 plist를 가져오거나 GestaltX로 공유하세요. 가져온 파일은 백업에 저장되며, 이 기기에 복원하거나 열어서 편집할 수 있습니다."
+            "value": "백업 탭에서 '파일'의 plist를 가져오거나 GestaltX로 공유하세요. 확인하면 파일이 백업에 저장되며, 이 기기에 복원하거나 열어서 편집할 수 있습니다."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Импортируйте plist из «Файлов» на вкладке «Резервные копии» или поделитесь им с GestaltX. Проверенные файлы сохраняются в резервные копии, откуда их можно восстановить на это устройство или открыть для редактирования."
+            "value": "Импортируйте plist из «Файлов» на вкладке «Резервные копии» или поделитесь им с GestaltX. После подтверждения файл сохраняется в резервные копии, откуда его можно восстановить на это устройство или открыть для редактирования."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nhập plist từ Tệp trong tab Bản sao lưu, hoặc chia sẻ nó tới GestaltX. Các tệp đã xác minh được lưu vào Bản sao lưu, nơi bạn có thể khôi phục chúng về thiết bị này hoặc mở để chỉnh sửa."
+            "value": "Nhập plist từ Tệp trong tab Bản sao lưu, hoặc chia sẻ nó tới GestaltX. Sau khi bạn xác nhận, tệp được lưu vào Bản sao lưu, nơi bạn có thể khôi phục về thiết bị này hoặc mở để chỉnh sửa."
           }
         },
         "zh-Hant-HK": {
           "stringUnit": {
             "state": "translated",
-            "value": "可在「備份」頁從「檔案」導入 plist，也可以將其分享到 GestaltX。核驗通過的文件會保存到備份列表，之後可恢復到本機，或打開進行編輯。"
+            "value": "可在「備份」頁從「檔案」導入 plist，也可以將其分享到 GestaltX。確認後，文件會保存到備份列表，之後可恢復到本機，或打開進行編輯。"
           }
         },
         "zh-Hant-TW": {
           "stringUnit": {
             "state": "translated",
-            "value": "可在「備份」頁從「檔案」匯入 plist，也可以將其分享到 GestaltX。核驗通過的檔案會儲存到備份列表，之後可恢復到本機，或開啟進行編輯。"
+            "value": "可在「備份」頁從「檔案」匯入 plist，也可以將其分享到 GestaltX。確認後，檔案會儲存到備份列表，之後可恢復到本機，或開啟進行編輯。"
           }
         }
       }
