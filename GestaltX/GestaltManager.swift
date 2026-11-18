@@ -199,6 +199,11 @@ final class GestaltManager: ObservableObject {
         guard !isBusy, snapshot != nil, working != nil else { return false }
         if (choices[capability.id] ?? .keep) != .keep { return true }
         if capability.id == "dynamicIsland" && subtype != 0 { return true }
+        if capability.id == "dynamicIsland", let snapshot, let working {
+            var restored = working
+            capability.restoreDynamicIslandLayout(in: &restored, from: snapshot)
+            if !restored.matches(working) { return true }
+        }
         if capability.id == ModelPreset.restoration.id && modelID != "keep" { return true }
         return differsFromOriginal(capability)
     }
@@ -234,7 +239,9 @@ final class GestaltManager: ObservableObject {
                 message = L(result.source == .device ? "Original values restored." : "Local changes saved. Export the plist to keep a copy.")
             }
             snapshot = result
-            working = before.rebasingPendingEdits(pending, onto: result.document, excluding: Set(capability.keys))
+            var rebased = before.rebasingPendingEdits(pending, onto: result.document, excluding: Set(capability.keys))
+            capability.restoreDynamicIslandLayout(in: &rebased, from: before)
+            working = rebased
             choices[capability.id] = .keep
             if capability.id == "dynamicIsland" { subtype = 0 }
             if capability.id == ModelPreset.restoration.id { modelID = "keep" }
@@ -254,20 +261,40 @@ final class GestaltManager: ObservableObject {
     }
 
     private func diffLines(_ before: [String: Any], _ after: [String: Any], prefix: String = "") -> [String] {
+        enum Difference { case line(String), nested([String]) }
+        var changes: [(key: String, value: Difference)] = []
+        func path(_ key: String) -> String { prefix.isEmpty ? key : prefix + "." + key }
+        var matched = 0
+        for (key, oldValue) in before {
+            guard let newValue = after[key] else {
+                changes.append((key, .line("- \(path(key))  (was \(describe(oldValue)))")))
+                continue
+            }
+            matched += 1
+            if let oldDict = oldValue as? [String: Any], let newDict = newValue as? [String: Any] {
+                // Recursion identifies changed members directly; comparing
+                // the whole dictionary first would traverse it again.
+                let nested = diffLines(oldDict, newDict, prefix: path(key))
+                if !nested.isEmpty { changes.append((key, .nested(nested))) }
+            } else if !GestaltDocument.valuesEqual(oldValue, newValue) {
+                changes.append((key, .line("~ \(path(key)): \(describe(oldValue)) → \(describe(newValue))")))
+            }
+        }
+        // A second walk is needed only if some destination keys were not
+        // encountered above. Ordinary value edits have no added keys.
+        if matched < after.count {
+            for (key, value) in after where before[key] == nil {
+                changes.append((key, .line("+ \(path(key)) = \(describe(value))")))
+            }
+        }
+        // Preserve the existing depth-first key order, sorting only branches
+        // that actually produced log messages.
+        changes.sort { $0.key < $1.key }
         var lines: [String] = []
-        for key in Set(before.keys).union(after.keys).sorted() {
-            let path = prefix.isEmpty ? key : prefix + "." + key
-            switch (before[key], after[key]) {
-            case (nil, let value?): lines.append("+ \(path) = \(describe(value))")
-            case (let value?, nil): lines.append("- \(path)  (was \(describe(value)))")
-            case (let oldValue?, let newValue?):
-                guard !GestaltDocument.valuesEqual(oldValue, newValue) else { continue }
-                if let oldDict = oldValue as? [String: Any], let newDict = newValue as? [String: Any] {
-                    lines.append(contentsOf: diffLines(oldDict, newDict, prefix: path))
-                } else {
-                    lines.append("~ \(path): \(describe(oldValue)) → \(describe(newValue))")
-                }
-            default: break
+        for (_, difference) in changes {
+            switch difference {
+            case .line(let line): lines.append(line)
+            case .nested(let nested): lines.append(contentsOf: nested)
             }
         }
         return lines
@@ -347,13 +374,19 @@ final class GestaltManager: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
-            let offer = try prepareImport(inbox.read(entry), name: entry.name, sharedSource: (inbox, entry))
+            let bytes = try await inbox.readAsync(entry)
+            try Task.checkCancellation()
+            let offer = try prepareImport(bytes, name: entry.name, sharedSource: (inbox, entry))
             log("[share] \(entry.name): waiting for import confirmation")
             return .ready(offer)
+        } catch is CancellationError {
+            return .deferred(nil)
         } catch {
-            // Imports are not verified, so a failure here is the file itself; set it aside.
+            // Imports are not verified. Retry only known access failures; set invalid files aside.
             log("[share] " + error.localizedDescription)
-            inbox.reject(entry)
+            if !inbox.reject(entry, after: error) {
+                return .deferred(error.localizedDescription)
+            }
             return .rejected(error.localizedDescription)
         }
     }
@@ -363,7 +396,8 @@ final class GestaltManager: ObservableObject {
         isBusy = true
         defer { isBusy = false }
         do {
-            let bytes = try SharedPlistInbox.readFile(at: url, limit: BackupArchive.maximumByteCount)
+            let bytes = try await Task.detached { try SharedPlistInbox.readFile(at: url, limit: BackupArchive.maximumByteCount) }.value
+            try Task.checkCancellation()
             if let payload = try BackupArchive.payload(of: bytes) {
                 let root = try? PropertyListSerialization.propertyList(from: payload, options: [], format: nil) as? [String: Any]
                 let count = (root?["backups"] as? [Any])?.count ?? 0
@@ -373,14 +407,15 @@ final class GestaltManager: ObservableObject {
             }
             try SharedPlistInbox.validate(bytes)
             return try prepareImport(bytes, name: url.lastPathComponent, sharedSource: nil)
-        } catch { failed(error); return nil }
+        } catch is CancellationError { return nil }
+        catch { failed(error); return nil }
     }
 
     /// Settings saved in a backup archive. The installation ID is not restored; imported backups are rebound instead.
     static let archivedSettingKeys = ["GestaltX.acceptedWelcome.v1", "GestaltX.sharedImportNotice.v1"]
 
     /// Exports every backup, the original-value record and the app settings as one file.
-    func exportAllBackups() async -> URL? {
+    func exportAllBackups() async -> TemporaryExport? {
         guard !isBusy else { return nil }
         isBusy = true; defer { isBusy = false }
         do {
@@ -430,8 +465,11 @@ final class GestaltManager: ObservableObject {
     }
 
     func stage(_ draft: FieldDraft) throws {
-        let key = draft.key.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !key.isEmpty else { throw GestaltFailure("Enter a field key.") }
+        // Imported plist keys may legitimately contain surrounding whitespace
+        // or be empty. Editing their values must not rename those existing keys.
+        let preservesKey = draft.originalKey == draft.key && working?.extra[draft.key] != nil
+        let key = preservesKey ? draft.key : draft.key.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard preservesKey || !key.isEmpty else { throw GestaltFailure("Enter a field key.") }
         guard var doc = working else { throw GestaltFailure("Load a document first.") }
         if draft.originalKey != key && doc.extra[key] != nil { throw GestaltFailure("That key already exists. Edit the existing field instead.") }
         let value = try draft.parsedValue()
@@ -443,8 +481,7 @@ final class GestaltManager: ObservableObject {
     private func discardPresets(touching changedKeys: Set<String>) {
         for capability in Capability.all where !changedKeys.isDisjoint(with: capability.keys) { choices[capability.id] = .keep }
         if !changedKeys.isDisjoint(with: [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo]) { regionID = "keep"; regionCodeID = "keep" }
-        // A staged Dynamic Island layout also sets the Dynamic Island flag.
-        if changedKeys.contains(GestaltKeys.artwork) || changedKeys.contains("YlEtTtHlNesRBMal1CqRaA") { subtype = 0 }
+        resetLayoutPresets(overriddenBy: changedKeys)
         if changedKeys.contains(GestaltKeys.modelNumber) { modelID = "keep" }
         if !changedKeys.isDisjoint(with: [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"]) { changesName = false }
     }
@@ -460,9 +497,21 @@ final class GestaltManager: ObservableObject {
         working?.set(nil, for: key)
         for capability in Capability.all where capability.keys.contains(key) { choices[capability.id] = .keep }
         if [GestaltKeys.regionCode, GestaltKeys.regionInfo, GestaltKeys.legacyRegionInfo].contains(key) { regionID = "keep"; regionCodeID = "keep" }
-        if key == GestaltKeys.artwork { subtype = 0 }
+        resetLayoutPresets(overriddenBy: [key])
         if key == GestaltKeys.modelNumber { modelID = "keep" }
         if [GestaltKeys.artwork, "Z/dqyWS6OZTRy10UcmUAhw", "bbtR9jQx50Fv5Af/affNtA"].contains(key) { changesName = false }
+    }
+
+    private func resetLayoutPresets(overriddenBy keys: Set<String>) {
+        // A subtype preset writes both the artwork member and the capability
+        // flag. Explicit edits to either field must win over that preset.
+        if !keys.isDisjoint(with: [GestaltKeys.artwork, "YlEtTtHlNesRBMal1CqRaA"]) { subtype = 0 }
+        // Restoring/removing the capability also restores its artwork subtype.
+        // Enabling only changes the flag, so it can coexist with artwork edits.
+        if keys.contains(GestaltKeys.artwork),
+           [.disable, .removeAdded].contains(choices["dynamicIsland"] ?? .keep) {
+            choices["dynamicIsland"] = .keep
+        }
     }
 
     func apply() async {
@@ -501,6 +550,32 @@ final class GestaltManager: ObservableObject {
     func reloadBackups() async {
         do { backups = try await files.backups() } catch { failed(error) }
     }
+    func restoreHardwareIdentity(from record: BackupRecord) async {
+        guard !isBusy, let before = snapshot else { return }
+        guard changeCount == 0 else {
+            failed(GestaltFailure("Save or discard your current changes before opening another plist."))
+            return
+        }
+        isBusy = true
+        defer { isBusy = false }
+        do {
+            let physical = GXCopyPhysicalHardwareIdentity()
+            guard let product = physical["hw.machine"], let board = physical["hw.model"] else {
+                throw GestaltFailure("The hardware model of this device could not be read.")
+            }
+            let live = before
+            let result = try await files.restoreHardwareIdentity(from: record, expected: live,
+                                                                 physicalProduct: product, physicalBoard: board)
+            logChanges(from: live.document, to: result.document, prefix: "[restore-hardware] ")
+            let changed = !result.document.matches(live.document)
+            accept(result)
+            needsRespring = needsRespring || changed
+            message = L(changed ? "Backup restored and verified." : "This backup already matches the device. No changes were made.")
+                + " " + L("Some changes require a device restart.")
+            await reloadBackups()
+        } catch { failed(error); await reloadBackups() }
+    }
+
     /// Restoring always targets this device, regardless of the open document.
     func restore(_ record: BackupRecord) async {
         guard !isBusy else { return }
@@ -513,9 +588,11 @@ final class GestaltManager: ObservableObject {
             log("[restore] \(record.filename) · \(record.byteCount) bytes · reason=\(record.reason)")
             logChanges(from: live.document, to: restored, prefix: "[restore-diff] ")
             let result = try await files.restore(record, onto: live)
-            accept(result); needsRespring = true
+            let changed = !result.document.matches(live.document)
+            accept(result); needsRespring = needsRespring || changed
             status = "Changes verified on device"
-            message = L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
+            message = changed ? L("Backup restored and verified.") + " " + L("Some changes require a device restart.")
+                : L("This backup already matches the device. No changes were made.")
             log(message ?? ""); await reloadBackups()
         } catch { failed(error); await reloadBackups() }
     }
@@ -569,13 +646,13 @@ final class GestaltManager: ObservableObject {
         do { try await files.deleteBackup(record); await reloadBackups() } catch { failed(error) }
     }
     /// Exports the backup's plain plist, exactly as saved.
-    func exportBackup(_ record: BackupRecord) async -> URL? {
+    func exportBackup(_ record: BackupRecord) async -> TemporaryExport? {
         do {
             return try exportData(await files.backupData(record), name: exportName(for: record.date, title: record.name))
         } catch { failed(error); return nil }
     }
     /// Exports the open document as last read or saved. Staged changes are never exported.
-    func exportDocument() -> URL? {
+    func exportDocument() -> TemporaryExport? {
         guard canExportDocument, let snapshot else { return nil }
         do {
             return try exportData(snapshot.data, name: exportName(for: .now))
@@ -595,10 +672,7 @@ final class GestaltManager: ObservableObject {
         let cleaned = String(safe).trimmingCharacters(in: .whitespacesAndNewlines.union(CharacterSet(charactersIn: ".")))
         return (cleaned.isEmpty ? stamp : String(cleaned.prefix(80)) + " " + stamp) + ".plist"
     }
-    private func exportData(_ data: Data, name: String) throws -> URL {
-        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
-        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        let url = folder.appendingPathComponent(name); try data.write(to: url, options: .atomic)
-        return url
+    private func exportData(_ data: Data, name: String) throws -> TemporaryExport {
+        try TemporaryExport(data: data, name: name)
     }
 }

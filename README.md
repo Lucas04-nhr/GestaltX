@@ -9,7 +9,7 @@
 [![SwiftUI](https://img.shields.io/badge/Swift-SwiftUI-orange?logo=swift)](https://github.com/huamidev/GestaltX)
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE)
 
-[English](README.md) · [简体中文](README_ZH-CN.md)
+[English](README.md) · [简体中文](README_ZH-CN.md) · [日本語](README_JA.md) · [한국어](README_KO.md) · [Türkçe](README_TR.md)
 
 A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://github.com/huamidev).
 
@@ -32,11 +32,12 @@ A MobileGestalt editor for iPhone and iPad. Developed by [huamidev](https://gith
 | Device          | Model name, boot/shutdown chime, charge limit, tap to wake, Camera Control settings, Action Button settings, Collision SOS, Audio Mix, Spatial FaceTime audio                                                                                                               |
 | iPad            | Apple Pencil settings, Stage Manager capability, iPad app compatibility                                                                                                                                                                                                     |
 | Intelligence    | Independent region-code options, Apple Intelligence capability flag, on-device Siri, Audio Intelligence, Personal Translator, Photos Clean Up, Handwriting Synthesis, always-listening Hey Siri, and sales-region options for activation attempts on China-mainland devices |
-| Advanced        | Apple internal feature flags, internal storage view, internal settings bundle, Security Research Device flag                                                                                                                                                                |
+| Advanced        | Apple internal feature flags, the system-wide InternalBuild flag with explicit enable confirmation, internal storage view, internal settings bundle, Security Research Device flag                                                                                          |
 | Field editor    | Read, search, add, edit, and remove `CacheExtra` fields; open a backup as a local document to edit it; String, Integer, Real, Boolean, Data, Date, Array, and Dictionary values                                                                                             |
 | Changes         | Automatic reading and manual re-read, staged before/after review, verified writes, per-preset restore                                                                                                                                                                       |
 | Backups         | Automatic initial backup and a backup before every write, manual device backup, original-value records; import from Files or the share sheet; restore to this device, open as a local document, rename, export, and delete; export and import all backups in one file       |
 | Logs & respring | Actual exploit-stage logs and manual NeoSpring respring                                                                                                                                                                                                                     |
+| Customization   | System Settings lock screen text, wallpaper packs (`.tendies` and `.zip`), App Launch Images, App Audio Library for custom notification sounds, device pairing for sound capture                                                                                            |
 | Extended tools  | Container cache scanning, size ranking, Bundle ID search, selection and confirmed cleanup                                                                                                                                                                                   |
 
 Usually, changing the region code is enough to try enabling AI; there is no need to change Sales Region. Selecting United States for Region Code sets `RegionCode` to `LL` and keeps the sales-region suffix. You can also choose China (Mainland), Hong Kong, Taiwan, Japan or the United Kingdom. Sales Region and Region Code can be applied together: the sales suffix follows Sales Region, while the code follows Region Code.
@@ -47,11 +48,26 @@ Disabling a preset or using its Revert button restores the recorded original val
 
 Presets modify capability flags; actual effects depend on the device and OS. China-mainland devices can use the Apple Intelligence and region options to attempt activation; availability also depends on the model, OS version, and Apple services.
 
+### Apple Intelligence, Face ID and dictation
+
+The [YumEdit 1.2.1 approach](https://github.com/H4CNPE/YumEdit/tree/v1.2.1) avoids spoofing the product, board and CPU. In Intelligence, **Apple Intelligence Capability** sets the generative-model flag to `1`, while the separate **Siri AI Mode** preset sets `SiriMode` to `2`. Neither changes hardware identity nor the device-specific On-Device Siri capability. These are experimental flags, not a guarantee of resource downloads or working Apple Intelligence. YumEdit later replaced this activation approach with an experimental two-stage workflow; GestaltX does not implement temporary hardware spoofing.
+
+If a previous hardware spoof broke Face ID or dictation, choose an original device backup in **Backups → Restore Hardware Identity**. Imported plists are saved as device backups and are checked the same way. Save or discard pending changes first. Recovery requires a verified same-device backup with the same `CacheData`, `CacheUUID` and cache version, whose product and board match the kernel-reported hardware. It restores only product, board, CPU and the original regulatory model number, preserving current AI, Siri, region and unrelated settings. Unlike YumEdit's region activation, recovery does not substitute a US regulatory model. Missing, incompatible or already-spoofed backups are rejected; original hardware values are never guessed.
+
+Recovery currently recognizes iPhone 11 through iPhone 15/15 Plus (including the second- and third-generation SE), checking the original CPU against the known chip for the physical product. Other products are rejected rather than guessing their chip. A backup is created before writing and the complete result is verified. **Fully restart the device, then test Face ID, dictation and Apple Intelligence.** This recovery addresses hardware-spoofing damage, not every possible Face ID fault; device-level behavior still requires testing on affected hardware.
+
 ## Compatibility
 
 Supports **iOS / iPadOS 27.x**. **iOS / iPadOS 26.x is not supported for on-device MobileGestalt access.** Powered by [worse_query](https://github.com/forcequitOS/worse_query). SystemGroup access requires iOS 27; available features depend on the device and OS. Local plist editing is also supported.
 
 Signing requires a certificate and provisioning profile with at least one usable App Group. Sign the app and its embedded share extension with at least one **common App Group**, and keep the extension when re-signing. Both processes detect their actual signed App Groups at runtime. Distributed IPAs carry ad-hoc signatures with these entitlements embedded so SideStore and AltStore can detect them when re-signing; they are not signed with a developer certificate.
+
+## Download
+
+Download the IPA from [Releases](https://github.com/Lucas04-nhr/GestaltX/releases).
+Some users report incomplete downloads with Safari on iOS 27. If the file is
+reported as damaged or cannot be extracted, download it again; several attempts
+may be needed. Try another browser if it persists. The cause has not been confirmed.
 
 ## Backups, import and export
 
@@ -134,6 +150,9 @@ GestaltX follows your iOS language settings, with English as the default and fal
 | Русский — Russian                                 | `ru`         |
 | فارسی — Persian                                   | `fa`         |
 | 한국어 — Korean                                   | `ko`         |
+| Español — Spanish                                 | `es`         |
+| 日本語 — Japanese                                 | `ja`         |
+| Türkçe — Turkish                                  | `tr`         |
 
 ## Credits
 

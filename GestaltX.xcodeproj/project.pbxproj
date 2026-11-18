@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A11800000000000000000001 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A11800000000000000000003 /* ZIPFoundation */; };
 		4590AC67EAB2441BAD0E6ED1 /* ItemProviderLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E4C01D754C14C8B9BB28F96 /* ItemProviderLoad.swift */; };
 		0984A2204DCE106EB57ABBA5 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = C4D44512A7F31C4F05AD18C7 /* Localizable.xcstrings */; };
 		2A78BFEA3F79682B43C6174D /* GestaltXShare.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 9EABFACA1DBDA148BE33107B /* GestaltXShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -17,6 +18,7 @@
 		A0D119FCB3963A4F9C1EAF17 /* SharedAppGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CE69FA6A4B81D2287B60D1 /* SharedAppGroups.swift */; };
 		C0E60E90A46F41C928987332 /* SharedAppGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CE69FA6A4B81D2287B60D1 /* SharedAppGroups.swift */; };
 		D57FEACAB810D3AA8EDA8E33 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 650DA52892F36D0BD4701C9E /* Foundation.framework */; };
+		A1C0DE000000000000000001 /* GXDeviceConsole.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1C0DE000000000000000002 /* GXDeviceConsole.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,7 @@
 		D4CE69FA6A4B81D2287B60D1 /* SharedAppGroups.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedAppGroups.swift; sourceTree = "<group>"; };
 		D8F975A2C87AA5E090A58F7F /* GXEntitlementsReader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GXEntitlementsReader.h; path = ../GestaltX/GXEntitlementsReader.h; sourceTree = "<group>"; };
 		E1681AAB87AE6E250D09FCD4 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1C0DE000000000000000002 /* GXDeviceConsole.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = Native/DeviceConsole/build/GXDeviceConsole.xcframework; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -74,6 +77,8 @@
 		3657C2D6303730E800908AE2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				A11800000000000000000001 /* ZIPFoundation in Frameworks */,
+				A1C0DE000000000000000001 /* GXDeviceConsole.xcframework in Frameworks */,
 			);
 		};
 		8EAD853B7894F8DE4CBFB3D3 /* Frameworks */ = {
@@ -117,6 +122,7 @@
 				114E4B0927714FB5809477BA /* Shared */,
 				549A67A15B582DE039CCAEE7 /* ShareExtension */,
 				D0ECEAEAA02D01A984128CA5 /* Configuration */,
+				A1C0DE000000000000000002 /* GXDeviceConsole.xcframework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -179,6 +185,7 @@
 			fileSystemSynchronizedGroups = (
 				3657C2DB303730E800908AE2 /* GestaltX */,
 			);
+			packageProductDependencies = (A11800000000000000000003 /* ZIPFoundation */, );
 			name = GestaltX;
 			productName = GestaltX;
 			productReference = 3657C2D9303730E800908AE2 /* GestaltX.app */;
@@ -214,6 +221,19 @@
 					3657C2D8303730E800908AE2 = {
 						CreatedOnToolsVersion = 27.0;
 						LastSwiftMigration = 2700;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					E14645B6DD100C2080D40483 = {
+						CreatedOnToolsVersion = 27.0;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -229,10 +249,14 @@
 				ru,
 				fa,
 				ko,
+				es,
+				ja,
+				tr,
 				Base,
 			);
 			mainGroup = 3657C2D0303730E800908AE2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (A11800000000000000000002 /* ZIPFoundation */, );
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3657C2DA303730E800908AE2 /* Products */;
 			projectDirPath = "";
@@ -290,6 +314,13 @@
 			targetProxy = F569702176BDA756E86027C5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+        A11800000000000000000002 /* ZIPFoundation */ = {isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/weichsel/ZIPFoundation.git"; requirement = {kind = exactVersion; version = 0.9.20; }; };
+/* End XCRemoteSwiftPackageReference section */
+/* Begin XCSwiftPackageProductDependency section */
+        A11800000000000000000003 /* ZIPFoundation */ = {isa = XCSwiftPackageProductDependency; package = A11800000000000000000002 /* ZIPFoundation */; productName = ZIPFoundation; };
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		3657C2E2303730E900908AE2 /* Debug */ = {
@@ -439,6 +470,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.2.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lc++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx;
 				PRODUCT_NAME = GestaltX;
 				REGISTER_APP_GROUPS = YES;
@@ -447,6 +482,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited) GXDEVICECONSOLE";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "GestaltX/GestaltX-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -483,6 +519,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.2.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lc++",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx;
 				PRODUCT_NAME = GestaltX;
 				REGISTER_APP_GROUPS = YES;
@@ -491,6 +531,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) GXDEVICECONSOLE";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "GestaltX/GestaltX-Bridging-Header.h";
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
@@ -521,6 +562,7 @@
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.ShareExtension;
 				PRODUCT_NAME = GestaltXShare;
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -553,6 +595,7 @@
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.huami.gestultx.ShareExtension;
 				PRODUCT_NAME = GestaltXShare;
+				REGISTER_APP_GROUPS = YES;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

@@ -24,7 +24,7 @@ struct AboutView: View {
                 }
             }
             Section {
-                LabeledContent(L("Minimum OS"), value: "iOS 26.0")
+                LabeledContent(L("Supported OS"), value: VersionSupport.range)
                 NavigationLink { CompatibilityView() } label: { Label(L("Compatibility"), systemImage: "iphone.badge.checkmark") }
             }
             Section(L("Special Thanks")) {
@@ -111,6 +111,11 @@ struct CreditsView: View {
                 credit("Nugget", author: "leminlimez", url: "https://github.com/leminlimez/Nugget")
                 credit("GestaltEdit", author: "frs0n", url: "https://github.com/frs0n/GestaltEdit")
                 credit("Erosion-CN", author: "Kianuni · lunginspector", url: "https://github.com/Kianuni/Erosion-CN")
+                licensedCredit("Gester", author: "sasobhabha · KAMUI contributors", license: "MIT", file: "Gester-MIT", url: "https://github.com/sasobhabha/Gester")
+                licensedCredit("Erosion", author: "lunginspector · jailbreak.party", license: "GPL v3", file: "Erosion-GPL-3.0", url: "https://github.com/jailbreakdotparty/Erosion")
+                licensedCredit("ZIPFoundation", author: "Thomas Zoechling", license: "MIT", file: "ZIPFoundation-MIT", url: "https://github.com/weichsel/ZIPFoundation")
+                licensedCredit("AirCard-iOS", author: "Johnny Franks", license: "MIT", file: "AirCard-MIT", url: "https://github.com/Mak5er/AirCard-iOS")
+                licensedCredit("idevice", author: "Jackson Coxson", license: "MIT", file: "idevice-MIT", url: "https://github.com/jkcoxson/idevice")
             }
         }
         .navigationTitle(L("Credits & Licenses"))
@@ -121,6 +126,18 @@ struct CreditsView: View {
         Link(destination: URL(string: url)!) {
             LabeledContent { Text(author).font(.subheadline).foregroundStyle(.secondary).multilineTextAlignment(.trailing) }
                 label: { Text(project).foregroundStyle(.primary) }
+        }
+    }
+    private func licensedCredit(_ project: String, author: String, license: String, file: String, url: String) -> some View {
+        NavigationLink { LicenseTextView(name: file, title: project + " · " + license, source: URL(string: url)) } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(project)
+                    Text(author).font(.caption).foregroundStyle(.secondary)
+                }
+                Spacer()
+                Text(license).font(.caption).foregroundStyle(.secondary)
+            }
         }
     }
 }
@@ -144,6 +161,7 @@ struct CompatibilityView: View {
 struct LicenseTextView: View {
     let name: String
     let title: String
+    var source: URL? = nil
     private var paragraphs: [String] {
         guard let url = Bundle.main.url(forResource: name, withExtension: "txt"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return [L("License text could not be loaded.")] }
@@ -173,5 +191,14 @@ struct LicenseTextView: View {
             .padding(20).frame(maxWidth: 720).frame(maxWidth: .infinity)
         }
         .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if let source {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Link(destination: source) {
+                        Image("GitHubMark").renderingMode(.template).resizable().scaledToFit().frame(width: 22, height: 22)
+                    }.accessibilityLabel(L("GitHub Repository"))
+                }
+            }
+        }
     }
 }

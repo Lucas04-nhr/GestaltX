@@ -79,6 +79,7 @@ xcodebuild -quiet \
   CODE_SIGNING_ALLOWED=NO \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGN_IDENTITY="" \
+  DEVELOPMENT_TEAM="" \
   ${build_settings[@]+"${build_settings[@]}"} \
   build
 
@@ -94,7 +95,7 @@ echo "==> Signing with entitlements"
 # extension, then the app
 while IFS= read -r -d '' item; do
   codesign -f -s - "$item"
-done < <(find "$app" \( -name '*.framework' -o -name '*.dylib' \) -print0)
+done < <(find "$app" -depth \( -name '*.framework' -o -name '*.dylib' \) -print0)
 
 # Older versions have no share extension
 bundles=()

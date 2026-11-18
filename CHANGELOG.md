@@ -4,6 +4,27 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
 
 ## [Unreleased]
 
+### Added
+
+- Merged upstream [huamidev/GestaltX](https://github.com/huamidev/GestaltX) up to 1.1.1:
+  **Customization** in Tools (System Settings lock screen text, Wallpaper Settings
+  with `.tendies` and `.zip` packs, App Launch Images, App Audio Library with
+  notification-sound capture), **Pairing & Device Connection**, the **Siri AI Mode**
+  preset, **Restore Hardware Identity** for backups (repairs Face ID and dictation
+  after a hardware spoof), and Spanish, Japanese and Turkish localizations.
+
+### Changed
+
+- Adopted upstream fixes: shared and Files imports are read away from the main
+  thread and retried after temporary failures, restoring an unchanged backup skips
+  the device write, temporary export files are removed after sharing, explicit
+  field edits take precedence over layout presets, and the Internal Build flag asks
+  for confirmation.
+- Corrected mixed-language strings in the Persian, Russian, Vietnamese and
+  Traditional Chinese translations.
+- Imports are still not verified. Restore Hardware Identity accepts device backups,
+  including confirmed imports, and checks them against the kernel-reported hardware.
+
 ## [1.2.0] - 2026-11-10
 
 Build `11101441`.
