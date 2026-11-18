@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 
 
-CORE = ["GestaltX/Capabilities.swift", "GestaltX/MobileGestaltCacheLayout.swift",
+CORE = ["GestaltX/Capabilities.swift", "GestaltX/Localization.swift", "GestaltX/MobileGestaltCacheLayout.swift",
         "GestaltX/DeviceCacheOptions.swift", "GestaltX/GestaltDocument.swift"]
 
 

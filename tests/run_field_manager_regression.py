@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 
 
-CORE = ["GestaltX/Capabilities.swift", "GestaltX/MobileGestaltCacheLayout.swift",
+CORE = ["GestaltX/Capabilities.swift", "GestaltX/Localization.swift", "GestaltX/GestaltAudit.swift", "GestaltX/MobileGestaltCacheLayout.swift",
         "GestaltX/DeviceCacheOptions.swift", "GestaltX/GestaltDocument.swift"]
 
 
@@ -40,7 +40,9 @@ def extract_member(source, signature, optional=False):
 def harness(source):
     members = [extract_member(source, signature) for signature in
                ["var preview:", "func stage(", "func removeField("]]
-    members.append(extract_member(source, "private func resetLayoutPresets(", optional=True))
+    # This fork routes explicit edits through discardPresets and adds a US model preset.
+    for signature in ["var modelPresets:", "private func discardPresets(", "private func resetLayoutPresets("]:
+        members.append(extract_member(source, signature, optional=True))
     return """import Foundation
 @MainActor final class FieldEditManagerHarness {
     var snapshot: DocumentSnapshot?
