@@ -4,6 +4,10 @@ English | [简体中文](CHANGELOG_ZH-CN.md)
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-18
+
+Build `11181333`.
+
 ### Added
 
 - Merged upstream [huamidev/GestaltX](https://github.com/huamidev/GestaltX) up to 1.1.1:

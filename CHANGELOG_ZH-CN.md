@@ -4,6 +4,10 @@
 
 ## [未发布]
 
+## [1.3.0] - 2026-11-18
+
+构建号 `11181333`。
+
 ### 新增
 
 - 合并上游 [huamidev/GestaltX](https://github.com/huamidev/GestaltX) 至 1.1.1：
